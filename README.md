@@ -327,12 +327,15 @@ cd backend
 pytest -q
 ```
 
-85 tests covering authentication, self-registration (first-user-becomes-admin
+97 tests covering authentication, self-registration (first-user-becomes-admin
 bootstrap, subsequent users, duplicate-email rejection), password change,
-company/contact/lead/deal/task/activity CRUD, pagination & search/status/
-source/stage/value/type filters, deal stage-transition rules (including the
-terminal-state and invalid-skip cases), lead conversion, RBAC/IDOR protection
-on companies, contacts, leads, deals and tasks (a Sales Rep cannot read or
+company/contact/lead/deal/task/activity/department/sales-target CRUD,
+pagination & search/status/source/stage/value/type filters, deal
+stage-transition rules (including the terminal-state and invalid-skip
+cases), lead conversion, sales target achievement calculation, audit log
+recording (including stage-change metadata) and its own RBAC (Sales Rep
+blocked, Analyst allowed), RBAC/IDOR protection on companies, contacts,
+leads, deals and tasks (a Sales Rep cannot read or
 write another rep's records of any type; Analyst/Viewer cannot write at all;
 only Admin can create employees), and analytics correctness on both an empty
 database and after creating/won-ing a deal.
