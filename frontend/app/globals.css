@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  --color-background: #f6f7f9;
+  --color-card: #ffffff;
+  --color-card-hover: #fafbfc;
+  --color-border: #e5e7eb;
+  --color-border-strong: #d1d5db;
+  --color-foreground: #101828;
+  --color-muted-foreground: #667085;
+  --color-subtle-foreground: #98a2b3;
+
+  --color-brand: #4338ca;
+  --color-brand-hover: #3730a3;
+  --color-brand-foreground: #ffffff;
+  --color-brand-subtle: #eef2ff;
+
+  --color-success: #059669;
+  --color-success-subtle: #ecfdf5;
+  --color-warning: #d97706;
+  --color-warning-subtle: #fffbeb;
+  --color-danger: #dc2626;
+  --color-danger-subtle: #fef2f2;
+  --color-info: #0284c7;
+  --color-info-subtle: #f0f9ff;
+
+  --shadow-card: 0 1px 2px 0 rgb(16 24 40 / 0.04), 0 1px 3px 0 rgb(16 24 40 / 0.06);
+}
+
+[data-theme="dark"] {
+  --color-background: #0a0c10;
+  --color-card: #14171d;
+  --color-card-hover: #191d24;
+  --color-border: #262b34;
+  --color-border-strong: #333944;
+  --color-foreground: #f0f2f5;
+  --color-muted-foreground: #94a0b3;
+  --color-subtle-foreground: #666f80;
+
+  --color-brand: #6366f1;
+  --color-brand-hover: #818cf8;
+  --color-brand-foreground: #ffffff;
+  --color-brand-subtle: #1e1b4b;
+
+  --color-success: #10b981;
+  --color-success-subtle: #062318;
+  --color-warning: #f59e0b;
+  --color-warning-subtle: #271a05;
+  --color-danger: #f87171;
+  --color-danger-subtle: #2c1212;
+  --color-info: #38bdf8;
+  --color-info-subtle: #071d29;
+
+  --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 2px 6px 0 rgb(0 0 0 / 0.25);
+}
+
+@theme inline {
+  --color-background: var(--color-background);
+  --color-card: var(--color-card);
+  --color-card-hover: var(--color-card-hover);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-foreground: var(--color-foreground);
+  --color-muted-foreground: var(--color-muted-foreground);
+  --color-subtle-foreground: var(--color-subtle-foreground);
+
+  --color-brand: var(--color-brand);
+  --color-brand-hover: var(--color-brand-hover);
+  --color-brand-foreground: var(--color-brand-foreground);
+  --color-brand-subtle: var(--color-brand-subtle);
+
+  --color-success: var(--color-success);
+  --color-success-subtle: var(--color-success-subtle);
+  --color-warning: var(--color-warning);
+  --color-warning-subtle: var(--color-warning-subtle);
+  --color-danger: var(--color-danger);
+  --color-danger-subtle: var(--color-danger-subtle);
+  --color-info: var(--color-info);
+  --color-info-subtle: var(--color-info-subtle);
+
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+::selection {
+  background: var(--color-brand-subtle);
+  color: var(--color-brand);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 9999px;
+}
+
+.animate-in {
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
