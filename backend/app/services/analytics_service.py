@@ -110,11 +110,16 @@ def get_kpi_summary(db: Session, days: int = 30) -> KpiSummary:
 
     # Cohort conversion: of the deals *created* in this window, what share have (by now)
     # become Won - not to be confused with win_rate, which looks at deals *closed* in the window.
+    # `Deal.created_at` is a DateTime column, so the upper bound must be exclusive of the day
+    # *after* `end` - a bare `<= end` coerces to midnight and silently drops deals created today.
+    end_exclusive = end + timedelta(days=1)
     created_count = db.execute(
-        select(func.count()).where(Deal.created_at >= start, Deal.created_at <= end)
+        select(func.count()).where(Deal.created_at >= start, Deal.created_at < end_exclusive)
     ).scalar_one()
     created_won_count = db.execute(
-        select(func.count()).where(Deal.created_at >= start, Deal.created_at <= end, Deal.stage == DealStage.WON)
+        select(func.count()).where(
+            Deal.created_at >= start, Deal.created_at < end_exclusive, Deal.stage == DealStage.WON
+        )
     ).scalar_one()
     prev_created_count = db.execute(
         select(func.count()).where(Deal.created_at >= prev_start, Deal.created_at <= prev_end)

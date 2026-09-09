@@ -327,14 +327,21 @@ cd backend
 pytest -q
 ```
 
-43 tests covering authentication, self-registration (first-user-becomes-admin
+64 tests covering authentication, self-registration (first-user-becomes-admin
 bootstrap, subsequent users, duplicate-email rejection), password change,
-company/deal CRUD, pagination & search filters, deal stage-transition rules
-(including the terminal-state and invalid-skip cases), lead conversion,
-RBAC/IDOR protection (a Sales Rep cannot read or write another rep's records;
-Analyst/Viewer cannot write at all; only Admin can create employees), and
-analytics correctness on both an empty database and after creating/won-ing a
-deal. Tests run against an in-memory SQLite database via dependency-injected
+company/contact/lead/deal CRUD, pagination & search/status/source/stage/value
+filters, deal stage-transition rules (including the terminal-state and
+invalid-skip cases), lead conversion, RBAC/IDOR protection on companies,
+contacts, leads and deals (a Sales Rep cannot read or write another rep's
+records of any type; Analyst/Viewer cannot write at all; only Admin can
+create employees), and analytics correctness on both an empty database and
+after creating/won-ing a deal. Also includes a Reports module suite (CSV
+export, pagination, per-report RBAC scoping) that caught a real bug during
+development: `Deal.created_at <= end` on a DateTime column silently drops
+same-day rows once `end` is a bare date (it coerces to midnight) — fixed with
+an exclusive `< end + 1 day` upper bound everywhere a report or the
+Conversion Rate KPI filters a timestamp column by a date range. Tests run
+against an in-memory SQLite database via dependency-injected
 sessions (`backend/tests/conftest.py`), so they don't touch your dev database.
 
 ---

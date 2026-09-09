@@ -14,6 +14,24 @@ def test_sales_rep_cannot_access_another_reps_company(client, sales_rep_user, sa
     assert response.json()["error"]["code"] == "FORBIDDEN"
 
 
+def test_sales_rep_cannot_access_another_reps_deal(client, sales_rep_user, sales_rep2_user):
+    rep1_headers = auth_headers(client, "rep@test.io")
+    rep2_headers = auth_headers(client, "rep2@test.io")
+
+    deal = client.post("/api/v1/deals", headers=rep1_headers, json={"title": "Rep1 Deal", "value": 5000}).json()
+
+    assert client.get(f"/api/v1/deals/{deal['id']}", headers=rep2_headers).status_code == 403
+    assert client.patch(f"/api/v1/deals/{deal['id']}", headers=rep2_headers, json={"value": 1}).status_code == 403
+    assert (
+        client.patch(f"/api/v1/deals/{deal['id']}/stage", headers=rep2_headers, json={"stage": "qualified"}).status_code
+        == 403
+    )
+    assert client.delete(f"/api/v1/deals/{deal['id']}", headers=rep2_headers).status_code == 403
+
+    # The owner and an admin/manager can still see it.
+    assert client.get(f"/api/v1/deals/{deal['id']}", headers=rep1_headers).status_code == 200
+
+
 def test_sales_rep_cannot_modify_another_reps_company(client, sales_rep_user, sales_rep2_user):
     rep1_headers = auth_headers(client, "rep@test.io")
     rep2_headers = auth_headers(client, "rep2@test.io")

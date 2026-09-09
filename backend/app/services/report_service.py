@@ -8,7 +8,7 @@ so the numbers always match what CRM/Analytics show.
 from datetime import date, timedelta
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.rbac import scope_to_owner_only
 from app.models.activity import Activity
@@ -37,9 +37,20 @@ def _date_bounds(start_date: date | None, end_date: date | None) -> tuple[date, 
     return start, end
 
 
+def _datetime_upper_bound(end: date) -> date:
+    """Exclusive upper bound for filtering a DateTime column by a plain `end` date,
+    so rows created any time during `end` itself are still included (a bare
+    `column <= end` would coerce `end` to midnight and silently drop same-day rows)."""
+    return end + timedelta(days=1)
+
+
 def sales_report(db: Session, user: User, start_date: date | None, end_date: date | None) -> list[dict]:
     start, end = _date_bounds(start_date, end_date)
-    stmt = select(Deal).where(Deal.created_at >= start, Deal.created_at <= end)
+    stmt = (
+        select(Deal)
+        .options(joinedload(Deal.company), joinedload(Deal.owner))
+        .where(Deal.created_at >= start, Deal.created_at < _datetime_upper_bound(end))
+    )
     if scope_to_owner_only(user):
         stmt = stmt.where(Deal.owner_id == user.id)
     rows = []
@@ -59,11 +70,11 @@ def sales_report(db: Session, user: User, start_date: date | None, end_date: dat
 
 
 def customer_report(db: Session, user: User) -> list[dict]:
-    stmt = select(Company)
+    stmt = select(Company).options(joinedload(Company.owner), joinedload(Company.deals))
     if scope_to_owner_only(user):
         stmt = stmt.where(Company.owner_id == user.id)
     rows = []
-    for company in db.execute(stmt).scalars().all():
+    for company in db.execute(stmt).unique().scalars().all():
         deals = company.deals
         won = [d for d in deals if d.stage == DealStage.WON]
         rows.append(
@@ -114,7 +125,7 @@ def revenue_report(db: Session, months: int = 12) -> list[dict]:
 
 
 def lead_conversion_report(db: Session, user: User) -> list[dict]:
-    stmt = select(Lead)
+    stmt = select(Lead).options(joinedload(Lead.owner))
     if scope_to_owner_only(user):
         stmt = stmt.where(Lead.owner_id == user.id)
     rows = []
@@ -134,7 +145,7 @@ def lead_conversion_report(db: Session, user: User) -> list[dict]:
 
 
 def pipeline_report(db: Session, user: User) -> list[dict]:
-    stmt = select(Deal)
+    stmt = select(Deal).options(joinedload(Deal.owner))
     if scope_to_owner_only(user):
         stmt = stmt.where(Deal.owner_id == user.id)
     rows = []
@@ -154,7 +165,11 @@ def pipeline_report(db: Session, user: User) -> list[dict]:
 
 def activity_report(db: Session, user: User, start_date: date | None, end_date: date | None) -> list[dict]:
     start, end = _date_bounds(start_date, end_date)
-    stmt = select(Activity).where(Activity.activity_date >= start, Activity.activity_date <= end)
+    stmt = (
+        select(Activity)
+        .options(joinedload(Activity.owner), joinedload(Activity.company))
+        .where(Activity.activity_date >= start, Activity.activity_date < _datetime_upper_bound(end))
+    )
     if scope_to_owner_only(user):
         stmt = stmt.where(Activity.owner_id == user.id)
     rows = []
