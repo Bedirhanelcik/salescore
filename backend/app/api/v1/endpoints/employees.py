@@ -26,7 +26,9 @@ def list_employees(
 
 
 @router.post("", response_model=UserRead, status_code=201)
-def create_employee(payload: UserCreate, db: Session = Depends(get_db), current_user: User = Depends(require_roles(UserRole.ADMIN))):
+def create_employee(
+    payload: UserCreate, db: Session = Depends(get_db), current_user: User = Depends(require_roles(UserRole.ADMIN))
+):
     return user_service.create_user(db, current_user, payload)
 
 
@@ -36,10 +38,17 @@ def get_employee(user_id: int, db: Session = Depends(get_db), current_user: User
 
 
 @router.patch("/{user_id}", response_model=UserRead)
-def update_employee(user_id: int, payload: UserUpdate, db: Session = Depends(get_db), current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.MANAGER))):
+def update_employee(
+    user_id: int,
+    payload: UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.MANAGER)),
+):
     return user_service.update_user(db, current_user, user_id, payload)
 
 
 @router.delete("/{user_id}", response_model=UserRead)
-def deactivate_employee(user_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_roles(UserRole.ADMIN))):
+def deactivate_employee(
+    user_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_roles(UserRole.ADMIN))
+):
     return user_service.deactivate_user(db, current_user, user_id)

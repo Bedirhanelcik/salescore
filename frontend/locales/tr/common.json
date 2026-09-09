@@ -10,7 +10,8 @@
     "analytics": "Analitik",
     "operations": "Operasyonlar",
     "reports": "Raporlar",
-    "knowledge": "Bilgi Merkezi"
+    "knowledge": "Bilgi Merkezi",
+    "settings": "Ayarlar"
   },
   "common": {
     "search": "Ara",
@@ -84,7 +85,15 @@
     "signOut": "Çıkış yap",
     "changePassword": "Şifre değiştir",
     "currentPassword": "Mevcut şifre",
-    "newPassword": "Yeni şifre"
+    "newPassword": "Yeni şifre",
+    "createAccount": "Hesabınızı oluşturun",
+    "createAccountSubtitle": "Yeni bir SalesCore çalışma alanı hesabı oluşturun",
+    "fullName": "Ad Soyad",
+    "signUp": "Hesap oluştur",
+    "creatingAccount": "Hesap oluşturuluyor...",
+    "alreadyHaveAccount": "Zaten bir hesabınız var mı?",
+    "dontHaveAccount": "Hesabınız yok mu?",
+    "emailTaken": "Bu e-posta ile bir hesap zaten mevcut."
   },
   "roles": {
     "admin": "Yönetici",
@@ -183,6 +192,7 @@
     "winLoss": "Kazanma / Kayıp",
     "teamPerformance": "Ekip Performansı",
     "segmentation": "Müşteri Segmentasyonu",
+    "customerGrowth": "Müşteri Büyümesi",
     "pipelineVelocity": "Pipeline Hızı",
     "avgDaysToClose": "Ort. Kapanış Süresi",
     "dealsPerMonth": "Fırsat / Ay",
@@ -283,6 +293,26 @@
       "target_reached": "Hedefe ulaşıldı",
       "mention": "Bahsedilme"
     }
+  },
+  "settingsPage": {
+    "title": "Ayarlar",
+    "subtitle": "Profilinizi, güvenliğinizi ve tercihlerinizi yönetin",
+    "profile": "Profil",
+    "profileHint": "Hesap bilgileriniz, kurumunuzun yöneticisi tarafından yönetilir.",
+    "fullName": "Ad Soyad",
+    "role": "Rol",
+    "department": "Departman",
+    "memberSince": "Katılım tarihi",
+    "security": "Güvenlik",
+    "securityHint": "SalesCore'a giriş yaparken kullandığınız şifreyi güncelleyin.",
+    "appearance": "Görünüm",
+    "appearanceHint": "SalesCore'un görünümünü ve görüntülenme dilini seçin.",
+    "language": "Dil",
+    "theme": "Tema",
+    "themeLight": "Açık",
+    "themeDark": "Koyu",
+    "passwordUpdated": "Şifre başarıyla güncellendi",
+    "passwordMismatch": "Şifreler eşleşmiyor"
   },
   "ai": {
     "title": "AI İş Asistanı",

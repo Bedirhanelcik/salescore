@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -16,4 +16,4 @@ class Department(Base, TimestampMixin):
     name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     description: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
-    employees: Mapped[List["User"]] = relationship(back_populates="department")
+    employees: Mapped[list["User"]] = relationship(back_populates="department")

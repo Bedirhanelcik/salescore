@@ -93,7 +93,10 @@ export default function CompanyDetailPage() {
 
       {c360 && (
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
-          <StatCard label={t("crm.customerSince")} value={c360.customer_since ? formatDate(c360.customer_since, locale) : "—"} />
+          <StatCard
+            label={t("crm.customerSince")}
+            value={c360.customer_since ? formatDate(c360.customer_since, locale) : "—"}
+          />
           <StatCard label={t("crm.lifetimeValue")} value={formatCurrency(c360.lifetime_value)} highlight />
           <StatCard label={t("crm.totalDeals")} value={String(c360.total_deals)} />
           <StatCard label={t("crm.wonDeals")} value={String(c360.won_deals)} tone="success" />
@@ -111,7 +114,10 @@ export default function CompanyDetailPage() {
             <Field label={t("crm.size")} value={company.size} />
             <Field label={t("common.country")} value={company.country} />
             <Field label={t("common.website")} value={company.website} />
-            <Field label={t("crm.revenue")} value={company.annual_revenue ? formatCurrency(company.annual_revenue) : undefined} />
+            <Field
+              label={t("crm.revenue")}
+              value={company.annual_revenue ? formatCurrency(company.annual_revenue) : undefined}
+            />
             <Field label={t("common.createdAt")} value={formatDate(company.created_at, locale)} />
           </CardContent>
         </Card>
@@ -124,11 +130,16 @@ export default function CompanyDetailPage() {
               <p className="py-6 text-center text-sm text-muted-foreground">{t("crm.noContacts")}</p>
             ) : (
               contacts.items.map((c) => (
-                <div key={c.id} className="flex items-center justify-between border-b border-border/60 pb-3 last:border-0 last:pb-0">
+                <div
+                  key={c.id}
+                  className="flex items-center justify-between border-b border-border/60 pb-3 last:border-0 last:pb-0"
+                >
                   <div className="flex items-center gap-2.5">
                     <Avatar name={`${c.first_name} ${c.last_name}`} size="sm" />
                     <div>
-                      <p className="text-sm font-medium text-foreground">{c.first_name} {c.last_name}</p>
+                      <p className="text-sm font-medium text-foreground">
+                        {c.first_name} {c.last_name}
+                      </p>
                       <p className="text-xs text-muted-foreground">{c.job_title}</p>
                     </div>
                   </div>
@@ -187,14 +198,30 @@ export default function CompanyDetailPage() {
   );
 }
 
-function StatCard({ label, value, tone, highlight }: { label: string; value: string; tone?: "success" | "info"; highlight?: boolean }) {
+function StatCard({
+  label,
+  value,
+  tone,
+  highlight,
+}: {
+  label: string;
+  value: string;
+  tone?: "success" | "info";
+  highlight?: boolean;
+}) {
   return (
     <div className="rounded-xl border border-border bg-card p-3.5">
       <p className="text-[11px] font-medium text-muted-foreground">{label}</p>
       <p
         className={
           "mt-1 text-lg font-bold " +
-          (highlight ? "text-brand" : tone === "success" ? "text-success" : tone === "info" ? "text-info" : "text-foreground")
+          (highlight
+            ? "text-brand"
+            : tone === "success"
+              ? "text-success"
+              : tone === "info"
+                ? "text-info"
+                : "text-foreground")
         }
       >
         {value}

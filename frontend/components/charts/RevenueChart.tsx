@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Area,
-  CartesianGrid,
-  ComposedChart,
-  Legend,
-  Line,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Area, CartesianGrid, ComposedChart, Legend, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { useI18n } from "@/lib/contexts/i18n-context";
 import type { RevenuePoint } from "@/lib/types";

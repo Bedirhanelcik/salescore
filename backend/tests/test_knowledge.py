@@ -1,5 +1,5 @@
-from app.seed.knowledge_data import CATEGORIES, TERMS
 from app.models.knowledge import KnowledgeCategory, KnowledgeTerm
+from app.seed.knowledge_data import CATEGORIES, TERMS
 
 
 def _seed_knowledge(db_session):

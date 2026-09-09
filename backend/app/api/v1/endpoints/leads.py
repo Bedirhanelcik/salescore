@@ -38,7 +38,9 @@ def get_lead(lead_id: int, db: Session = Depends(get_db), current_user: User = D
 
 
 @router.patch("/{lead_id}", response_model=LeadRead)
-def update_lead(lead_id: int, payload: LeadUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_lead(
+    lead_id: int, payload: LeadUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
     return lead_service.update_lead(db, current_user, lead_id, payload)
 
 
@@ -48,5 +50,10 @@ def delete_lead(lead_id: int, db: Session = Depends(get_db), current_user: User 
 
 
 @router.post("/{lead_id}/convert", response_model=DealRead, status_code=201)
-def convert_lead(lead_id: int, payload: LeadConvertRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def convert_lead(
+    lead_id: int,
+    payload: LeadConvertRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     return lead_service.convert_lead(db, current_user, lead_id, payload)

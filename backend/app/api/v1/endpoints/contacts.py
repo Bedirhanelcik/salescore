@@ -25,7 +25,9 @@ def list_contacts(
 
 
 @router.post("", response_model=ContactRead, status_code=201)
-def create_contact(payload: ContactCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def create_contact(
+    payload: ContactCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
     return contact_service.create_contact(db, current_user, payload)
 
 
@@ -35,7 +37,12 @@ def get_contact(contact_id: int, db: Session = Depends(get_db), current_user: Us
 
 
 @router.patch("/{contact_id}", response_model=ContactRead)
-def update_contact(contact_id: int, payload: ContactUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_contact(
+    contact_id: int,
+    payload: ContactUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     return contact_service.update_contact(db, current_user, contact_id, payload)
 
 

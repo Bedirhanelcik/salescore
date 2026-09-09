@@ -26,11 +26,15 @@ def list_companies(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return company_service.list_companies(db, current_user, page, page_size, search, industry, country, status, owner_id, sort_by, sort_dir)
+    return company_service.list_companies(
+        db, current_user, page, page_size, search, industry, country, status, owner_id, sort_by, sort_dir
+    )
 
 
 @router.post("", response_model=CompanyRead, status_code=201)
-def create_company(payload: CompanyCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def create_company(
+    payload: CompanyCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
     return company_service.create_company(db, current_user, payload)
 
 
@@ -45,7 +49,12 @@ def get_company_360(company_id: int, db: Session = Depends(get_db), current_user
 
 
 @router.patch("/{company_id}", response_model=CompanyRead)
-def update_company(company_id: int, payload: CompanyUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_company(
+    company_id: int,
+    payload: CompanyUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     return company_service.update_company(db, current_user, company_id, payload)
 
 

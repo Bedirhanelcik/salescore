@@ -1,4 +1,4 @@
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
@@ -7,7 +7,12 @@ from app.core.audit import record_audit
 from app.core.cache import get_cache
 from app.core.exceptions import NotFoundError, ValidationAppError
 from app.core.pagination import paginate
-from app.core.rbac import assert_can_access_owned_record, assert_can_modify_owned_record, require_write_access, scope_to_owner_only
+from app.core.rbac import (
+    assert_can_access_owned_record,
+    assert_can_modify_owned_record,
+    require_write_access,
+    scope_to_owner_only,
+)
 from app.models.deal import Deal, DealStageHistory
 from app.models.enums import DEAL_STAGE_ORDER, DEAL_STAGE_TRANSITIONS, DealStage
 from app.models.user import User
@@ -79,7 +84,11 @@ def create_deal(db: Session, user: User, data: DealCreate) -> Deal:
     deal = Deal(**data.model_dump(exclude={"owner_id"}), owner_id=data.owner_id or user.id)
     db.add(deal)
     db.flush()
-    db.add(DealStageHistory(deal_id=deal.id, from_stage=None, to_stage=deal.stage, changed_by_id=user.id, note="Deal created"))
+    db.add(
+        DealStageHistory(
+            deal_id=deal.id, from_stage=None, to_stage=deal.stage, changed_by_id=user.id, note="Deal created"
+        )
+    )
     record_audit(db, user_id=user.id, action="create", entity_type="deal", entity_id=deal.id, entity_label=deal.title)
     get_cache().delete_prefix("analytics:")
     db.commit()
@@ -125,7 +134,7 @@ def change_deal_stage(db: Session, user: User, deal_id: int, data: DealStageUpda
 
     from_stage = deal.stage
     deal.stage = data.stage
-    deal.last_activity_at = datetime.now(timezone.utc)
+    deal.last_activity_at = datetime.now(UTC)
 
     if data.stage == DealStage.WON:
         deal.probability = 100
@@ -155,9 +164,25 @@ def change_deal_stage(db: Session, user: User, deal_id: int, data: DealStageUpda
 
     if deal.owner_id:
         if data.stage == DealStage.WON:
-            notify(db, user_id=deal.owner_id, type_="deal_won", title="Deal won!", message=f"'{deal.title}' was marked as Won.", related_entity_type="deal", related_entity_id=deal.id)
+            notify(
+                db,
+                user_id=deal.owner_id,
+                type_="deal_won",
+                title="Deal won!",
+                message=f"'{deal.title}' was marked as Won.",
+                related_entity_type="deal",
+                related_entity_id=deal.id,
+            )
         elif data.stage == DealStage.LOST:
-            notify(db, user_id=deal.owner_id, type_="deal_lost", title="Deal lost", message=f"'{deal.title}' was marked as Lost.", related_entity_type="deal", related_entity_id=deal.id)
+            notify(
+                db,
+                user_id=deal.owner_id,
+                type_="deal_lost",
+                title="Deal lost",
+                message=f"'{deal.title}' was marked as Lost.",
+                related_entity_type="deal",
+                related_entity_id=deal.id,
+            )
 
     get_cache().delete_prefix("analytics:")
     db.commit()

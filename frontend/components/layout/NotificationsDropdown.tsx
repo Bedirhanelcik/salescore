@@ -5,7 +5,12 @@ import { useRouter } from "next/navigation";
 import { Bell } from "lucide-react";
 
 import { useI18n } from "@/lib/contexts/i18n-context";
-import { useMarkAllNotificationsRead, useMarkNotificationRead, useNotifications, useUnreadCount } from "@/lib/hooks/use-notifications";
+import {
+  useMarkAllNotificationsRead,
+  useMarkNotificationRead,
+  useNotifications,
+  useUnreadCount,
+} from "@/lib/hooks/use-notifications";
 import { relativeTime } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
@@ -85,7 +90,9 @@ export function NotificationsDropdown() {
                   !n.is_read && "bg-brand-subtle/30"
                 )}
               >
-                <span className={cn("mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full", TYPE_DOT[n.type] ?? "bg-muted-foreground")} />
+                <span
+                  className={cn("mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full", TYPE_DOT[n.type] ?? "bg-muted-foreground")}
+                />
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-medium text-foreground">{n.title}</span>
                   <span className="block text-xs text-muted-foreground line-clamp-2">{n.message}</span>

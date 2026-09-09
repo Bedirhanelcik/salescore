@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
@@ -6,7 +6,12 @@ from sqlalchemy.orm import Session, joinedload
 from app.core.audit import record_audit
 from app.core.exceptions import NotFoundError
 from app.core.pagination import paginate
-from app.core.rbac import assert_can_access_owned_record, assert_can_modify_owned_record, require_write_access, scope_to_owner_only
+from app.core.rbac import (
+    assert_can_access_owned_record,
+    assert_can_modify_owned_record,
+    require_write_access,
+    scope_to_owner_only,
+)
 from app.models.activity import Activity
 from app.models.deal import Deal
 from app.models.enums import ActivityType
@@ -45,7 +50,9 @@ def list_activities(
 
 
 def get_activity_or_404(db: Session, user: User, activity_id: int) -> Activity:
-    activity = db.execute(select(Activity).options(*LOAD_OPTIONS).where(Activity.id == activity_id)).scalar_one_or_none()
+    activity = db.execute(
+        select(Activity).options(*LOAD_OPTIONS).where(Activity.id == activity_id)
+    ).scalar_one_or_none()
     if not activity:
         raise NotFoundError("Activity", activity_id)
     assert_can_access_owned_record(user, activity.owner_id)
@@ -61,9 +68,11 @@ def create_activity(db: Session, user: User, data: ActivityCreate) -> Activity:
     if activity.deal_id:
         deal = db.get(Deal, activity.deal_id)
         if deal:
-            deal.last_activity_at = datetime.now(timezone.utc)
+            deal.last_activity_at = datetime.now(UTC)
 
-    record_audit(db, user_id=user.id, action="create", entity_type="activity", entity_id=activity.id, entity_label=activity.title)
+    record_audit(
+        db, user_id=user.id, action="create", entity_type="activity", entity_id=activity.id, entity_label=activity.title
+    )
     db.commit()
     db.refresh(activity)
     return activity
@@ -74,7 +83,9 @@ def update_activity(db: Session, user: User, activity_id: int, data: ActivityUpd
     assert_can_modify_owned_record(user, activity.owner_id)
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(activity, field, value)
-    record_audit(db, user_id=user.id, action="update", entity_type="activity", entity_id=activity.id, entity_label=activity.title)
+    record_audit(
+        db, user_id=user.id, action="update", entity_type="activity", entity_id=activity.id, entity_label=activity.title
+    )
     db.commit()
     db.refresh(activity)
     return activity
@@ -83,6 +94,8 @@ def update_activity(db: Session, user: User, activity_id: int, data: ActivityUpd
 def delete_activity(db: Session, user: User, activity_id: int) -> None:
     activity = get_activity_or_404(db, user, activity_id)
     assert_can_modify_owned_record(user, activity.owner_id)
-    record_audit(db, user_id=user.id, action="delete", entity_type="activity", entity_id=activity.id, entity_label=activity.title)
+    record_audit(
+        db, user_id=user.id, action="delete", entity_type="activity", entity_id=activity.id, entity_label=activity.title
+    )
     db.delete(activity)
     db.commit()

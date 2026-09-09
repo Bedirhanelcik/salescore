@@ -68,14 +68,16 @@ def test_analyst_is_read_only(client, analyst_user):
 def test_only_admin_can_create_employee(client, admin_user, manager_user, sales_rep_user):
     manager_headers = auth_headers(client, "manager@test.io")
     response = client.post(
-        "/api/v1/employees", headers=manager_headers,
+        "/api/v1/employees",
+        headers=manager_headers,
         json={"email": "newhire@test.io", "password": "Password123!", "full_name": "New Hire", "role": "sales_rep"},
     )
     assert response.status_code == 403
 
     admin_headers = auth_headers(client, "admin@test.io")
     response = client.post(
-        "/api/v1/employees", headers=admin_headers,
+        "/api/v1/employees",
+        headers=admin_headers,
         json={"email": "newhire@test.io", "password": "Password123!", "full_name": "New Hire", "role": "sales_rep"},
     )
     assert response.status_code == 201
@@ -84,7 +86,14 @@ def test_only_admin_can_create_employee(client, admin_user, manager_user, sales_
 def test_only_admin_or_manager_can_create_sales_target(client, admin_user, analyst_user, sales_rep_user):
     analyst_headers = auth_headers(client, "analyst@test.io")
     response = client.post(
-        "/api/v1/sales-targets", headers=analyst_headers,
-        json={"name": "Q1 Target", "period": "monthly", "period_start": "2026-01-01", "period_end": "2026-01-31", "target_amount": 50000},
+        "/api/v1/sales-targets",
+        headers=analyst_headers,
+        json={
+            "name": "Q1 Target",
+            "period": "monthly",
+            "period_start": "2026-01-01",
+            "period_end": "2026-01-31",
+            "target_amount": 50000,
+        },
     )
     assert response.status_code == 403

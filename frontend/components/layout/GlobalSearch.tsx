@@ -100,7 +100,9 @@ export function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => 
                     <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-medium text-foreground">{item.title}</span>
-                      {item.subtitle && <span className="block truncate text-xs text-muted-foreground">{item.subtitle}</span>}
+                      {item.subtitle && (
+                        <span className="block truncate text-xs text-muted-foreground">{item.subtitle}</span>
+                      )}
                     </span>
                   </button>
                 );

@@ -4,7 +4,12 @@ from sqlalchemy.orm import Session, joinedload
 from app.core.audit import record_audit
 from app.core.exceptions import NotFoundError
 from app.core.pagination import paginate
-from app.core.rbac import assert_can_access_owned_record, assert_can_modify_owned_record, require_write_access, scope_to_owner_only
+from app.core.rbac import (
+    assert_can_access_owned_record,
+    assert_can_modify_owned_record,
+    require_write_access,
+    scope_to_owner_only,
+)
 from app.models.contact import Contact
 from app.models.user import User
 from app.schemas.contact import ContactCreate, ContactUpdate
@@ -52,7 +57,14 @@ def create_contact(db: Session, user: User, data: ContactCreate) -> Contact:
     contact = Contact(**data.model_dump(exclude={"owner_id"}), owner_id=data.owner_id or user.id)
     db.add(contact)
     db.flush()
-    record_audit(db, user_id=user.id, action="create", entity_type="contact", entity_id=contact.id, entity_label=contact.full_name)
+    record_audit(
+        db,
+        user_id=user.id,
+        action="create",
+        entity_type="contact",
+        entity_id=contact.id,
+        entity_label=contact.full_name,
+    )
     db.commit()
     db.refresh(contact)
     return contact
@@ -63,7 +75,14 @@ def update_contact(db: Session, user: User, contact_id: int, data: ContactUpdate
     assert_can_modify_owned_record(user, contact.owner_id)
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(contact, field, value)
-    record_audit(db, user_id=user.id, action="update", entity_type="contact", entity_id=contact.id, entity_label=contact.full_name)
+    record_audit(
+        db,
+        user_id=user.id,
+        action="update",
+        entity_type="contact",
+        entity_id=contact.id,
+        entity_label=contact.full_name,
+    )
     db.commit()
     db.refresh(contact)
     return contact
@@ -72,6 +91,13 @@ def update_contact(db: Session, user: User, contact_id: int, data: ContactUpdate
 def delete_contact(db: Session, user: User, contact_id: int) -> None:
     contact = get_contact_or_404(db, user, contact_id)
     assert_can_modify_owned_record(user, contact.owner_id)
-    record_audit(db, user_id=user.id, action="delete", entity_type="contact", entity_id=contact.id, entity_label=contact.full_name)
+    record_audit(
+        db,
+        user_id=user.id,
+        action="delete",
+        entity_type="contact",
+        entity_id=contact.id,
+        entity_label=contact.full_name,
+    )
     db.delete(contact)
     db.commit()

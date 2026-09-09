@@ -1,10 +1,15 @@
-from sqlalchemy import or_, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.audit import record_audit
 from app.core.exceptions import NotFoundError
 from app.core.pagination import paginate
-from app.core.rbac import assert_can_access_owned_record, assert_can_modify_owned_record, require_write_access, scope_to_owner_only
+from app.core.rbac import (
+    assert_can_access_owned_record,
+    assert_can_modify_owned_record,
+    require_write_access,
+    scope_to_owner_only,
+)
 from app.models.company import Company
 from app.models.enums import CompanyStatus
 from app.models.user import User
@@ -61,7 +66,9 @@ def create_company(db: Session, user: User, data: CompanyCreate) -> Company:
     company = Company(**data.model_dump(exclude={"owner_id"}), owner_id=data.owner_id or user.id)
     db.add(company)
     db.flush()
-    record_audit(db, user_id=user.id, action="create", entity_type="company", entity_id=company.id, entity_label=company.name)
+    record_audit(
+        db, user_id=user.id, action="create", entity_type="company", entity_id=company.id, entity_label=company.name
+    )
     db.commit()
     db.refresh(company)
     return company
@@ -72,7 +79,9 @@ def update_company(db: Session, user: User, company_id: int, data: CompanyUpdate
     assert_can_modify_owned_record(user, company.owner_id)
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(company, field, value)
-    record_audit(db, user_id=user.id, action="update", entity_type="company", entity_id=company.id, entity_label=company.name)
+    record_audit(
+        db, user_id=user.id, action="update", entity_type="company", entity_id=company.id, entity_label=company.name
+    )
     db.commit()
     db.refresh(company)
     return company
@@ -81,7 +90,9 @@ def update_company(db: Session, user: User, company_id: int, data: CompanyUpdate
 def delete_company(db: Session, user: User, company_id: int) -> None:
     company = get_company_or_404(db, user, company_id)
     assert_can_modify_owned_record(user, company.owner_id)
-    record_audit(db, user_id=user.id, action="delete", entity_type="company", entity_id=company.id, entity_label=company.name)
+    record_audit(
+        db, user_id=user.id, action="delete", entity_type="company", entity_id=company.id, entity_label=company.name
+    )
     db.delete(company)
     db.commit()
 

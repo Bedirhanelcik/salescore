@@ -48,10 +48,15 @@ def client(db_session):
     app.dependency_overrides.clear()
 
 
-def make_user(db_session, email: str, role: UserRole, password: str = "Password123!", department: Department | None = None) -> User:
+def make_user(
+    db_session, email: str, role: UserRole, password: str = "Password123!", department: Department | None = None
+) -> User:
     user = User(
-        email=email, password_hash=hash_password(password), full_name=email.split("@")[0].title(),
-        role=role, department_id=department.id if department else None,
+        email=email,
+        password_hash=hash_password(password),
+        full_name=email.split("@")[0].title(),
+        role=role,
+        department_id=department.id if department else None,
     )
     db_session.add(user)
     db_session.commit()

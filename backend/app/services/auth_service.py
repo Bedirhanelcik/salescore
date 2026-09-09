@@ -1,10 +1,11 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import AppException
+from app.core.exceptions import AppException, ConflictError
 from app.core.security import create_access_token, hash_password, verify_password
+from app.models.enums import UserRole
 from app.models.user import User
 
 
@@ -14,13 +15,33 @@ def authenticate(db: Session, email: str, password: str) -> User:
         raise AppException(code="INVALID_CREDENTIALS", message="Invalid email or password.", status_code=401)
     if not user.is_active:
         raise AppException(code="ACCOUNT_DISABLED", message="This account has been disabled.", status_code=403)
-    user.last_login_at = datetime.now(timezone.utc)
+    user.last_login_at = datetime.now(UTC)
     db.commit()
     return user
 
 
 def issue_token(user: User) -> str:
     return create_access_token(subject=str(user.id), extra_claims={"role": user.role.value})
+
+
+def register(db: Session, email: str, password: str, full_name: str) -> User:
+    email = email.lower()
+    existing = db.execute(select(User).where(User.email == email)).scalar_one_or_none()
+    if existing:
+        raise ConflictError("An account with this email already exists.", code="EMAIL_TAKEN")
+
+    # The very first account in a fresh workspace bootstraps as Admin so there is always
+    # someone able to manage employees/departments; everyone after that self-registers
+    # with the safest (read-only) role and waits to be promoted by an admin or manager -
+    # this mirrors how most B2B SaaS products (Slack, Notion, etc.) bootstrap a workspace.
+    user_count = db.execute(select(func.count()).select_from(User)).scalar_one()
+    role = UserRole.ADMIN if user_count == 0 else UserRole.VIEWER
+
+    user = User(email=email, password_hash=hash_password(password), full_name=full_name, role=role)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
 def change_password(db: Session, user: User, current_password: str, new_password: str) -> None:

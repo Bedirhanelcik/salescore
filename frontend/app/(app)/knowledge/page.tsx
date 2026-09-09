@@ -20,7 +20,10 @@ export default function KnowledgePage() {
   const [categoryId, setCategoryId] = useState<number | undefined>();
 
   const { data: categories, isLoading: categoriesLoading } = useKnowledgeCategories();
-  const { data: terms, isLoading: termsLoading } = useKnowledgeTerms({ category_id: categoryId, search: search || undefined });
+  const { data: terms, isLoading: termsLoading } = useKnowledgeTerms({
+    category_id: categoryId,
+    search: search || undefined,
+  });
 
   return (
     <div className="space-y-5">
@@ -44,7 +47,9 @@ export default function KnowledgePage() {
           onClick={() => setCategoryId(undefined)}
           className={cn(
             "rounded-full border px-3 py-1.5 text-xs font-medium",
-            categoryId === undefined ? "border-brand bg-brand-subtle text-brand" : "border-border text-muted-foreground hover:bg-card-hover"
+            categoryId === undefined
+              ? "border-brand bg-brand-subtle text-brand"
+              : "border-border text-muted-foreground hover:bg-card-hover"
           )}
         >
           {t("knowledge.allCategories")}
@@ -56,7 +61,9 @@ export default function KnowledgePage() {
               onClick={() => setCategoryId(cat.id)}
               className={cn(
                 "rounded-full border px-3 py-1.5 text-xs font-medium",
-                categoryId === cat.id ? "border-brand bg-brand-subtle text-brand" : "border-border text-muted-foreground hover:bg-card-hover"
+                categoryId === cat.id
+                  ? "border-brand bg-brand-subtle text-brand"
+                  : "border-border text-muted-foreground hover:bg-card-hover"
               )}
             >
               {categoryName(cat, locale)} <span className="opacity-60">({cat.term_count})</span>
@@ -83,7 +90,9 @@ export default function KnowledgePage() {
               className="rounded-xl border border-border bg-card p-4 text-left shadow-[var(--shadow-card)] transition-colors hover:border-brand/50 hover:bg-card-hover"
             >
               <p className="font-semibold text-foreground">{termName(term, locale)}</p>
-              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground line-clamp-3">{termShortDefinition(term, locale)}</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground line-clamp-3">
+                {termShortDefinition(term, locale)}
+              </p>
             </button>
           ))}
         </div>

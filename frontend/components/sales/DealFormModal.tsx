@@ -22,7 +22,15 @@ const schema = z.object({
 });
 type FormValues = z.infer<typeof schema>;
 
-export function DealFormModal({ open, onClose, defaultStage = "lead" }: { open: boolean; onClose: () => void; defaultStage?: DealStage }) {
+export function DealFormModal({
+  open,
+  onClose,
+  defaultStage = "lead",
+}: {
+  open: boolean;
+  onClose: () => void;
+  defaultStage?: DealStage;
+}) {
   const { t } = useI18n();
   const createDeal = useCreateDeal();
   const { data: companies } = useCompanies({ page_size: 100 });
@@ -31,7 +39,10 @@ export function DealFormModal({ open, onClose, defaultStage = "lead" }: { open: 
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<z.input<typeof schema>, unknown, FormValues>({ resolver: zodResolver(schema), defaultValues: { value: 0 } });
+  } = useForm<z.input<typeof schema>, unknown, FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { value: 0 },
+  });
 
   const onSubmit = async (values: FormValues) => {
     try {

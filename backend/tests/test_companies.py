@@ -3,7 +3,9 @@ from tests.conftest import auth_headers
 
 def test_create_and_get_company(client, admin_user):
     headers = auth_headers(client, "admin@test.io")
-    response = client.post("/api/v1/companies", headers=headers, json={"name": "Acme Corporation", "industry": "Software"})
+    response = client.post(
+        "/api/v1/companies", headers=headers, json={"name": "Acme Corporation", "industry": "Software"}
+    )
     assert response.status_code == 201
     company_id = response.json()["id"]
 

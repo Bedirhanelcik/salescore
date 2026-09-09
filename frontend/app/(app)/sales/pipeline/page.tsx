@@ -2,7 +2,15 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 
@@ -68,7 +76,12 @@ export default function PipelinePage() {
     const nextBoard: PipelineBoard = {
       columns: board.columns.map((col) => {
         if (col.stage === entry.stage) {
-          return { ...col, deals: col.deals.filter((d) => d.id !== dealId), count: col.count - 1, total_value: col.total_value - entry.deal.value };
+          return {
+            ...col,
+            deals: col.deals.filter((d) => d.id !== dealId),
+            count: col.count - 1,
+            total_value: col.total_value - entry.deal.value,
+          };
         }
         if (col.stage === targetStage) {
           return {
@@ -100,7 +113,13 @@ export default function PipelinePage() {
         <div>
           <h1 className="text-xl font-bold text-foreground">{t("sales.pipeline")}</h1>
         </div>
-        <Button size="sm" onClick={() => { setFormStage("lead"); setFormOpen(true); }}>
+        <Button
+          size="sm"
+          onClick={() => {
+            setFormStage("lead");
+            setFormOpen(true);
+          }}
+        >
           <Plus className="h-4 w-4" />
           {t("sales.addDeal")}
         </Button>
@@ -122,7 +141,9 @@ export default function PipelinePage() {
                   label={col.label}
                   deals={col.deals}
                   totalValue={col.total_value}
-                  isValidDropTarget={!activeDeal || canTransition(dealsById.get(activeDeal.id)?.stage ?? col.stage, col.stage)}
+                  isValidDropTarget={
+                    !activeDeal || canTransition(dealsById.get(activeDeal.id)?.stage ?? col.stage, col.stage)
+                  }
                   onAddDeal={() => {
                     setFormStage(col.stage);
                     setFormOpen(true);

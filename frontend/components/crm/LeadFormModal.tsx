@@ -30,7 +30,10 @@ export function LeadFormModal({ open, onClose }: { open: boolean; onClose: () =>
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<z.input<typeof schema>, unknown, FormValues>({ resolver: zodResolver(schema), defaultValues: { source: "website", score: 50 } });
+  } = useForm<z.input<typeof schema>, unknown, FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { source: "website", score: 50 },
+  });
 
   const onSubmit = async (values: FormValues) => {
     try {

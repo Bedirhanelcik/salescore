@@ -47,7 +47,13 @@ export default function ContactsPage() {
         {isLoading ? (
           <TableSkeleton />
         ) : !data || data.items.length === 0 ? (
-          <EmptyState icon={UserCircle} title={t("crm.noContacts")} description={t("crm.noContactsHint")} actionLabel={t("crm.addContact")} onAction={() => setModalOpen(true)} />
+          <EmptyState
+            icon={UserCircle}
+            title={t("crm.noContacts")}
+            description={t("crm.noContactsHint")}
+            actionLabel={t("crm.addContact")}
+            onAction={() => setModalOpen(true)}
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -82,7 +88,13 @@ export default function ContactsPage() {
           </div>
         )}
         {data && data.total > 0 && (
-          <Pagination page={data.page} totalPages={data.total_pages} total={data.total} pageSize={data.page_size} onPageChange={setPage} />
+          <Pagination
+            page={data.page}
+            totalPages={data.total_pages}
+            total={data.total}
+            pageSize={data.page_size}
+            onPageChange={setPage}
+          />
         )}
       </Card>
 

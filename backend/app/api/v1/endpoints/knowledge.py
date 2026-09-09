@@ -13,8 +13,13 @@ def list_categories(db: Session = Depends(get_db)):
     rows = knowledge_service.list_categories(db)
     return [
         KnowledgeCategoryRead(
-            id=r["category"].id, key=r["category"].key, name_en=r["category"].name_en, name_tr=r["category"].name_tr,
-            name_de=r["category"].name_de, name_ar=r["category"].name_ar, term_count=r["term_count"],
+            id=r["category"].id,
+            key=r["category"].key,
+            name_en=r["category"].name_en,
+            name_tr=r["category"].name_tr,
+            name_de=r["category"].name_de,
+            name_ar=r["category"].name_ar,
+            term_count=r["term_count"],
         )
         for r in rows
     ]

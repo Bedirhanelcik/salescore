@@ -32,7 +32,9 @@ class MockAIProvider(AIProvider):
         if any(word in q for word in ["revenue", "gelir", "umsatz"]):
             revenue = metrics["revenue"]
             trend = "up" if (revenue.change_pct or 0) >= 0 else "down"
-            insights = [i for i in analytics_service.get_business_insights(db) if i.metric_key in ("revenue", "sales_target")]
+            insights = [
+                i for i in analytics_service.get_business_insights(db) if i.metric_key in ("revenue", "sales_target")
+            ]
             extra = f" {insights[0].description}" if insights else ""
             return (
                 f"Revenue over the last 30 days is ${revenue.value:,.0f}, {trend} "
@@ -63,7 +65,11 @@ class MockAIProvider(AIProvider):
             return (
                 f"{top.employee.full_name} is the top performer with ${top.revenue:,.0f} in won revenue "
                 f"and a {top.win_rate:.1f}% win rate. "
-                + (f"{len(below)} rep(s) are below 70% of target." if below else "All reps are tracking above 70% of target.")
+                + (
+                    f"{len(below)} rep(s) are below 70% of target."
+                    if below
+                    else "All reps are tracking above 70% of target."
+                )
             )
 
         insights = analytics_service.get_business_insights(db)
@@ -93,7 +99,10 @@ class OpenAIProvider(AIProvider):
         response = client.chat.completions.create(
             model=settings.OPENAI_MODEL,
             messages=[
-                {"role": "system", "content": "You are a helpful sales operations analyst. Use the provided business data context to answer concisely."},
+                {
+                    "role": "system",
+                    "content": "You are a helpful sales operations analyst. Use the provided business data context to answer concisely.",
+                },
                 {"role": "user", "content": f"Business data:\n{context}\n\nQuestion: {question}"},
             ],
             max_tokens=300,

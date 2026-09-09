@@ -12,7 +12,14 @@ interface ReportPage {
 
 export function useReport(
   reportType: string,
-  params: { start_date?: string; end_date?: string; sort_by?: string; sort_dir?: string; page?: number; page_size?: number }
+  params: {
+    start_date?: string;
+    end_date?: string;
+    sort_by?: string;
+    sort_dir?: string;
+    page?: number;
+    page_size?: number;
+  }
 ) {
   return useQuery({
     queryKey: ["reports", reportType, params],

@@ -27,7 +27,9 @@ def list_activities(
 
 
 @router.post("", response_model=ActivityRead, status_code=201)
-def create_activity(payload: ActivityCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def create_activity(
+    payload: ActivityCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
     return activity_service.create_activity(db, current_user, payload)
 
 
@@ -37,7 +39,12 @@ def get_activity(activity_id: int, db: Session = Depends(get_db), current_user: 
 
 
 @router.patch("/{activity_id}", response_model=ActivityRead)
-def update_activity(activity_id: int, payload: ActivityUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_activity(
+    activity_id: int,
+    payload: ActivityUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     return activity_service.update_activity(db, current_user, activity_id, payload)
 
 

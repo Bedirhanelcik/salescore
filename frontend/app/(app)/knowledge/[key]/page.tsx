@@ -22,7 +22,10 @@ export default function KnowledgeTermPage() {
 
   return (
     <div className="space-y-5">
-      <button onClick={() => router.push("/knowledge")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+      <button
+        onClick={() => router.push("/knowledge")}
+        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+      >
         <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
         {t("common.back")}
       </button>
@@ -38,7 +41,9 @@ export default function KnowledgeTermPage() {
           <CardContent className="pt-6">
             {category && <Badge tone="brand">{categoryName(category, locale)}</Badge>}
             <h1 className="mt-3 text-2xl font-bold text-foreground">{termName(term, locale)}</h1>
-            <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{termDefinition(term, locale)}</p>
+            <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+              {termDefinition(term, locale)}
+            </p>
             {term.example && (
               <div className="mt-5 rounded-lg border border-border bg-card-hover p-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-subtle-foreground">Example</p>

@@ -1,4 +1,4 @@
-from typing import Generic, Type, TypeVar
+from typing import Generic, TypeVar
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -9,7 +9,7 @@ ModelT = TypeVar("ModelT", bound=Base)
 
 
 class BaseRepository(Generic[ModelT]):
-    model: Type[ModelT]
+    model: type[ModelT]
 
     def __init__(self, db: Session):
         self.db = db

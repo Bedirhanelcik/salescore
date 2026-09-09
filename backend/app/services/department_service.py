@@ -32,7 +32,14 @@ def create_department(db: Session, actor: User, data: DepartmentCreate) -> Depar
     department = Department(**data.model_dump())
     db.add(department)
     db.flush()
-    record_audit(db, user_id=actor.id, action="create", entity_type="department", entity_id=department.id, entity_label=department.name)
+    record_audit(
+        db,
+        user_id=actor.id,
+        action="create",
+        entity_type="department",
+        entity_id=department.id,
+        entity_label=department.name,
+    )
     db.commit()
     db.refresh(department)
     return department
@@ -42,7 +49,14 @@ def update_department(db: Session, actor: User, department_id: int, data: Depart
     department = get_department_or_404(db, department_id)
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(department, field, value)
-    record_audit(db, user_id=actor.id, action="update", entity_type="department", entity_id=department.id, entity_label=department.name)
+    record_audit(
+        db,
+        user_id=actor.id,
+        action="update",
+        entity_type="department",
+        entity_id=department.id,
+        entity_label=department.name,
+    )
     db.commit()
     db.refresh(department)
     return department
@@ -50,6 +64,13 @@ def update_department(db: Session, actor: User, department_id: int, data: Depart
 
 def delete_department(db: Session, actor: User, department_id: int) -> None:
     department = get_department_or_404(db, department_id)
-    record_audit(db, user_id=actor.id, action="delete", entity_type="department", entity_id=department.id, entity_label=department.name)
+    record_audit(
+        db,
+        user_id=actor.id,
+        action="delete",
+        entity_type="department",
+        entity_id=department.id,
+        entity_label=department.name,
+    )
     db.delete(department)
     db.commit()

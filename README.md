@@ -32,9 +32,10 @@ sales organization would run internally — not a CRUD scaffold — combining:
 8. [Running locally](#running-locally)
 9. [Environment variables](#environment-variables)
 10. [Testing](#testing)
-11. [API overview](#api-overview)
-12. [Project structure](#project-structure)
-13. [Future improvements](#future-improvements)
+11. [Code quality & CI](#code-quality--ci)
+12. [API overview](#api-overview)
+13. [Project structure](#project-structure)
+14. [Future improvements](#future-improvements)
 
 ---
 
@@ -83,9 +84,13 @@ logging, cache invalidation) → SQLAlchemy models/session. Pydantic schemas kee
 the wire format decoupled from the ORM models.
 
 **Layering (frontend):** route segments under `app/(app)/*` are guarded by an
-`AuthProvider`; each domain has a `lib/hooks/use-*.ts` TanStack Query hook file
-and, where forms are needed, a `components/<domain>/*FormModal.tsx` built with
-React Hook Form + Zod.
+`AuthProvider` and share a collapsible left `Sidebar` (Dashboard/CRM/Sales/
+Analytics/Reports/Operations/Knowledge/Settings) plus a slim top `Navbar`
+(search, language, theme, notifications, user menu) — the sidebar collapses to
+an icon rail on desktop and an off-canvas drawer on mobile, both states
+persisted per browser. Each domain has a `lib/hooks/use-*.ts` TanStack Query
+hook file and, where forms are needed, a `components/<domain>/*FormModal.tsx`
+built with React Hook Form + Zod.
 
 ---
 
@@ -127,8 +132,8 @@ Everything runs fully locally with no paid service required.
   period-over-period change indicator.
 - Sales funnel computed from `deal_stage_history` (cohort "reached this stage"
   counts, not just current snapshot), revenue trend with target/forecast/
-  previous-period lines, win/loss trend, customer segmentation, pipeline
-  velocity, and a team performance leaderboard.
+  previous-period lines, win/loss trend, customer segmentation, customer
+  growth, pipeline velocity, and a team performance leaderboard.
 - **Business Insights**: a small rule-based engine (`analytics_service.get_business_insights`)
   that turns the raw metrics into sentences like *"Proposal → Negotiation
   conversion decreased 9% this month"* — the Data → Information → Analysis →
@@ -146,8 +151,10 @@ Everything runs fully locally with no paid service required.
   CSV export.
 
 ### Knowledge
-- A searchable glossary (CRM, Sales, Marketing, Finance, Management, BI, YBS,
-  Software, Analytics categories) with full translations in English, Turkish,
+- A searchable glossary of **39 terms** across 9 categories (CRM, Sales,
+  Marketing, Finance, Management, Business Intelligence, YBS, Software,
+  Analytics — CAC, LTV, MRR/ARR, EBITDA, OKR, ROAS, ROI, Pipeline Velocity,
+  Sales Cycle, Quota and more) with full translations in English, Turkish,
   German and Arabic for every term.
 - Dashboard/analytics metric labels carry a small **"?"** affordance
   (`MetricHelp`) that shows the term's short definition on hover and links to
@@ -157,7 +164,13 @@ Everything runs fully locally with no paid service required.
 - Global search (`Cmd/Ctrl+K` or `/`) across customers, contacts, leads, deals,
   tasks, employees and knowledge terms.
 - Notifications (task due, deal won/lost, new lead, target reached) with an
-  unread badge.
+  unread badge and click-through to the related deal/lead.
+- Self-service registration (`/register`) alongside the demo-account login —
+  the first account in a fresh workspace bootstraps as Admin, every account
+  after that starts as Viewer until promoted, mirroring how most B2B SaaS
+  products (Slack, Notion, etc.) bootstrap a new workspace.
+- A Settings page for profile info, password changes, and language/theme
+  preferences, in addition to the navbar's quick switchers.
 - Dark/light theme and 4-language i18n (see below), both persisted per browser.
 - Empty states, loading skeletons, and a consistent `{success, error: {code,
   message}}` error envelope surfaced as toasts on the frontend.
@@ -199,6 +212,12 @@ This is enforced in `backend/app/core/rbac.py` and applied inside every
 service function (not just at the router level), so a Sales Rep who guesses
 another rep's deal ID in the URL gets a `403 FORBIDDEN`, not the record — this
 is covered by `backend/tests/test_rbac.py`.
+
+New accounts are provisioned two ways: an Admin creates one directly
+(`POST /employees`, Admin-only), or a person self-registers at `/register`
+(`POST /auth/register`) — the first account in an empty workspace bootstraps
+as Admin so there's always someone able to manage employees, and every
+account after that starts as Viewer until an Admin or Manager promotes it.
 
 ---
 
@@ -308,14 +327,28 @@ cd backend
 pytest -q
 ```
 
-40 tests covering authentication, password change, company/deal CRUD,
-pagination & search filters, deal stage-transition rules (including the
-terminal-state and invalid-skip cases), lead conversion, RBAC/IDOR protection
-(a Sales Rep cannot read or write another rep's records; Analyst/Viewer cannot
-write at all; only Admin can create employees), and analytics correctness on
-both an empty database and after creating/won-ing a deal. Tests run against an
-in-memory SQLite database via dependency-injected sessions
-(`backend/tests/conftest.py`), so they don't touch your dev database.
+43 tests covering authentication, self-registration (first-user-becomes-admin
+bootstrap, subsequent users, duplicate-email rejection), password change,
+company/deal CRUD, pagination & search filters, deal stage-transition rules
+(including the terminal-state and invalid-skip cases), lead conversion,
+RBAC/IDOR protection (a Sales Rep cannot read or write another rep's records;
+Analyst/Viewer cannot write at all; only Admin can create employees), and
+analytics correctness on both an empty database and after creating/won-ing a
+deal. Tests run against an in-memory SQLite database via dependency-injected
+sessions (`backend/tests/conftest.py`), so they don't touch your dev database.
+
+---
+
+## Code quality & CI
+
+- **Backend**: [Ruff](https://docs.astral.sh/ruff/) for both linting and
+  formatting (`backend/pyproject.toml`) — `ruff check .` and
+  `ruff format --check .`.
+- **Frontend**: ESLint (`npm run lint`, including the React Compiler's
+  `react-hooks` rules) and Prettier (`npm run format:check`).
+- **CI** (`.github/workflows/ci.yml`): on every push/PR, GitHub Actions runs
+  the backend lint + format + Pytest suite and the frontend lint + format +
+  production build in parallel jobs.
 
 ---
 
@@ -332,12 +365,14 @@ Representative endpoints:
 
 ```
 POST   /api/v1/auth/login
+POST   /api/v1/auth/register
 GET    /api/v1/companies?search=&status=&page=&page_size=
 GET    /api/v1/companies/{id}/360
 POST   /api/v1/leads/{id}/convert
 GET    /api/v1/deals/pipeline
 PATCH  /api/v1/deals/{id}/stage
 GET    /api/v1/analytics/kpis?days=30
+GET    /api/v1/analytics/customer-growth?months=12
 GET    /api/v1/analytics/insights
 GET    /api/v1/reports/{type}?format=csv
 GET    /api/v1/knowledge/terms?search=
@@ -352,6 +387,7 @@ POST   /api/v1/ai/ask
 salescore/
 ├── docker-compose.yml
 ├── .env.example
+├── .github/workflows/ci.yml        # lint + test + build, on every push/PR
 ├── backend/
 │   ├── app/
 │   │   ├── api/v1/endpoints/     # FastAPI routers (one file per domain)
@@ -361,17 +397,19 @@ salescore/
 │   │   ├── services/               # business logic, one file per domain
 │   │   └── seed/                   # demo data + knowledge base content
 │   ├── alembic/versions/           # database migrations
+│   ├── pyproject.toml               # Ruff lint + format config
 │   └── tests/
 └── frontend/
     ├── app/
-    │   ├── login/
-    │   └── (app)/                  # authenticated routes (dashboard, crm, sales, ...)
-    ├── components/                 # ui/, layout/, charts/, and per-domain components
+    │   ├── login/, register/
+    │   └── (app)/                  # authenticated routes (dashboard, crm, sales, settings, ...)
+    ├── components/                 # ui/, layout/ (Sidebar, Navbar), charts/, per-domain components
     ├── lib/
     │   ├── contexts/                # auth, theme, i18n
     │   ├── hooks/                    # TanStack Query hooks, one file per domain
     │   └── types.ts                   # frontend mirror of backend schemas
-    └── locales/{en,tr,de,ar}/common.json
+    ├── locales/{en,tr,de,ar}/common.json
+    └── .prettierrc.json
 ```
 
 ---

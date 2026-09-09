@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -23,7 +22,7 @@ class User(Base, TimestampMixin):
 
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     avatar_color: Mapped[str] = mapped_column(String(10), default="#4F46E5", nullable=False)
-    last_login_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     department = relationship("Department", back_populates="employees", foreign_keys=[department_id])
     manager = relationship("User", remote_side=[id], foreign_keys=[manager_id])

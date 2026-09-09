@@ -85,6 +85,12 @@ class WinLossRow(BaseModel):
     win_rate: float
 
 
+class CustomerGrowthPoint(BaseModel):
+    period_label: str
+    new_customers: int
+    total_customers: int
+
+
 class PipelineVelocity(BaseModel):
     average_days_to_close: float
     average_deal_size: float

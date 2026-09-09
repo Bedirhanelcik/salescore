@@ -21,25 +21,46 @@ def list_targets(
     rows = sales_target_service.list_targets(db, employee_id, department_id)
     return [
         SalesTargetRead(
-            id=r["target"].id, name=r["target"].name, period=r["target"].period,
-            period_start=r["target"].period_start, period_end=r["target"].period_end,
-            target_amount=float(r["target"].target_amount), employee=r["target"].employee,
-            department=r["target"].department, actual_amount=r["actual_amount"], achievement_pct=r["achievement_pct"],
+            id=r["target"].id,
+            name=r["target"].name,
+            period=r["target"].period,
+            period_start=r["target"].period_start,
+            period_end=r["target"].period_end,
+            target_amount=float(r["target"].target_amount),
+            employee=r["target"].employee,
+            department=r["target"].department,
+            actual_amount=r["actual_amount"],
+            achievement_pct=r["achievement_pct"],
         )
         for r in rows
     ]
 
 
 @router.post("", response_model=SalesTargetRead, status_code=201)
-def create_target(payload: SalesTargetCreate, db: Session = Depends(get_db), current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.MANAGER))):
+def create_target(
+    payload: SalesTargetCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.MANAGER)),
+):
     target = sales_target_service.create_target(db, current_user, payload)
     return SalesTargetRead(
-        id=target.id, name=target.name, period=target.period, period_start=target.period_start,
-        period_end=target.period_end, target_amount=float(target.target_amount), employee=target.employee,
-        department=target.department, actual_amount=0, achievement_pct=0,
+        id=target.id,
+        name=target.name,
+        period=target.period,
+        period_start=target.period_start,
+        period_end=target.period_end,
+        target_amount=float(target.target_amount),
+        employee=target.employee,
+        department=target.department,
+        actual_amount=0,
+        achievement_pct=0,
     )
 
 
 @router.delete("/{target_id}", status_code=204)
-def delete_target(target_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.MANAGER))):
+def delete_target(
+    target_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(UserRole.ADMIN, UserRole.MANAGER)),
+):
     sales_target_service.delete_target(db, current_user, target_id)

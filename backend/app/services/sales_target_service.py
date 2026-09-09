@@ -53,7 +53,9 @@ def delete_target(db: Session, actor: User, target_id: int) -> None:
     target = db.get(SalesTarget, target_id)
     if not target:
         raise NotFoundError("Sales target", target_id)
-    record_audit(db, user_id=actor.id, action="delete", entity_type="sales_target", entity_id=target.id, entity_label=target.name)
+    record_audit(
+        db, user_id=actor.id, action="delete", entity_type="sales_target", entity_id=target.id, entity_label=target.name
+    )
     db.delete(target)
     db.commit()
 

@@ -78,7 +78,10 @@ export default function DealDetailPage() {
 
   return (
     <div className="space-y-5">
-      <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+      >
         <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
         {t("common.back")}
       </button>
@@ -124,8 +127,14 @@ export default function DealDetailPage() {
             <Field label={t("common.company")} value={deal.company?.name} />
             <Field label={t("sales.dealValue")} value={formatCurrency(deal.value, deal.currency)} />
             <Field label={t("sales.probability")} value={`${deal.probability}%`} />
-            <Field label={t("sales.expectedClose")} value={deal.expected_close_date ? formatDate(deal.expected_close_date, locale) : undefined} />
-            <Field label={t("sales.actualClose")} value={deal.actual_close_date ? formatDate(deal.actual_close_date, locale) : undefined} />
+            <Field
+              label={t("sales.expectedClose")}
+              value={deal.expected_close_date ? formatDate(deal.expected_close_date, locale) : undefined}
+            />
+            <Field
+              label={t("sales.actualClose")}
+              value={deal.actual_close_date ? formatDate(deal.actual_close_date, locale) : undefined}
+            />
             <Field label={t("common.owner")} value={deal.owner?.full_name} />
             {deal.lost_reason && <Field label={t("sales.lostReason")} value={deal.lost_reason} />}
             <Field label={t("common.createdAt")} value={formatDate(deal.created_at, locale)} />
@@ -134,7 +143,9 @@ export default function DealDetailPage() {
 
         <Card>
           <CardContent className="pt-5">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("sales.timeline")}</p>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {t("sales.timeline")}
+            </p>
             <div className="space-y-4">
               {history?.map((h, idx) => (
                 <div key={h.id} className="relative flex gap-3 pb-4 last:pb-0">

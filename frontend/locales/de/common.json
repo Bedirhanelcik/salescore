@@ -10,7 +10,8 @@
     "analytics": "Analytik",
     "operations": "Betrieb",
     "reports": "Berichte",
-    "knowledge": "Wissen"
+    "knowledge": "Wissen",
+    "settings": "Einstellungen"
   },
   "common": {
     "search": "Suchen",
@@ -84,7 +85,15 @@
     "signOut": "Abmelden",
     "changePassword": "Passwort ändern",
     "currentPassword": "Aktuelles Passwort",
-    "newPassword": "Neues Passwort"
+    "newPassword": "Neues Passwort",
+    "createAccount": "Konto erstellen",
+    "createAccountSubtitle": "Ein neues SalesCore-Arbeitsbereichskonto einrichten",
+    "fullName": "Vollständiger Name",
+    "signUp": "Konto erstellen",
+    "creatingAccount": "Konto wird erstellt...",
+    "alreadyHaveAccount": "Sie haben bereits ein Konto?",
+    "dontHaveAccount": "Sie haben noch kein Konto?",
+    "emailTaken": "Für diese E-Mail-Adresse existiert bereits ein Konto."
   },
   "roles": {
     "admin": "Administrator",
@@ -183,6 +192,7 @@
     "winLoss": "Gewonnen / Verloren",
     "teamPerformance": "Teamleistung",
     "segmentation": "Kundensegmentierung",
+    "customerGrowth": "Kundenwachstum",
     "pipelineVelocity": "Pipeline-Geschwindigkeit",
     "avgDaysToClose": "Ø Tage bis Abschluss",
     "dealsPerMonth": "Deals / Monat",
@@ -283,6 +293,26 @@
       "target_reached": "Ziel erreicht",
       "mention": "Erwähnung"
     }
+  },
+  "settingsPage": {
+    "title": "Einstellungen",
+    "subtitle": "Verwalten Sie Ihr Profil, Ihre Sicherheit und Ihre Präferenzen",
+    "profile": "Profil",
+    "profileHint": "Ihre Kontoinformationen werden vom Administrator Ihrer Organisation verwaltet.",
+    "fullName": "Vollständiger Name",
+    "role": "Rolle",
+    "department": "Abteilung",
+    "memberSince": "Mitglied seit",
+    "security": "Sicherheit",
+    "securityHint": "Aktualisieren Sie das Passwort für die Anmeldung bei SalesCore.",
+    "appearance": "Erscheinungsbild",
+    "appearanceHint": "Wählen Sie, wie SalesCore aussieht und in welcher Sprache es angezeigt wird.",
+    "language": "Sprache",
+    "theme": "Design",
+    "themeLight": "Hell",
+    "themeDark": "Dunkel",
+    "passwordUpdated": "Passwort erfolgreich aktualisiert",
+    "passwordMismatch": "Passwörter stimmen nicht überein"
   },
   "ai": {
     "title": "KI-Business-Assistent",

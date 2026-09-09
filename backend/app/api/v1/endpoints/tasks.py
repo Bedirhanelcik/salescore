@@ -36,7 +36,9 @@ def get_task(task_id: int, db: Session = Depends(get_db), current_user: User = D
 
 
 @router.patch("/{task_id}", response_model=TaskRead)
-def update_task(task_id: int, payload: TaskUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_task(
+    task_id: int, payload: TaskUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
     return task_service.update_task(db, current_user, task_id, payload)
 
 

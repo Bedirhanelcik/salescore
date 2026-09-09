@@ -15,7 +15,16 @@ import { useI18n } from "@/lib/contexts/i18n-context";
 import { useReport } from "@/lib/hooks/use-reports";
 import { titleCase } from "@/lib/utils";
 
-const REPORT_TYPES = ["sales", "customers", "employee-performance", "revenue", "lead-conversion", "pipeline", "activity", "kpi"];
+const REPORT_TYPES = [
+  "sales",
+  "customers",
+  "employee-performance",
+  "revenue",
+  "lead-conversion",
+  "pipeline",
+  "activity",
+  "kpi",
+];
 
 export default function ReportsPage() {
   const { t } = useI18n();
@@ -80,8 +89,20 @@ export default function ReportsPage() {
             </option>
           ))}
         </Select>
-        <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-40" title={t("reports.startDate")} />
-        <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="w-40" title={t("reports.endDate")} />
+        <Input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className="w-40"
+          title={t("reports.startDate")}
+        />
+        <Input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          className="w-40"
+          title={t("reports.endDate")}
+        />
         <Button variant="outline" size="sm" onClick={exportCsv} className="ms-auto">
           <Download className="h-4 w-4" />
           {t("common.exportCsv")}
@@ -99,10 +120,15 @@ export default function ReportsPage() {
               <thead>
                 <tr className="border-b border-border text-left text-xs text-muted-foreground rtl:text-right">
                   {columns.map((col) => (
-                    <th key={col} className="cursor-pointer px-5 py-3 font-medium select-none" onClick={() => toggleSort(col)}>
+                    <th
+                      key={col}
+                      className="cursor-pointer px-5 py-3 font-medium select-none"
+                      onClick={() => toggleSort(col)}
+                    >
                       <span className="inline-flex items-center gap-1">
                         {titleCase(col)}
-                        {sortBy === col && (sortDir === "asc" ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />)}
+                        {sortBy === col &&
+                          (sortDir === "asc" ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />)}
                       </span>
                     </th>
                   ))}
@@ -123,7 +149,13 @@ export default function ReportsPage() {
           </div>
         )}
         {data && data.total > 0 && (
-          <Pagination page={data.page} totalPages={data.total_pages} total={data.total} pageSize={data.page_size} onPageChange={setPage} />
+          <Pagination
+            page={data.page}
+            totalPages={data.total_pages}
+            total={data.total}
+            pageSize={data.page_size}
+            onPageChange={setPage}
+          />
         )}
       </Card>
     </div>

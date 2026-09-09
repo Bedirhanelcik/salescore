@@ -4,7 +4,12 @@ from sqlalchemy.orm import Session, joinedload
 from app.core.audit import record_audit
 from app.core.exceptions import ConflictError, NotFoundError
 from app.core.pagination import paginate
-from app.core.rbac import assert_can_access_owned_record, assert_can_modify_owned_record, require_write_access, scope_to_owner_only
+from app.core.rbac import (
+    assert_can_access_owned_record,
+    assert_can_modify_owned_record,
+    require_write_access,
+    scope_to_owner_only,
+)
 from app.models.company import Company
 from app.models.deal import Deal, DealStageHistory
 from app.models.enums import DealStage, LeadSource, LeadStatus
@@ -116,12 +121,28 @@ def convert_lead(db: Session, user: User, lead_id: int, data: LeadConvertRequest
     )
     db.add(deal)
     db.flush()
-    db.add(DealStageHistory(deal_id=deal.id, from_stage=None, to_stage=DealStage.QUALIFIED, changed_by_id=user.id, note="Converted from lead"))
+    db.add(
+        DealStageHistory(
+            deal_id=deal.id,
+            from_stage=None,
+            to_stage=DealStage.QUALIFIED,
+            changed_by_id=user.id,
+            note="Converted from lead",
+        )
+    )
 
     lead.status = LeadStatus.CONVERTED
     lead.converted_deal_id = deal.id
 
-    record_audit(db, user_id=user.id, action="convert", entity_type="lead", entity_id=lead.id, entity_label=lead.name, metadata={"deal_id": deal.id})
+    record_audit(
+        db,
+        user_id=user.id,
+        action="convert",
+        entity_type="lead",
+        entity_id=lead.id,
+        entity_label=lead.name,
+        metadata={"deal_id": deal.id},
+    )
     db.commit()
     db.refresh(deal)
     return deal

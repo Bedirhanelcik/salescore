@@ -48,11 +48,17 @@ export default function DashboardPage() {
           <CardHeader>
             <div>
               <CardTitle>{t("dashboard.revenueTrend")}</CardTitle>
-              <CardDescription>{t("common.last90Days")} · {t("common.thisYear")}</CardDescription>
+              <CardDescription>
+                {t("common.last90Days")} · {t("common.thisYear")}
+              </CardDescription>
             </div>
           </CardHeader>
           <CardContent>
-            {revenueLoading || !revenue ? <Skeleton className="h-[300px] w-full" /> : <RevenueChart points={revenue.points} />}
+            {revenueLoading || !revenue ? (
+              <Skeleton className="h-[300px] w-full" />
+            ) : (
+              <RevenueChart points={revenue.points} />
+            )}
           </CardContent>
         </Card>
 

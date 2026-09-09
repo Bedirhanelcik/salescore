@@ -5,7 +5,13 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { SegmentationRow } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
 
-const COLORS = ["var(--color-brand)", "var(--color-info)", "var(--color-success)", "var(--color-warning)", "var(--color-danger)"];
+const COLORS = [
+  "var(--color-brand)",
+  "var(--color-info)",
+  "var(--color-success)",
+  "var(--color-warning)",
+  "var(--color-danger)",
+];
 
 export function SegmentationChart({ rows }: { rows: SegmentationRow[] }) {
   return (
@@ -19,7 +25,12 @@ export function SegmentationChart({ rows }: { rows: SegmentationRow[] }) {
           </Pie>
           <Tooltip
             formatter={(value) => formatCurrency(Number(value))}
-            contentStyle={{ background: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: 8, fontSize: 12 }}
+            contentStyle={{
+              background: "var(--color-card)",
+              border: "1px solid var(--color-border)",
+              borderRadius: 8,
+              fontSize: 12,
+            }}
           />
         </PieChart>
       </ResponsiveContainer>

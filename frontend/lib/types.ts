@@ -10,13 +10,7 @@ export type ActivityStatus = "planned" | "completed" | "cancelled";
 export type TaskStatus = "todo" | "in_progress" | "completed" | "overdue";
 export type TaskPriority = "low" | "medium" | "high" | "critical";
 export type NotificationType =
-  | "task_due"
-  | "deal_follow_up"
-  | "new_lead"
-  | "deal_won"
-  | "deal_lost"
-  | "target_reached"
-  | "mention";
+  "task_due" | "deal_follow_up" | "new_lead" | "deal_won" | "deal_lost" | "target_reached" | "mention";
 export type TargetPeriod = "monthly" | "quarterly" | "yearly";
 
 export interface DepartmentBrief {
@@ -340,6 +334,12 @@ export interface WinLossRow {
   won: number;
   lost: number;
   win_rate: number;
+}
+
+export interface CustomerGrowthPoint {
+  period_label: string;
+  new_customers: number;
+  total_customers: number;
 }
 
 export interface PipelineVelocity {

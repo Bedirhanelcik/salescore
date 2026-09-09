@@ -29,7 +29,9 @@ def get_current_user(token: str | None = Depends(oauth2_scheme), db: Session = D
 def require_roles(*roles: UserRole):
     def dependency(current_user: User = Depends(get_current_user)) -> User:
         if current_user.role not in roles:
-            raise ForbiddenError(f"This action requires one of the following roles: {', '.join(r.value for r in roles)}.")
+            raise ForbiddenError(
+                f"This action requires one of the following roles: {', '.join(r.value for r in roles)}."
+            )
         return current_user
 
     return dependency

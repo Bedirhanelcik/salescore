@@ -36,11 +36,15 @@ def list_deals(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return deal_service.list_deals(db, current_user, page, page_size, stage, owner_id, company_id, search, min_value, max_value, sort_by, sort_dir)
+    return deal_service.list_deals(
+        db, current_user, page, page_size, stage, owner_id, company_id, search, min_value, max_value, sort_by, sort_dir
+    )
 
 
 @router.get("/pipeline", response_model=PipelineBoard)
-def get_pipeline(owner_id: int | None = None, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def get_pipeline(
+    owner_id: int | None = None, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
     columns = []
     for stage in DEAL_STAGE_ORDER + [DealStage.LOST]:
         result = deal_service.list_deals(db, current_user, page=1, page_size=200, stage=stage, owner_id=owner_id)
@@ -73,12 +77,19 @@ def get_deal_history(deal_id: int, db: Session = Depends(get_db), current_user: 
 
 
 @router.patch("/{deal_id}", response_model=DealRead)
-def update_deal(deal_id: int, payload: DealUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_deal(
+    deal_id: int, payload: DealUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
     return deal_service.update_deal(db, current_user, deal_id, payload)
 
 
 @router.patch("/{deal_id}/stage", response_model=DealRead)
-def change_deal_stage(deal_id: int, payload: DealStageUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def change_deal_stage(
+    deal_id: int,
+    payload: DealStageUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     return deal_service.change_deal_stage(db, current_user, deal_id, payload)
 
 

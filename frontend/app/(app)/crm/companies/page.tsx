@@ -31,7 +31,12 @@ export default function CompaniesPage() {
   const [status, setStatus] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { data, isLoading } = useCompanies({ page, page_size: 15, search: search || undefined, status: status || undefined });
+  const { data, isLoading } = useCompanies({
+    page,
+    page_size: 15,
+    search: search || undefined,
+    status: status || undefined,
+  });
 
   return (
     <div className="space-y-4">
@@ -48,8 +53,17 @@ export default function CompaniesPage() {
             className="pl-9 rtl:pl-3 rtl:pr-9"
           />
         </div>
-        <Select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }} className="w-40">
-          <option value="">{t("common.status")}: {t("common.all")}</option>
+        <Select
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
+          className="w-40"
+        >
+          <option value="">
+            {t("common.status")}: {t("common.all")}
+          </option>
           <option value="prospect">Prospect</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
@@ -64,7 +78,13 @@ export default function CompaniesPage() {
         {isLoading ? (
           <TableSkeleton />
         ) : !data || data.items.length === 0 ? (
-          <EmptyState icon={Building2} title={t("crm.noCompanies")} description={t("crm.noCompaniesHint")} actionLabel={t("crm.addCompany")} onAction={() => setModalOpen(true)} />
+          <EmptyState
+            icon={Building2}
+            title={t("crm.noCompanies")}
+            description={t("crm.noCompaniesHint")}
+            actionLabel={t("crm.addCompany")}
+            onAction={() => setModalOpen(true)}
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -95,7 +115,9 @@ export default function CompaniesPage() {
                       <Badge tone={STATUS_TONE[company.status]}>{company.status}</Badge>
                     </td>
                     <td className="px-5 py-3">
-                      {company.owner && <Avatar name={company.owner.full_name} color={company.owner.avatar_color} size="xs" />}
+                      {company.owner && (
+                        <Avatar name={company.owner.full_name} color={company.owner.avatar_color} size="xs" />
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -104,7 +126,13 @@ export default function CompaniesPage() {
           </div>
         )}
         {data && data.total > 0 && (
-          <Pagination page={data.page} totalPages={data.total_pages} total={data.total} pageSize={data.page_size} onPageChange={setPage} />
+          <Pagination
+            page={data.page}
+            totalPages={data.total_pages}
+            total={data.total}
+            pageSize={data.page_size}
+            onPageChange={setPage}
+          />
         )}
       </Card>
 

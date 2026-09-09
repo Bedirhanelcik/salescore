@@ -33,7 +33,10 @@ export default function EmployeeDetailPage() {
 
   return (
     <div className="space-y-5">
-      <button onClick={() => router.push("/operations/employees")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+      <button
+        onClick={() => router.push("/operations/employees")}
+        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+      >
         <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
         {t("common.back")}
       </button>
@@ -70,7 +73,11 @@ export default function EmployeeDetailPage() {
                     <span className="font-bold text-foreground">{formatCurrency(target.actual_amount)}</span>
                     <span className="text-xs text-muted-foreground">/ {formatCurrency(target.target_amount)}</span>
                   </div>
-                  <ProgressBar value={target.achievement_pct} className="mt-2" tone={target.achievement_pct >= 100 ? "success" : "brand"} />
+                  <ProgressBar
+                    value={target.achievement_pct}
+                    className="mt-2"
+                    tone={target.achievement_pct >= 100 ? "success" : "brand"}
+                  />
                 </CardContent>
               </Card>
             ))}

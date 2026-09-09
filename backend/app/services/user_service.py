@@ -55,7 +55,9 @@ def create_user(db: Session, actor: User, data: UserCreate) -> User:
     )
     db.add(user)
     db.flush()
-    record_audit(db, user_id=actor.id, action="create", entity_type="employee", entity_id=user.id, entity_label=user.full_name)
+    record_audit(
+        db, user_id=actor.id, action="create", entity_type="employee", entity_id=user.id, entity_label=user.full_name
+    )
     db.commit()
     db.refresh(user)
     return user
@@ -65,7 +67,9 @@ def update_user(db: Session, actor: User, user_id: int, data: UserUpdate) -> Use
     user = get_user_or_404(db, user_id)
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(user, field, value)
-    record_audit(db, user_id=actor.id, action="update", entity_type="employee", entity_id=user.id, entity_label=user.full_name)
+    record_audit(
+        db, user_id=actor.id, action="update", entity_type="employee", entity_id=user.id, entity_label=user.full_name
+    )
     db.commit()
     db.refresh(user)
     return user
@@ -74,7 +78,14 @@ def update_user(db: Session, actor: User, user_id: int, data: UserUpdate) -> Use
 def deactivate_user(db: Session, actor: User, user_id: int) -> User:
     user = get_user_or_404(db, user_id)
     user.is_active = False
-    record_audit(db, user_id=actor.id, action="deactivate", entity_type="employee", entity_id=user.id, entity_label=user.full_name)
+    record_audit(
+        db,
+        user_id=actor.id,
+        action="deactivate",
+        entity_type="employee",
+        entity_id=user.id,
+        entity_label=user.full_name,
+    )
     db.commit()
     db.refresh(user)
     return user

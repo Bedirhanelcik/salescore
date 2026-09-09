@@ -31,7 +31,10 @@ export function TaskFormModal({ open, onClose }: { open: boolean; onClose: () =>
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<z.input<typeof schema>, unknown, FormValues>({ resolver: zodResolver(schema), defaultValues: { priority: "medium" } });
+  } = useForm<z.input<typeof schema>, unknown, FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { priority: "medium" },
+  });
 
   const onSubmit = async (values: FormValues) => {
     try {

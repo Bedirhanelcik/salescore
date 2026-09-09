@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar } from "@/components/ui/Avatar";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { CustomerGrowthChart } from "@/components/charts/CustomerGrowthChart";
 import { FunnelChart } from "@/components/charts/FunnelChart";
 import { RevenueChart } from "@/components/charts/RevenueChart";
 import { SegmentationChart } from "@/components/charts/SegmentationChart";
@@ -11,6 +12,7 @@ import { WinLossChart } from "@/components/charts/WinLossChart";
 import { MetricHelp } from "@/components/knowledge/MetricHelp";
 import { useI18n } from "@/lib/contexts/i18n-context";
 import {
+  useCustomerGrowth,
   useFunnel,
   usePipelineVelocity,
   useRevenueTrend,
@@ -28,6 +30,7 @@ export default function AnalyticsPage() {
   const { data: team, isLoading: teamLoading } = useTeamPerformance(30);
   const { data: segmentation, isLoading: segmentationLoading } = useSegmentation();
   const { data: velocity, isLoading: velocityLoading } = usePipelineVelocity(90);
+  const { data: customerGrowth, isLoading: customerGrowthLoading } = useCustomerGrowth(12);
 
   return (
     <div className="space-y-5">
@@ -37,10 +40,27 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <VelocityStat label={t("analytics.avgDaysToClose")} value={velocity ? `${velocity.average_days_to_close}` : undefined} loading={velocityLoading} />
-        <VelocityStat label={t("crm.tabs.deals")} value={velocity ? formatCompactCurrency(velocity.average_deal_size) : undefined} loading={velocityLoading} />
-        <VelocityStat label={t("analytics.dealsPerMonth")} value={velocity ? `${velocity.deals_per_month}` : undefined} loading={velocityLoading} />
-        <VelocityStat label={t("analytics.velocityScore")} value={velocity ? formatCompactCurrency(velocity.velocity_score) : undefined} loading={velocityLoading} termKey="pipeline_velocity" />
+        <VelocityStat
+          label={t("analytics.avgDaysToClose")}
+          value={velocity ? `${velocity.average_days_to_close}` : undefined}
+          loading={velocityLoading}
+        />
+        <VelocityStat
+          label={t("crm.tabs.deals")}
+          value={velocity ? formatCompactCurrency(velocity.average_deal_size) : undefined}
+          loading={velocityLoading}
+        />
+        <VelocityStat
+          label={t("analytics.dealsPerMonth")}
+          value={velocity ? `${velocity.deals_per_month}` : undefined}
+          loading={velocityLoading}
+        />
+        <VelocityStat
+          label={t("analytics.velocityScore")}
+          value={velocity ? formatCompactCurrency(velocity.velocity_score) : undefined}
+          loading={velocityLoading}
+          termKey="pipeline_velocity"
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -49,7 +69,11 @@ export default function AnalyticsPage() {
             <CardTitle>{t("analytics.revenueTrend")}</CardTitle>
           </CardHeader>
           <CardContent>
-            {revenueLoading || !revenue ? <Skeleton className="h-[280px] w-full" /> : <RevenueChart points={revenue.points} />}
+            {revenueLoading || !revenue ? (
+              <Skeleton className="h-[280px] w-full" />
+            ) : (
+              <RevenueChart points={revenue.points} />
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -62,15 +86,16 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>{t("analytics.salesFunnel")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {funnelLoading || !funnel ? <Skeleton className="h-56 w-full" /> : <FunnelChart stages={funnel.stages} />}
-          </CardContent>
-        </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("analytics.salesFunnel")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {funnelLoading || !funnel ? <Skeleton className="h-56 w-full" /> : <FunnelChart stages={funnel.stages} />}
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>{t("analytics.segmentation")}</CardTitle>
@@ -82,6 +107,18 @@ export default function AnalyticsPage() {
               <p className="py-8 text-center text-sm text-muted-foreground">{t("common.noResults")}</p>
             ) : (
               <SegmentationChart rows={segmentation} />
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("analytics.customerGrowth")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {customerGrowthLoading || !customerGrowth ? (
+              <Skeleton className="h-[220px] w-full" />
+            ) : (
+              <CustomerGrowthChart points={customerGrowth} />
             )}
           </CardContent>
         </Card>
@@ -129,7 +166,9 @@ export default function AnalyticsPage() {
                         <div className="flex items-center gap-2">
                           <ProgressBar
                             value={row.achievement_pct}
-                            tone={row.achievement_pct >= 100 ? "success" : row.achievement_pct >= 70 ? "brand" : "warning"}
+                            tone={
+                              row.achievement_pct >= 100 ? "success" : row.achievement_pct >= 70 ? "brand" : "warning"
+                            }
                             className="w-24"
                           />
                           <span className="text-xs text-muted-foreground">{row.achievement_pct.toFixed(0)}%</span>
@@ -147,7 +186,17 @@ export default function AnalyticsPage() {
   );
 }
 
-function VelocityStat({ label, value, loading, termKey }: { label: string; value?: string; loading?: boolean; termKey?: string }) {
+function VelocityStat({
+  label,
+  value,
+  loading,
+  termKey,
+}: {
+  label: string;
+  value?: string;
+  loading?: boolean;
+  termKey?: string;
+}) {
   return (
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-center gap-1.5">

@@ -12,7 +12,9 @@ def test_kpis_are_zero_on_empty_database(client, admin_user):
 
 def test_kpis_reflect_won_deal(client, admin_user):
     headers = auth_headers(client, "admin@test.io")
-    deal = client.post("/api/v1/deals", headers=headers, json={"title": "Big Deal", "value": 50000, "stage": "lead"}).json()
+    deal = client.post(
+        "/api/v1/deals", headers=headers, json={"title": "Big Deal", "value": 50000, "stage": "lead"}
+    ).json()
     client.patch(f"/api/v1/deals/{deal['id']}/stage", headers=headers, json={"stage": "qualified"})
     client.patch(f"/api/v1/deals/{deal['id']}/stage", headers=headers, json={"stage": "opportunity"})
     client.patch(f"/api/v1/deals/{deal['id']}/stage", headers=headers, json={"stage": "proposal"})

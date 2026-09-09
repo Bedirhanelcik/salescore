@@ -31,7 +31,10 @@ export function CompanyFormModal({ open, onClose }: { open: boolean; onClose: ()
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<z.input<typeof schema>, unknown, FormValues>({ resolver: zodResolver(schema), defaultValues: { status: "prospect" } });
+  } = useForm<z.input<typeof schema>, unknown, FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { status: "prospect" },
+  });
 
   const onSubmit = async (values: FormValues) => {
     try {

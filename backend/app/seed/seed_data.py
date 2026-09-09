@@ -5,16 +5,15 @@ Safe to re-run: it wipes and recreates all rows.
 """
 
 import random
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 
 from faker import Faker
-from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
+from app.core.security import hash_password
 from app.db.base import Base
 from app.db.session import SessionLocal, engine
 from app.models.activity import Activity
-from app.models.audit_log import AuditLog
 from app.models.company import Company
 from app.models.contact import Contact
 from app.models.deal import Deal, DealStageHistory
@@ -40,7 +39,6 @@ from app.models.notification import Notification
 from app.models.sales_target import SalesTarget
 from app.models.task import Task
 from app.models.user import User
-from app.core.security import hash_password
 from app.seed.knowledge_data import CATEGORIES, TERMS
 
 fake = Faker()
@@ -59,13 +57,39 @@ DEPARTMENTS = [
     ("Management", "Executive leadership and cross-team strategy."),
 ]
 
-INDUSTRIES = ["Software", "Manufacturing", "Retail", "Healthcare", "Financial Services", "Logistics", "Energy", "Telecommunications", "Education", "Real Estate"]
-COUNTRIES = ["United States", "United Kingdom", "Germany", "Turkey", "United Arab Emirates", "France", "Netherlands", "Canada", "Spain", "Saudi Arabia"]
+INDUSTRIES = [
+    "Software",
+    "Manufacturing",
+    "Retail",
+    "Healthcare",
+    "Financial Services",
+    "Logistics",
+    "Energy",
+    "Telecommunications",
+    "Education",
+    "Real Estate",
+]
+COUNTRIES = [
+    "United States",
+    "United Kingdom",
+    "Germany",
+    "Turkey",
+    "United Arab Emirates",
+    "France",
+    "Netherlands",
+    "Canada",
+    "Spain",
+    "Saudi Arabia",
+]
 COMPANY_SUFFIXES = ["Inc.", "Corp.", "Group", "Holdings", "Technologies", "Solutions", "Industries", "Partners"]
 
 LOST_REASONS = [
-    "Budget constraints", "Chose a competitor", "Project cancelled internally",
-    "Pricing too high", "Timing not right", "No response from champion",
+    "Budget constraints",
+    "Chose a competitor",
+    "Project cancelled internally",
+    "Pricing too high",
+    "Timing not right",
+    "No response from champion",
 ]
 
 
@@ -112,8 +136,12 @@ def seed_users(db: Session, departments: dict[str, Department]) -> dict[str, lis
 
     def make(email, password, full_name, role, dept, title, manager=None) -> User:
         u = User(
-            email=email, password_hash=hash_password(password), full_name=full_name, role=role,
-            department_id=dept.id if dept else None, job_title=title,
+            email=email,
+            password_hash=hash_password(password),
+            full_name=full_name,
+            role=role,
+            department_id=dept.id if dept else None,
+            job_title=title,
             manager_id=manager.id if manager else None,
             avatar_color=random.choice(AVATAR_PALETTE),
         )
@@ -121,16 +149,47 @@ def seed_users(db: Session, departments: dict[str, Department]) -> dict[str, lis
         db.flush()
         return u
 
-    admin = make("admin@salescore.io", "Admin123!", "Elena Kovacs", UserRole.ADMIN, departments["Management"], "System Administrator")
+    admin = make(
+        "admin@salescore.io",
+        "Admin123!",
+        "Elena Kovacs",
+        UserRole.ADMIN,
+        departments["Management"],
+        "System Administrator",
+    )
     users["admin"].append(admin)
 
-    manager1 = make("manager@salescore.io", "Manager123!", "Marcus Webb", UserRole.MANAGER, departments["Sales"], "Sales Director", admin)
-    manager2 = make("sarah.manager@salescore.io", "Manager123!", "Sarah Nakamura", UserRole.MANAGER, departments["Marketing"], "Marketing Director", admin)
+    manager1 = make(
+        "manager@salescore.io",
+        "Manager123!",
+        "Marcus Webb",
+        UserRole.MANAGER,
+        departments["Sales"],
+        "Sales Director",
+        admin,
+    )
+    manager2 = make(
+        "sarah.manager@salescore.io",
+        "Manager123!",
+        "Sarah Nakamura",
+        UserRole.MANAGER,
+        departments["Marketing"],
+        "Marketing Director",
+        admin,
+    )
     users["manager"] += [manager1, manager2]
 
     rep_names = [
-        "Ahmet Yilmaz", "Elif Demir", "Mert Kaya", "James Carter", "Olivia Bennett",
-        "Lucas Martin", "Amara Johnson", "Noah Fischer", "Layla Haddad", "Ben Turner",
+        "Ahmet Yilmaz",
+        "Elif Demir",
+        "Mert Kaya",
+        "James Carter",
+        "Olivia Bennett",
+        "Lucas Martin",
+        "Amara Johnson",
+        "Noah Fischer",
+        "Layla Haddad",
+        "Ben Turner",
     ]
     sales_reps = []
     for i, name in enumerate(rep_names):
@@ -139,15 +198,49 @@ def seed_users(db: Session, departments: dict[str, Department]) -> dict[str, lis
         sales_reps.append(rep)
     users["sales_rep"] = sales_reps
 
-    analyst1 = make("analyst@salescore.io", "Analyst123!", "Priya Chandran", UserRole.ANALYST, departments["Finance"], "Business Analyst", admin)
-    analyst2 = make("tom.analyst@salescore.io", "Analyst123!", "Tom Richter", UserRole.ANALYST, departments["Operations"], "Operations Analyst", admin)
+    analyst1 = make(
+        "analyst@salescore.io",
+        "Analyst123!",
+        "Priya Chandran",
+        UserRole.ANALYST,
+        departments["Finance"],
+        "Business Analyst",
+        admin,
+    )
+    analyst2 = make(
+        "tom.analyst@salescore.io",
+        "Analyst123!",
+        "Tom Richter",
+        UserRole.ANALYST,
+        departments["Operations"],
+        "Operations Analyst",
+        admin,
+    )
     users["analyst"] = [analyst1, analyst2]
 
-    viewer1 = make("viewer@salescore.io", "Viewer123!", "Grace Liu", UserRole.VIEWER, departments["Human Resources"], "HR Coordinator", admin)
+    viewer1 = make(
+        "viewer@salescore.io",
+        "Viewer123!",
+        "Grace Liu",
+        UserRole.VIEWER,
+        departments["Human Resources"],
+        "HR Coordinator",
+        admin,
+    )
     users["viewer"] = [viewer1]
 
-    hr_extra = make("hr.lead@salescore.io", "Viewer123!", "Daniel Osei", UserRole.MANAGER, departments["Human Resources"], "HR Manager", admin)
-    it_lead = make("it.lead@salescore.io", "Viewer123!", "Nadia Rahimi", UserRole.MANAGER, departments["IT"], "IT Manager", admin)
+    hr_extra = make(
+        "hr.lead@salescore.io",
+        "Viewer123!",
+        "Daniel Osei",
+        UserRole.MANAGER,
+        departments["Human Resources"],
+        "HR Manager",
+        admin,
+    )
+    it_lead = make(
+        "it.lead@salescore.io", "Viewer123!", "Nadia Rahimi", UserRole.MANAGER, departments["IT"], "IT Manager", admin
+    )
     users["manager"] += [hr_extra, it_lead]
 
     db.commit()
@@ -156,7 +249,12 @@ def seed_users(db: Session, departments: dict[str, Department]) -> dict[str, lis
 
 def seed_companies(db: Session, sales_reps: list[User]) -> list[Company]:
     companies = []
-    for _ in range(16):
+    # Spread account creation across the last ~15 months (roughly evenly, oldest first)
+    # so the Customer Growth chart shows a realistic gradual climb rather than every
+    # account appearing to sign up on the same day.
+    age_days = sorted(random.sample(range(5, 460), 16), reverse=True)
+    for days_ago in age_days:
+        created_at = datetime.now(UTC) - timedelta(days=days_ago)
         company = Company(
             name=_company_name(),
             industry=random.choice(INDUSTRIES),
@@ -166,6 +264,8 @@ def seed_companies(db: Session, sales_reps: list[User]) -> list[Company]:
             annual_revenue=random.randint(500_000, 80_000_000),
             status=random.choices(list(CompanyStatus), weights=[0.55, 0.15, 0.3])[0],
             owner_id=random.choice(sales_reps).id,
+            created_at=created_at,
+            updated_at=created_at,
         )
         db.add(company)
         companies.append(company)
@@ -179,10 +279,15 @@ def seed_contacts(db: Session, companies: list[Company]) -> list[Contact]:
     for company in companies:
         for _ in range(random.randint(1, 3)):
             contact = Contact(
-                first_name=fake.first_name(), last_name=fake.last_name(),
-                email=fake.company_email(), phone=fake.phone_number(),
-                job_title=random.choice(["CEO", "CFO", "VP Sales", "Head of Procurement", "IT Director", "COO", "VP Marketing"]),
-                company_id=company.id, owner_id=company.owner_id,
+                first_name=fake.first_name(),
+                last_name=fake.last_name(),
+                email=fake.company_email(),
+                phone=fake.phone_number(),
+                job_title=random.choice(
+                    ["CEO", "CFO", "VP Sales", "Head of Procurement", "IT Director", "COO", "VP Marketing"]
+                ),
+                company_id=company.id,
+                owner_id=company.owner_id,
             )
             db.add(contact)
             contacts.append(contact)
@@ -196,10 +301,16 @@ def seed_leads(db: Session, sales_reps: list[User]) -> list[Lead]:
     for _ in range(34):
         status = random.choices(list(LeadStatus), weights=[0.25, 0.25, 0.2, 0.15, 0.15])[0]
         lead = Lead(
-            name=fake.name(), company_name=_company_name(), email=fake.email(), phone=fake.phone_number(),
-            source=random.choice(list(LeadSource)), score=random.randint(10, 95), status=status,
-            notes=fake.sentence(nb_words=12), owner_id=random.choice(sales_reps).id,
-            created_at=datetime.now(timezone.utc) - timedelta(days=random.randint(0, 120)),
+            name=fake.name(),
+            company_name=_company_name(),
+            email=fake.email(),
+            phone=fake.phone_number(),
+            source=random.choice(list(LeadSource)),
+            score=random.randint(10, 95),
+            status=status,
+            notes=fake.sentence(nb_words=12),
+            owner_id=random.choice(sales_reps).id,
+            created_at=datetime.now(UTC) - timedelta(days=random.randint(0, 120)),
         )
         db.add(lead)
         leads.append(lead)
@@ -224,18 +335,23 @@ def seed_deals(db: Session, companies: list[Company], contacts: list[Contact], s
         contacts_by_company.setdefault(c.company_id, []).append(c)
 
     stage_weights = {
-        DealStage.LEAD: 0.10, DealStage.QUALIFIED: 0.14, DealStage.OPPORTUNITY: 0.14,
-        DealStage.PROPOSAL: 0.12, DealStage.NEGOTIATION: 0.1, DealStage.WON: 0.28, DealStage.LOST: 0.12,
+        DealStage.LEAD: 0.10,
+        DealStage.QUALIFIED: 0.14,
+        DealStage.OPPORTUNITY: 0.14,
+        DealStage.PROPOSAL: 0.12,
+        DealStage.NEGOTIATION: 0.1,
+        DealStage.WON: 0.28,
+        DealStage.LOST: 0.12,
     }
 
-    for i in range(90):
+    for _ in range(90):
         company = random.choice(companies)
         owner = random.choice(sales_reps)
         stage = random.choices(list(stage_weights), weights=list(stage_weights.values()))[0]
         # Triangular distribution: most deals are recent (mode ~35 days), with a long tail
         # back to ~13 months so the 12-month revenue trend chart has data in every month.
         age_days = int(random.triangular(2, 400, 35))
-        created_at = datetime.now(timezone.utc) - timedelta(days=age_days)
+        created_at = datetime.now(UTC) - timedelta(days=age_days)
         value = random.choice([8_500, 12_000, 18_500, 24_000, 32_000, 45_000, 58_000, 75_000, 110_000, 150_000])
         company_contacts = contacts_by_company.get(company.id, [])
 
@@ -253,12 +369,14 @@ def seed_deals(db: Session, companies: list[Company], contacts: list[Contact], s
             updated_at=created_at,
         )
 
-        history_stages = DEAL_STAGE_ORDER[: DEAL_STAGE_ORDER.index(stage) + 1] if stage in DEAL_STAGE_ORDER else DEAL_STAGE_ORDER[:2]
+        history_stages = (
+            DEAL_STAGE_ORDER[: DEAL_STAGE_ORDER.index(stage) + 1] if stage in DEAL_STAGE_ORDER else DEAL_STAGE_ORDER[:2]
+        )
         if stage == DealStage.LOST:
             drop_index = random.randint(1, len(DEAL_STAGE_ORDER) - 2)
             history_stages = DEAL_STAGE_ORDER[:drop_index]
 
-        today = datetime.now(timezone.utc)
+        today = datetime.now(UTC)
         if stage in (DealStage.WON, DealStage.LOST):
             close_days = random.randint(10, 75)
             close_at = min(created_at + timedelta(days=close_days), today)
@@ -275,11 +393,24 @@ def seed_deals(db: Session, companies: list[Company], contacts: list[Contact], s
         cursor = created_at
         prev = None
         for hs in history_stages:
-            db.add(DealStageHistory(deal_id=deal.id, from_stage=prev, to_stage=hs, changed_by_id=owner.id, changed_at=cursor, note=None))
+            db.add(
+                DealStageHistory(
+                    deal_id=deal.id, from_stage=prev, to_stage=hs, changed_by_id=owner.id, changed_at=cursor, note=None
+                )
+            )
             prev = hs
             cursor += timedelta(days=random.randint(2, 12))
         if stage in (DealStage.WON, DealStage.LOST):
-            db.add(DealStageHistory(deal_id=deal.id, from_stage=prev, to_stage=stage, changed_by_id=owner.id, changed_at=cursor, note=deal.lost_reason))
+            db.add(
+                DealStageHistory(
+                    deal_id=deal.id,
+                    from_stage=prev,
+                    to_stage=stage,
+                    changed_by_id=owner.id,
+                    changed_at=cursor,
+                    note=deal.lost_reason,
+                )
+            )
 
         deals.append(deal)
 
@@ -289,12 +420,16 @@ def seed_deals(db: Session, companies: list[Company], contacts: list[Contact], s
 
 def seed_activities(db: Session, deals: list[Deal], sales_reps: list[User]) -> None:
     activity_titles = {
-        ActivityType.CALL: "Discovery call", ActivityType.EMAIL: "Follow-up email",
-        ActivityType.MEETING: "Solution walkthrough meeting", ActivityType.NOTE: "Internal note",
-        ActivityType.FOLLOW_UP: "Scheduled follow-up", ActivityType.DEMO: "Product demo",
-        ActivityType.PROPOSAL: "Proposal sent", ActivityType.TASK: "Action item",
+        ActivityType.CALL: "Discovery call",
+        ActivityType.EMAIL: "Follow-up email",
+        ActivityType.MEETING: "Solution walkthrough meeting",
+        ActivityType.NOTE: "Internal note",
+        ActivityType.FOLLOW_UP: "Scheduled follow-up",
+        ActivityType.DEMO: "Product demo",
+        ActivityType.PROPOSAL: "Proposal sent",
+        ActivityType.TASK: "Action item",
     }
-    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    now = datetime.now(UTC).replace(tzinfo=None)
     for deal in deals:
         count = random.randint(2, 6)
         cursor = deal.created_at.replace(tzinfo=None) if deal.created_at.tzinfo else deal.created_at
@@ -305,20 +440,32 @@ def seed_activities(db: Session, deals: list[Deal], sales_reps: list[User]) -> N
                 cursor = now - timedelta(hours=random.randint(1, 48))
             db.add(
                 Activity(
-                    type=atype, title=activity_titles[atype], description=fake.sentence(nb_words=14),
-                    status=random.choice(list(ActivityStatus)), activity_date=cursor,
-                    owner_id=deal.owner_id, company_id=deal.company_id, contact_id=deal.contact_id, deal_id=deal.id,
+                    type=atype,
+                    title=activity_titles[atype],
+                    description=fake.sentence(nb_words=14),
+                    status=random.choice(list(ActivityStatus)),
+                    activity_date=cursor,
+                    owner_id=deal.owner_id,
+                    company_id=deal.company_id,
+                    contact_id=deal.contact_id,
+                    deal_id=deal.id,
                 )
             )
     db.commit()
 
 
 def seed_tasks(db: Session, sales_reps: list[User], deals: list[Deal]) -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     task_titles = [
-        "Send updated proposal", "Prepare contract redlines", "Schedule executive check-in",
-        "Confirm pricing with finance", "Follow up on demo feedback", "Draft renewal quote",
-        "Update CRM with call notes", "Coordinate technical evaluation", "Send case study",
+        "Send updated proposal",
+        "Prepare contract redlines",
+        "Schedule executive check-in",
+        "Confirm pricing with finance",
+        "Follow up on demo feedback",
+        "Draft renewal quote",
+        "Update CRM with call notes",
+        "Coordinate technical evaluation",
+        "Send case study",
         "Book onsite meeting",
     ]
     for _ in range(60):
@@ -328,14 +475,20 @@ def seed_tasks(db: Session, sales_reps: list[User], deals: list[Deal]) -> None:
         if due_offset < 0:
             status = random.choice([TaskStatus.OVERDUE, TaskStatus.COMPLETED])
         else:
-            status = random.choices([TaskStatus.TODO, TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED], weights=[0.5, 0.3, 0.2])[0]
+            status = random.choices(
+                [TaskStatus.TODO, TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED], weights=[0.5, 0.3, 0.2]
+            )[0]
         related_deal = random.choice(deals) if random.random() < 0.7 else None
         db.add(
             Task(
-                title=random.choice(task_titles), description=fake.sentence(nb_words=10),
-                status=status, priority=random.choice(list(TaskPriority)), due_date=due,
+                title=random.choice(task_titles),
+                description=fake.sentence(nb_words=10),
+                status=status,
+                priority=random.choice(list(TaskPriority)),
+                due_date=due,
                 completed_at=(now - timedelta(days=random.randint(0, 5))) if status == TaskStatus.COMPLETED else None,
-                assignee_id=assignee.id, created_by_id=assignee.id,
+                assignee_id=assignee.id,
+                created_by_id=assignee.id,
                 related_company_id=related_deal.company_id if related_deal else None,
                 related_deal_id=related_deal.id if related_deal else None,
             )
@@ -348,23 +501,37 @@ def seed_targets(db: Session, sales_reps: list[User], departments: dict[str, Dep
     month_cursor = date(today.year, today.month, 1)
     for _ in range(12):
         month_start = month_cursor
-        next_month = date(month_start.year + (1 if month_start.month == 12 else 0), 1 if month_start.month == 12 else month_start.month + 1, 1)
+        next_month = date(
+            month_start.year + (1 if month_start.month == 12 else 0),
+            1 if month_start.month == 12 else month_start.month + 1,
+            1,
+        )
         month_end = next_month - timedelta(days=1)
-        month_cursor = date(month_start.year - (1 if month_start.month == 1 else 0), 12 if month_start.month == 1 else month_start.month - 1, 1)
+        month_cursor = date(
+            month_start.year - (1 if month_start.month == 1 else 0),
+            12 if month_start.month == 1 else month_start.month - 1,
+            1,
+        )
 
         for rep in sales_reps:
             db.add(
                 SalesTarget(
                     name=f"{rep.full_name} - {month_start.strftime('%B %Y')}",
-                    period=TargetPeriod.MONTHLY, period_start=month_start, period_end=month_end,
-                    target_amount=random.choice([18_000, 22_000, 26_000, 30_000]), employee_id=rep.id,
+                    period=TargetPeriod.MONTHLY,
+                    period_start=month_start,
+                    period_end=month_end,
+                    target_amount=random.choice([18_000, 22_000, 26_000, 30_000]),
+                    employee_id=rep.id,
                 )
             )
         db.add(
             SalesTarget(
                 name=f"Sales Department - {month_start.strftime('%B %Y')}",
-                period=TargetPeriod.MONTHLY, period_start=month_start, period_end=month_end,
-                target_amount=230_000, department_id=departments["Sales"].id,
+                period=TargetPeriod.MONTHLY,
+                period_start=month_start,
+                period_end=month_end,
+                target_amount=230_000,
+                department_id=departments["Sales"].id,
             )
         )
     db.commit()
@@ -375,16 +542,23 @@ def seed_notifications(db: Session, sales_reps: list[User], deals: list[Deal]) -
     for deal in won_deals:
         db.add(
             Notification(
-                user_id=deal.owner_id, type=NotificationType.DEAL_WON, title="Deal won!",
-                message=f"'{deal.title}' was marked as Won.", related_entity_type="deal", related_entity_id=deal.id,
+                user_id=deal.owner_id,
+                type=NotificationType.DEAL_WON,
+                title="Deal won!",
+                message=f"'{deal.title}' was marked as Won.",
+                related_entity_type="deal",
+                related_entity_id=deal.id,
                 is_read=random.random() < 0.4,
             )
         )
     for rep in sales_reps[:5]:
         db.add(
             Notification(
-                user_id=rep.id, type=NotificationType.TASK_DUE, title="Task due soon",
-                message="You have a task due within 24 hours.", is_read=False,
+                user_id=rep.id,
+                type=NotificationType.TASK_DUE,
+                title="Task due soon",
+                message="You have a task due within 24 hours.",
+                is_read=False,
             )
         )
     db.commit()

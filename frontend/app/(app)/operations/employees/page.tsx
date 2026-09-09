@@ -32,7 +32,15 @@ export default function EmployeesPage() {
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-subtle-foreground rtl:left-auto rtl:right-3" />
-          <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder={t("common.search")} className="pl-9 rtl:pl-3 rtl:pr-9" />
+          <Input
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            placeholder={t("common.search")}
+            className="pl-9 rtl:pl-3 rtl:pr-9"
+          />
         </div>
         {user?.role === "admin" && (
           <Button onClick={() => setModalOpen(true)} size="sm">
@@ -76,7 +84,9 @@ export default function EmployeesPage() {
                     <td className="px-5 py-3 text-muted-foreground">{emp.department?.name ?? "—"}</td>
                     <td className="px-5 py-3 text-muted-foreground">{emp.job_title ?? "—"}</td>
                     <td className="px-5 py-3">
-                      <Badge tone={emp.is_active ? "success" : "neutral"}>{emp.is_active ? "Active" : "Inactive"}</Badge>
+                      <Badge tone={emp.is_active ? "success" : "neutral"}>
+                        {emp.is_active ? "Active" : "Inactive"}
+                      </Badge>
                     </td>
                   </tr>
                 ))}
@@ -85,7 +95,13 @@ export default function EmployeesPage() {
           </div>
         )}
         {data && data.total > 0 && (
-          <Pagination page={data.page} totalPages={data.total_pages} total={data.total} pageSize={data.page_size} onPageChange={setPage} />
+          <Pagination
+            page={data.page}
+            totalPages={data.total_pages}
+            total={data.total}
+            pageSize={data.page_size}
+            onPageChange={setPage}
+          />
         )}
       </Card>
 

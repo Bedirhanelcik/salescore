@@ -38,7 +38,9 @@ export function MetricHelp({ termKey }: { termKey: string }) {
         <span className="absolute bottom-full left-1/2 z-20 mb-2 w-56 -translate-x-1/2 rounded-lg border border-border bg-card p-3 text-xs text-foreground shadow-xl animate-in rtl:translate-x-1/2">
           {term ? (
             <>
-              <span className="mb-1 block font-semibold text-brand">{termShortDefinition(term, locale).split(" — ")[0]}</span>
+              <span className="mb-1 block font-semibold text-brand">
+                {termShortDefinition(term, locale).split(" — ")[0]}
+              </span>
               <span className="text-muted-foreground">{termShortDefinition(term, locale)}</span>
             </>
           ) : (

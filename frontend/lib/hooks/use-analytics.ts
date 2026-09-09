@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import type {
   BusinessInsight,
+  CustomerGrowthPoint,
   FunnelAnalytics,
   KpiSummary,
   PipelineVelocity,
@@ -58,6 +59,13 @@ export function usePipelineVelocity(days = 90) {
   return useQuery({
     queryKey: ["analytics", "pipeline-velocity", days],
     queryFn: () => api.get<PipelineVelocity>("/analytics/pipeline-velocity", { days }),
+  });
+}
+
+export function useCustomerGrowth(months = 12) {
+  return useQuery({
+    queryKey: ["analytics", "customer-growth", months],
+    queryFn: () => api.get<CustomerGrowthPoint[]>("/analytics/customer-growth", { months }),
   });
 }
 

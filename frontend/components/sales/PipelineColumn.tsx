@@ -34,7 +34,10 @@ export function PipelineColumn({
           </p>
         </div>
         {stage !== "won" && stage !== "lost" && (
-          <button onClick={onAddDeal} className="rounded-md p-1 text-muted-foreground hover:bg-card hover:text-foreground">
+          <button
+            onClick={onAddDeal}
+            className="rounded-md p-1 text-muted-foreground hover:bg-card hover:text-foreground"
+          >
             <Plus className="h-3.5 w-3.5" />
           </button>
         )}

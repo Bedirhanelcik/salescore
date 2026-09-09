@@ -39,7 +39,10 @@ export default function LeadDetailPage() {
     register,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<z.input<typeof schema>, unknown, FormValues>({ resolver: zodResolver(schema), defaultValues: { deal_value: 0 } });
+  } = useForm<z.input<typeof schema>, unknown, FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { deal_value: 0 },
+  });
 
   const onConvert = async (values: FormValues) => {
     try {
@@ -63,7 +66,10 @@ export default function LeadDetailPage() {
 
   return (
     <div className="space-y-5">
-      <button onClick={() => router.push("/crm/leads")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+      <button
+        onClick={() => router.push("/crm/leads")}
+        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+      >
         <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
         {t("common.back")}
       </button>

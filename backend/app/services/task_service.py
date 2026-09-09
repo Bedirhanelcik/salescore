@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
@@ -16,7 +16,7 @@ LOAD_OPTIONS = [joinedload(Task.assignee), joinedload(Task.created_by)]
 
 
 def _refresh_overdue(db: Session, tasks: list[Task]) -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     changed = False
     for task in tasks:
         if task.status in (TaskStatus.TODO, TaskStatus.IN_PROGRESS) and task.due_date and task.due_date < now:
@@ -62,7 +62,9 @@ def get_task_or_404(db: Session, user: User, task_id: int) -> Task:
 
 def create_task(db: Session, user: User, data: TaskCreate) -> Task:
     require_write_access(user)
-    task = Task(**data.model_dump(exclude={"assignee_id"}), created_by_id=user.id, assignee_id=data.assignee_id or user.id)
+    task = Task(
+        **data.model_dump(exclude={"assignee_id"}), created_by_id=user.id, assignee_id=data.assignee_id or user.id
+    )
     db.add(task)
     db.flush()
     record_audit(db, user_id=user.id, action="create", entity_type="task", entity_id=task.id, entity_label=task.title)
@@ -78,7 +80,7 @@ def update_task(db: Session, user: User, task_id: int, data: TaskUpdate) -> Task
 
     payload = data.model_dump(exclude_unset=True)
     if payload.get("status") == TaskStatus.COMPLETED:
-        task.completed_at = datetime.now(timezone.utc)
+        task.completed_at = datetime.now(UTC)
     for field, value in payload.items():
         setattr(task, field, value)
 

@@ -31,17 +31,39 @@ export default function LeadsPage() {
   const [status, setStatus] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { data, isLoading } = useLeads({ page, page_size: 15, search: search || undefined, status: status || undefined });
+  const { data, isLoading } = useLeads({
+    page,
+    page_size: 15,
+    search: search || undefined,
+    status: status || undefined,
+  });
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-subtle-foreground rtl:left-auto rtl:right-3" />
-          <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder={t("common.search")} className="pl-9 rtl:pl-3 rtl:pr-9" />
+          <Input
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            placeholder={t("common.search")}
+            className="pl-9 rtl:pl-3 rtl:pr-9"
+          />
         </div>
-        <Select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }} className="w-40">
-          <option value="">{t("common.status")}: {t("common.all")}</option>
+        <Select
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
+          className="w-40"
+        >
+          <option value="">
+            {t("common.status")}: {t("common.all")}
+          </option>
           <option value="new">New</option>
           <option value="contacted">Contacted</option>
           <option value="qualified">Qualified</option>
@@ -58,7 +80,13 @@ export default function LeadsPage() {
         {isLoading ? (
           <TableSkeleton />
         ) : !data || data.items.length === 0 ? (
-          <EmptyState icon={Target} title={t("crm.noLeads")} description={t("crm.noLeadsHint")} actionLabel={t("crm.addLead")} onAction={() => setModalOpen(true)} />
+          <EmptyState
+            icon={Target}
+            title={t("crm.noLeads")}
+            description={t("crm.noLeadsHint")}
+            actionLabel={t("crm.addLead")}
+            onAction={() => setModalOpen(true)}
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -92,7 +120,13 @@ export default function LeadsPage() {
           </div>
         )}
         {data && data.total > 0 && (
-          <Pagination page={data.page} totalPages={data.total_pages} total={data.total} pageSize={data.page_size} onPageChange={setPage} />
+          <Pagination
+            page={data.page}
+            totalPages={data.total_pages}
+            total={data.total}
+            pageSize={data.page_size}
+            onPageChange={setPage}
+          />
         )}
       </Card>
 

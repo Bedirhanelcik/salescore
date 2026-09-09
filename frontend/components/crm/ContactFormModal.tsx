@@ -21,7 +21,15 @@ const schema = z.object({
 });
 type FormValues = z.infer<typeof schema>;
 
-export function ContactFormModal({ open, onClose, companyId }: { open: boolean; onClose: () => void; companyId?: number }) {
+export function ContactFormModal({
+  open,
+  onClose,
+  companyId,
+}: {
+  open: boolean;
+  onClose: () => void;
+  companyId?: number;
+}) {
   const { t } = useI18n();
   const createContact = useCreateContact();
   const {

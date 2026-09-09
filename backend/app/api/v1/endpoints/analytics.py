@@ -6,6 +6,7 @@ from app.db.session import get_db
 from app.models.user import User
 from app.schemas.analytics import (
     BusinessInsights,
+    CustomerGrowthPoint,
     FunnelAnalytics,
     KpiSummary,
     PipelineVelocity,
@@ -50,8 +51,17 @@ def get_win_loss(months: int = 6, db: Session = Depends(get_db), current_user: U
 
 
 @router.get("/pipeline-velocity", response_model=PipelineVelocity)
-def get_pipeline_velocity(days: int = 90, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def get_pipeline_velocity(
+    days: int = 90, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
     return analytics_service.get_pipeline_velocity(db, days)
+
+
+@router.get("/customer-growth", response_model=list[CustomerGrowthPoint])
+def get_customer_growth(
+    months: int = 12, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+):
+    return analytics_service.get_customer_growth(db, months)
 
 
 @router.get("/insights", response_model=BusinessInsights)

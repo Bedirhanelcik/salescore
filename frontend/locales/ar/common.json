@@ -10,7 +10,8 @@
     "analytics": "التحليلات",
     "operations": "العمليات",
     "reports": "التقارير",
-    "knowledge": "المعرفة"
+    "knowledge": "المعرفة",
+    "settings": "الإعدادات"
   },
   "common": {
     "search": "بحث",
@@ -84,7 +85,15 @@
     "signOut": "تسجيل الخروج",
     "changePassword": "تغيير كلمة المرور",
     "currentPassword": "كلمة المرور الحالية",
-    "newPassword": "كلمة المرور الجديدة"
+    "newPassword": "كلمة المرور الجديدة",
+    "createAccount": "أنشئ حسابك",
+    "createAccountSubtitle": "قم بإعداد حساب جديد في مساحة عمل SalesCore",
+    "fullName": "الاسم الكامل",
+    "signUp": "إنشاء حساب",
+    "creatingAccount": "جارٍ إنشاء الحساب...",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "dontHaveAccount": "ليس لديك حساب؟",
+    "emailTaken": "يوجد حساب بهذا البريد الإلكتروني بالفعل."
   },
   "roles": {
     "admin": "مسؤول النظام",
@@ -183,6 +192,7 @@
     "winLoss": "الفوز / الخسارة",
     "teamPerformance": "أداء الفريق",
     "segmentation": "تجزئة العملاء",
+    "customerGrowth": "نمو العملاء",
     "pipelineVelocity": "سرعة خط الأنابيب",
     "avgDaysToClose": "متوسط أيام الإغلاق",
     "dealsPerMonth": "صفقات / شهر",
@@ -283,6 +293,26 @@
       "target_reached": "تم تحقيق الهدف",
       "mention": "إشارة"
     }
+  },
+  "settingsPage": {
+    "title": "الإعدادات",
+    "subtitle": "إدارة ملفك الشخصي وأمانك وتفضيلاتك",
+    "profile": "الملف الشخصي",
+    "profileHint": "معلومات حسابك تتم إدارتها بواسطة مسؤول مؤسستك.",
+    "fullName": "الاسم الكامل",
+    "role": "الدور",
+    "department": "القسم",
+    "memberSince": "عضو منذ",
+    "security": "الأمان",
+    "securityHint": "قم بتحديث كلمة المرور المستخدمة لتسجيل الدخول إلى SalesCore.",
+    "appearance": "المظهر",
+    "appearanceHint": "اختر شكل SalesCore واللغة التي يُعرض بها.",
+    "language": "اللغة",
+    "theme": "السمة",
+    "themeLight": "فاتح",
+    "themeDark": "داكن",
+    "passwordUpdated": "تم تحديث كلمة المرور بنجاح",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين"
   },
   "ai": {
     "title": "مساعد الأعمال الذكي",

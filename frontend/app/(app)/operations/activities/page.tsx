@@ -1,7 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Activity as ActivityIcon, Calendar, Mail, MessageSquare, Phone, Plus, Presentation, FileText, CheckSquare } from "lucide-react";
+import {
+  Activity as ActivityIcon,
+  Calendar,
+  Mail,
+  MessageSquare,
+  Phone,
+  Plus,
+  Presentation,
+  FileText,
+  CheckSquare,
+} from "lucide-react";
 
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -49,7 +59,12 @@ export default function ActivitiesPage() {
             ))}
           </div>
         ) : !data || data.items.length === 0 ? (
-          <EmptyState icon={ActivityIcon} title={t("operations.noActivities")} actionLabel={t("operations.addActivity")} onAction={() => setModalOpen(true)} />
+          <EmptyState
+            icon={ActivityIcon}
+            title={t("operations.noActivities")}
+            actionLabel={t("operations.addActivity")}
+            onAction={() => setModalOpen(true)}
+          />
         ) : (
           <CardContent className="pt-5 space-y-1">
             {data.items.map((activity) => {
@@ -62,21 +77,31 @@ export default function ActivitiesPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-sm font-medium text-foreground">{activity.title}</p>
-                      <span className="shrink-0 text-xs text-subtle-foreground">{formatDateTime(activity.activity_date, locale)}</span>
+                      <span className="shrink-0 text-xs text-subtle-foreground">
+                        {formatDateTime(activity.activity_date, locale)}
+                      </span>
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {t(`operations.activityTypes.${activity.type}`)}
                       {activity.company && ` · ${activity.company.name}`}
                     </p>
                   </div>
-                  {activity.owner && <Avatar name={activity.owner.full_name} color={activity.owner.avatar_color} size="xs" />}
+                  {activity.owner && (
+                    <Avatar name={activity.owner.full_name} color={activity.owner.avatar_color} size="xs" />
+                  )}
                 </div>
               );
             })}
           </CardContent>
         )}
         {data && data.total > 0 && (
-          <Pagination page={data.page} totalPages={data.total_pages} total={data.total} pageSize={data.page_size} onPageChange={setPage} />
+          <Pagination
+            page={data.page}
+            totalPages={data.total_pages}
+            total={data.total}
+            pageSize={data.page_size}
+            onPageChange={setPage}
+          />
         )}
       </Card>
 

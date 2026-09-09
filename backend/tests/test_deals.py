@@ -55,7 +55,9 @@ def test_terminal_stage_cannot_transition(client, admin_user):
 def test_stage_history_is_recorded(client, admin_user):
     headers = auth_headers(client, "admin@test.io")
     deal = _create_deal(client, headers)
-    client.patch(f"/api/v1/deals/{deal['id']}/stage", headers=headers, json={"stage": "qualified", "note": "Great first call"})
+    client.patch(
+        f"/api/v1/deals/{deal['id']}/stage", headers=headers, json={"stage": "qualified", "note": "Great first call"}
+    )
 
     history = client.get(f"/api/v1/deals/{deal['id']}/history", headers=headers).json()
     assert len(history) == 2  # creation + one transition
@@ -78,7 +80,9 @@ def test_lost_deal_requires_no_special_field_but_records_reason(client, admin_us
     deal = _create_deal(client, headers)
 
     response = client.patch(
-        f"/api/v1/deals/{deal['id']}/stage", headers=headers, json={"stage": "lost", "lost_reason": "Budget constraints"}
+        f"/api/v1/deals/{deal['id']}/stage",
+        headers=headers,
+        json={"stage": "lost", "lost_reason": "Budget constraints"},
     )
     assert response.status_code == 200
     body = response.json()

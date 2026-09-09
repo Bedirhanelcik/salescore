@@ -7,7 +7,7 @@ whenever a deal is created, updated, or changes stage (see deal_service).
 """
 
 from calendar import monthrange
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, timedelta
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -20,6 +20,7 @@ from app.models.sales_target import SalesTarget
 from app.models.user import User
 from app.schemas.analytics import (
     BusinessInsight,
+    CustomerGrowthPoint,
     FunnelAnalytics,
     FunnelStage,
     KpiMetric,
@@ -90,7 +91,9 @@ def get_kpi_summary(db: Session, days: int = 30) -> KpiSummary:
     prev_won_deals = _won_count(db, prev_start, prev_end)
 
     lost_deals = db.execute(
-        select(func.count()).where(Deal.stage == DealStage.LOST, Deal.actual_close_date >= start, Deal.actual_close_date <= end)
+        select(func.count()).where(
+            Deal.stage == DealStage.LOST, Deal.actual_close_date >= start, Deal.actual_close_date <= end
+        )
     ).scalar_one()
     prev_lost_deals = db.execute(
         select(func.count()).where(
@@ -100,7 +103,9 @@ def get_kpi_summary(db: Session, days: int = 30) -> KpiSummary:
 
     win_rate = round((won_deals / (won_deals + lost_deals)) * 100, 1) if (won_deals + lost_deals) else 0
     prev_win_rate = (
-        round((prev_won_deals / (prev_won_deals + prev_lost_deals)) * 100, 1) if (prev_won_deals + prev_lost_deals) else 0
+        round((prev_won_deals / (prev_won_deals + prev_lost_deals)) * 100, 1)
+        if (prev_won_deals + prev_lost_deals)
+        else 0
     )
 
     # Cohort conversion: of the deals *created* in this window, what share have (by now)
@@ -115,7 +120,9 @@ def get_kpi_summary(db: Session, days: int = 30) -> KpiSummary:
         select(func.count()).where(Deal.created_at >= prev_start, Deal.created_at <= prev_end)
     ).scalar_one()
     prev_created_won_count = db.execute(
-        select(func.count()).where(Deal.created_at >= prev_start, Deal.created_at <= prev_end, Deal.stage == DealStage.WON)
+        select(func.count()).where(
+            Deal.created_at >= prev_start, Deal.created_at <= prev_end, Deal.stage == DealStage.WON
+        )
     ).scalar_one()
     conversion_rate = round((created_won_count / created_count) * 100, 1) if created_count else 0
     prev_conversion_rate = round((prev_created_won_count / prev_created_count) * 100, 1) if prev_created_count else 0
@@ -142,21 +149,69 @@ def get_kpi_summary(db: Session, days: int = 30) -> KpiSummary:
     # are summed separately on the Team Performance view, so combining both here would
     # double-count the same revenue goal.
     targets = db.execute(select(SalesTarget).where(SalesTarget.employee_id.is_(None))).scalars().all()
-    total_target = sum(
-        float(t.target_amount) for t in targets if t.period_start <= month_end and t.period_end >= month_start
-    ) or 1
+    total_target = (
+        sum(float(t.target_amount) for t in targets if t.period_start <= month_end and t.period_end >= month_start) or 1
+    )
     month_revenue = _won_value(db, month_start, min(month_end, today))
     sales_target_pct = round((month_revenue / total_target) * 100, 1)
 
     metrics = [
-        KpiMetric(key="revenue", label="Revenue", value=revenue, change_pct=_pct_change(revenue, prev_revenue), format="currency"),
-        KpiMetric(key="pipeline_value", label="Pipeline Value", value=pipeline_value, change_pct=_pct_change(pipeline_value, prev_pipeline_value), format="currency"),
-        KpiMetric(key="won_deals", label="Won Deals", value=won_deals, change_pct=_pct_change(won_deals, prev_won_deals), format="number"),
-        KpiMetric(key="conversion_rate", label="Conversion Rate", value=conversion_rate, change_pct=_pct_change(conversion_rate, prev_conversion_rate), format="percent"),
-        KpiMetric(key="win_rate", label="Win Rate", value=win_rate, change_pct=_pct_change(win_rate, prev_win_rate), format="percent"),
-        KpiMetric(key="avg_deal_size", label="Average Deal Size", value=avg_deal_size, change_pct=_pct_change(avg_deal_size, prev_avg_deal_size), format="currency"),
-        KpiMetric(key="active_customers", label="Active Customers", value=active_customers, change_pct=_pct_change(active_customers, prev_active_customers), format="number"),
-        KpiMetric(key="sales_target", label="Sales Target Achievement", value=sales_target_pct, change_pct=None, format="percent"),
+        KpiMetric(
+            key="revenue",
+            label="Revenue",
+            value=revenue,
+            change_pct=_pct_change(revenue, prev_revenue),
+            format="currency",
+        ),
+        KpiMetric(
+            key="pipeline_value",
+            label="Pipeline Value",
+            value=pipeline_value,
+            change_pct=_pct_change(pipeline_value, prev_pipeline_value),
+            format="currency",
+        ),
+        KpiMetric(
+            key="won_deals",
+            label="Won Deals",
+            value=won_deals,
+            change_pct=_pct_change(won_deals, prev_won_deals),
+            format="number",
+        ),
+        KpiMetric(
+            key="conversion_rate",
+            label="Conversion Rate",
+            value=conversion_rate,
+            change_pct=_pct_change(conversion_rate, prev_conversion_rate),
+            format="percent",
+        ),
+        KpiMetric(
+            key="win_rate",
+            label="Win Rate",
+            value=win_rate,
+            change_pct=_pct_change(win_rate, prev_win_rate),
+            format="percent",
+        ),
+        KpiMetric(
+            key="avg_deal_size",
+            label="Average Deal Size",
+            value=avg_deal_size,
+            change_pct=_pct_change(avg_deal_size, prev_avg_deal_size),
+            format="currency",
+        ),
+        KpiMetric(
+            key="active_customers",
+            label="Active Customers",
+            value=active_customers,
+            change_pct=_pct_change(active_customers, prev_active_customers),
+            format="number",
+        ),
+        KpiMetric(
+            key="sales_target",
+            label="Sales Target Achievement",
+            value=sales_target_pct,
+            change_pct=None,
+            format="percent",
+        ),
     ]
     result = KpiSummary(metrics=metrics)
     cache.set(cache_key, result.model_dump(), ttl_seconds=CACHE_TTL)
@@ -195,7 +250,13 @@ def get_funnel(db: Session, days: int = 90) -> FunnelAnalytics:
         count = reached_counts[stage]
         conversion_rate = round((count / previous_count) * 100, 1) if previous_count else 100.0
         stages.append(
-            FunnelStage(stage=stage, label=stage.value.replace("_", " ").title(), count=count, value=reached_values[stage], conversion_rate=conversion_rate)
+            FunnelStage(
+                stage=stage,
+                label=stage.value.replace("_", " ").title(),
+                count=count,
+                value=reached_values[stage],
+                conversion_rate=conversion_rate,
+            )
         )
         if stage != DealStage.LOST:
             previous_count = count if count else previous_count
@@ -237,12 +298,16 @@ def get_revenue_trend(db: Session, months: int = 12) -> RevenueAnalytics:
 
         targets = db.execute(
             select(func.coalesce(func.sum(SalesTarget.target_amount), 0)).where(
-                SalesTarget.employee_id.is_(None), SalesTarget.period_start <= month_end, SalesTarget.period_end >= month_start
+                SalesTarget.employee_id.is_(None),
+                SalesTarget.period_start <= month_end,
+                SalesTarget.period_end >= month_start,
             )
         ).scalar_one()
 
         prev_month_start = date(month_start.year - 1, month_start.month, 1) if month_start.month else month_start
-        prev_month_end = date(prev_month_start.year, prev_month_start.month, monthrange(prev_month_start.year, prev_month_start.month)[1])
+        prev_month_end = date(
+            prev_month_start.year, prev_month_start.month, monthrange(prev_month_start.year, prev_month_start.month)[1]
+        )
         previous_period = _won_value(db, prev_month_start, prev_month_end)
 
         forecast_stmt = select(func.coalesce(func.sum(Deal.value * Deal.probability / 100), 0)).where(
@@ -266,7 +331,9 @@ def get_revenue_trend(db: Session, months: int = 12) -> RevenueAnalytics:
         total_target += float(targets)
 
     achievement_pct = round((total_actual / total_target) * 100, 1) if total_target else 0
-    result = RevenueAnalytics(points=points, total_actual=total_actual, total_target=total_target, achievement_pct=achievement_pct)
+    result = RevenueAnalytics(
+        points=points, total_actual=total_actual, total_target=total_target, achievement_pct=achievement_pct
+    )
     cache.set(cache_key, result.model_dump(), ttl_seconds=CACHE_TTL)
     return result
 
@@ -277,17 +344,32 @@ def get_team_performance(db: Session, days: int = 30) -> TeamPerformance:
 
     rows: list[TeamPerformanceRow] = []
     for rep in reps:
-        deals_count = db.execute(select(func.count()).where(Deal.owner_id == rep.id, Deal.created_at >= start)).scalar_one()
+        deals_count = db.execute(
+            select(func.count()).where(Deal.owner_id == rep.id, Deal.created_at >= start)
+        ).scalar_one()
         won_count = db.execute(
-            select(func.count()).where(Deal.owner_id == rep.id, Deal.stage == DealStage.WON, Deal.actual_close_date >= start, Deal.actual_close_date <= end)
+            select(func.count()).where(
+                Deal.owner_id == rep.id,
+                Deal.stage == DealStage.WON,
+                Deal.actual_close_date >= start,
+                Deal.actual_close_date <= end,
+            )
         ).scalar_one()
         lost_count = db.execute(
-            select(func.count()).where(Deal.owner_id == rep.id, Deal.stage == DealStage.LOST, Deal.actual_close_date >= start, Deal.actual_close_date <= end)
+            select(func.count()).where(
+                Deal.owner_id == rep.id,
+                Deal.stage == DealStage.LOST,
+                Deal.actual_close_date >= start,
+                Deal.actual_close_date <= end,
+            )
         ).scalar_one()
         revenue = float(
             db.execute(
                 select(func.coalesce(func.sum(Deal.value), 0)).where(
-                    Deal.owner_id == rep.id, Deal.stage == DealStage.WON, Deal.actual_close_date >= start, Deal.actual_close_date <= end
+                    Deal.owner_id == rep.id,
+                    Deal.stage == DealStage.WON,
+                    Deal.actual_close_date >= start,
+                    Deal.actual_close_date <= end,
                 )
             ).scalar_one()
         )
@@ -302,13 +384,27 @@ def get_team_performance(db: Session, days: int = 30) -> TeamPerformance:
 
         rows.append(
             TeamPerformanceRow(
-                employee=rep, deals_count=deals_count, won_count=won_count, revenue=revenue, win_rate=win_rate,
-                target_amount=float(target), achievement_pct=achievement_pct,
+                employee=rep,
+                deals_count=deals_count,
+                won_count=won_count,
+                revenue=revenue,
+                win_rate=win_rate,
+                target_amount=float(target),
+                achievement_pct=achievement_pct,
             )
         )
 
     rows.sort(key=lambda r: r.revenue, reverse=True)
     return TeamPerformance(rows=rows)
+
+
+SEGMENT_LABELS = {
+    CompanySize.SELF_EMPLOYED: "Self-employed",
+    CompanySize.SMALL: "1-50 employees",
+    CompanySize.MEDIUM: "51-200 employees",
+    CompanySize.LARGE: "201-1000 employees",
+    CompanySize.ENTERPRISE: "1000+ employees",
+}
 
 
 def get_segmentation(db: Session) -> list[SegmentationRow]:
@@ -322,7 +418,7 @@ def get_segmentation(db: Session) -> list[SegmentationRow]:
     total = sum(float(r[2]) for r in rows) or 1
     return [
         SegmentationRow(
-            segment=(size.value if size else "Unclassified"),
+            segment=(SEGMENT_LABELS.get(size, size.value) if size else "Unclassified"),
             customer_count=count,
             revenue=float(revenue),
             revenue_share_pct=round((float(revenue) / total) * 100, 1),
@@ -347,18 +443,48 @@ def get_win_loss_trend(db: Session, months: int = 6) -> list[WinLossRow]:
         month_end = date(month_start.year, month_start.month, last_day)
         won = _won_count(db, month_start, month_end)
         lost = db.execute(
-            select(func.count()).where(Deal.stage == DealStage.LOST, Deal.actual_close_date >= month_start, Deal.actual_close_date <= month_end)
+            select(func.count()).where(
+                Deal.stage == DealStage.LOST, Deal.actual_close_date >= month_start, Deal.actual_close_date <= month_end
+            )
         ).scalar_one()
         win_rate = round((won / (won + lost)) * 100, 1) if (won + lost) else 0
         rows.append(WinLossRow(period_label=month_start.strftime("%b %Y"), won=won, lost=lost, win_rate=win_rate))
     return rows
 
 
+def get_customer_growth(db: Session, months: int = 12) -> list[CustomerGrowthPoint]:
+    today = date.today()
+    month_cursor = date(today.year, today.month, 1)
+    month_starts = []
+    for _ in range(months):
+        month_starts.insert(0, month_cursor)
+        prev_month = month_cursor.month - 1 or 12
+        prev_year = month_cursor.year - 1 if month_cursor.month == 1 else month_cursor.year
+        month_cursor = date(prev_year, prev_month, 1)
+
+    points: list[CustomerGrowthPoint] = []
+    running_total = db.execute(select(func.count()).where(Company.created_at < month_starts[0])).scalar_one()
+
+    for month_start in month_starts:
+        _, last_day = monthrange(month_start.year, month_start.month)
+        month_end = date(month_start.year, month_start.month, last_day)
+        new_customers = db.execute(
+            select(func.count()).where(Company.created_at >= month_start, Company.created_at <= month_end)
+        ).scalar_one()
+        running_total += new_customers
+        points.append(
+            CustomerGrowthPoint(
+                period_label=month_start.strftime("%b %Y"), new_customers=new_customers, total_customers=running_total
+            )
+        )
+    return points
+
+
 def get_pipeline_velocity(db: Session, days: int = 90) -> PipelineVelocity:
     start = date.today() - timedelta(days=days)
-    won_deals = db.execute(
-        select(Deal).where(Deal.stage == DealStage.WON, Deal.actual_close_date >= start)
-    ).scalars().all()
+    won_deals = (
+        db.execute(select(Deal).where(Deal.stage == DealStage.WON, Deal.actual_close_date >= start)).scalars().all()
+    )
 
     if not won_deals:
         return PipelineVelocity(average_days_to_close=0, average_deal_size=0, deals_per_month=0, velocity_score=0)
@@ -376,20 +502,40 @@ def get_pipeline_velocity(db: Session, days: int = 90) -> PipelineVelocity:
     win_rate = len(won_deals) / total_open_and_won if total_open_and_won else 0
     velocity_score = round((len(won_deals) * win_rate * avg_deal_size) / max(avg_days, 1), 2)
 
-    return PipelineVelocity(average_days_to_close=avg_days, average_deal_size=avg_deal_size, deals_per_month=deals_per_month, velocity_score=velocity_score)
+    return PipelineVelocity(
+        average_days_to_close=avg_days,
+        average_deal_size=avg_deal_size,
+        deals_per_month=deals_per_month,
+        velocity_score=velocity_score,
+    )
 
 
 def get_business_insights(db: Session) -> list[BusinessInsight]:
     insights: list[BusinessInsight] = []
 
     kpis = get_kpi_summary(db, days=30)
-    revenue = next(m for m in kpis.metrics if m.key == "revenue")
     target_pct = next(m for m in kpis.metrics if m.key == "sales_target")
 
     if target_pct.value >= 105:
-        insights.append(BusinessInsight(id="revenue_above_target", severity="positive", title="Revenue is above target", description=f"Revenue is {target_pct.value - 100:.1f}% above target for the last 30 days.", metric_key="revenue"))
+        insights.append(
+            BusinessInsight(
+                id="revenue_above_target",
+                severity="positive",
+                title="Revenue is above target",
+                description=f"Revenue is {target_pct.value - 100:.1f}% above target for the last 30 days.",
+                metric_key="revenue",
+            )
+        )
     elif target_pct.value < 85:
-        insights.append(BusinessInsight(id="revenue_below_target", severity="warning", title="Revenue is below target", description=f"Revenue is tracking at {target_pct.value:.1f}% of target for the last 30 days. Review pipeline coverage.", metric_key="sales_target"))
+        insights.append(
+            BusinessInsight(
+                id="revenue_below_target",
+                severity="warning",
+                title="Revenue is below target",
+                description=f"Revenue is tracking at {target_pct.value:.1f}% of target for the last 30 days. Review pipeline coverage.",
+                metric_key="sales_target",
+            )
+        )
 
     segmentation = get_segmentation(db)
     if segmentation:

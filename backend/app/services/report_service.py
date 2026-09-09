@@ -7,14 +7,14 @@ so the numbers always match what CRM/Analytics show.
 
 from datetime import date, timedelta
 
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.rbac import scope_to_owner_only
 from app.models.activity import Activity
 from app.models.company import Company
 from app.models.deal import Deal
-from app.models.enums import DealStage, LeadStatus, UserRole
+from app.models.enums import DealStage, LeadStatus
 from app.models.lead import Lead
 from app.models.user import User
 from app.services import analytics_service
@@ -44,15 +44,17 @@ def sales_report(db: Session, user: User, start_date: date | None, end_date: dat
         stmt = stmt.where(Deal.owner_id == user.id)
     rows = []
     for deal in db.execute(stmt).scalars().all():
-        rows.append({
-            "deal": deal.title,
-            "company": deal.company.name if deal.company else "-",
-            "owner": deal.owner.full_name if deal.owner else "-",
-            "stage": deal.stage.value,
-            "value": float(deal.value),
-            "probability": deal.probability,
-            "expected_close_date": deal.expected_close_date.isoformat() if deal.expected_close_date else "-",
-        })
+        rows.append(
+            {
+                "deal": deal.title,
+                "company": deal.company.name if deal.company else "-",
+                "owner": deal.owner.full_name if deal.owner else "-",
+                "stage": deal.stage.value,
+                "value": float(deal.value),
+                "probability": deal.probability,
+                "expected_close_date": deal.expected_close_date.isoformat() if deal.expected_close_date else "-",
+            }
+        )
     return rows
 
 
@@ -64,16 +66,18 @@ def customer_report(db: Session, user: User) -> list[dict]:
     for company in db.execute(stmt).scalars().all():
         deals = company.deals
         won = [d for d in deals if d.stage == DealStage.WON]
-        rows.append({
-            "company": company.name,
-            "industry": company.industry or "-",
-            "country": company.country or "-",
-            "status": company.status.value,
-            "owner": company.owner.full_name if company.owner else "-",
-            "total_deals": len(deals),
-            "won_deals": len(won),
-            "lifetime_value": sum(float(d.value) for d in won),
-        })
+        rows.append(
+            {
+                "company": company.name,
+                "industry": company.industry or "-",
+                "country": company.country or "-",
+                "status": company.status.value,
+                "owner": company.owner.full_name if company.owner else "-",
+                "total_deals": len(deals),
+                "won_deals": len(won),
+                "lifetime_value": sum(float(d.value) for d in won),
+            }
+        )
     return rows
 
 
@@ -98,7 +102,13 @@ def employee_performance_report(db: Session, start_date: date | None, end_date: 
 def revenue_report(db: Session, months: int = 12) -> list[dict]:
     trend = analytics_service.get_revenue_trend(db, months)
     return [
-        {"period": p.period_label, "actual": p.actual, "target": p.target, "forecast": p.forecast, "previous_period": p.previous_period}
+        {
+            "period": p.period_label,
+            "actual": p.actual,
+            "target": p.target,
+            "forecast": p.forecast,
+            "previous_period": p.previous_period,
+        }
         for p in trend.points
     ]
 
@@ -109,15 +119,17 @@ def lead_conversion_report(db: Session, user: User) -> list[dict]:
         stmt = stmt.where(Lead.owner_id == user.id)
     rows = []
     for lead in db.execute(stmt).scalars().all():
-        rows.append({
-            "lead": lead.name,
-            "company": lead.company_name or "-",
-            "source": lead.source.value,
-            "score": lead.score,
-            "status": lead.status.value,
-            "owner": lead.owner.full_name if lead.owner else "-",
-            "converted": lead.status == LeadStatus.CONVERTED,
-        })
+        rows.append(
+            {
+                "lead": lead.name,
+                "company": lead.company_name or "-",
+                "source": lead.source.value,
+                "score": lead.score,
+                "status": lead.status.value,
+                "owner": lead.owner.full_name if lead.owner else "-",
+                "converted": lead.status == LeadStatus.CONVERTED,
+            }
+        )
     return rows
 
 
@@ -127,14 +139,16 @@ def pipeline_report(db: Session, user: User) -> list[dict]:
         stmt = stmt.where(Deal.owner_id == user.id)
     rows = []
     for deal in db.execute(stmt).scalars().all():
-        rows.append({
-            "deal": deal.title,
-            "stage": deal.stage.value,
-            "value": float(deal.value),
-            "probability": deal.probability,
-            "owner": deal.owner.full_name if deal.owner else "-",
-            "days_in_pipeline": (date.today() - deal.created_at.date()).days,
-        })
+        rows.append(
+            {
+                "deal": deal.title,
+                "stage": deal.stage.value,
+                "value": float(deal.value),
+                "probability": deal.probability,
+                "owner": deal.owner.full_name if deal.owner else "-",
+                "days_in_pipeline": (date.today() - deal.created_at.date()).days,
+            }
+        )
     return rows
 
 
@@ -145,14 +159,16 @@ def activity_report(db: Session, user: User, start_date: date | None, end_date: 
         stmt = stmt.where(Activity.owner_id == user.id)
     rows = []
     for activity in db.execute(stmt).scalars().all():
-        rows.append({
-            "title": activity.title,
-            "type": activity.type.value,
-            "status": activity.status.value,
-            "owner": activity.owner.full_name if activity.owner else "-",
-            "company": activity.company.name if activity.company else "-",
-            "date": activity.activity_date.date().isoformat(),
-        })
+        rows.append(
+            {
+                "title": activity.title,
+                "type": activity.type.value,
+                "status": activity.status.value,
+                "owner": activity.owner.full_name if activity.owner else "-",
+                "company": activity.company.name if activity.company else "-",
+                "date": activity.activity_date.date().isoformat(),
+            }
+        )
     return rows
 
 
@@ -161,7 +177,9 @@ def kpi_report(db: Session) -> list[dict]:
     return [{"metric": m.label, "value": m.value, "change_pct": m.change_pct, "format": m.format} for m in kpis.metrics]
 
 
-def get_report(db: Session, user: User, report_type: str, start_date: date | None = None, end_date: date | None = None) -> list[dict]:
+def get_report(
+    db: Session, user: User, report_type: str, start_date: date | None = None, end_date: date | None = None
+) -> list[dict]:
     match report_type:
         case "sales":
             return sales_report(db, user, start_date, end_date)

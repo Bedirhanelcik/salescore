@@ -3,7 +3,6 @@ from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.enums import DealStage, LeadSource
-from app.schemas.company import CompanyRead
 from app.schemas.contact import CompanyBrief, ContactRead
 from app.schemas.user import UserBrief
 

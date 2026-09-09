@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -121,6 +122,13 @@ export default function LoginPage() {
             ))}
           </div>
         </div>
+
+        <p className="mt-5 text-center text-sm text-muted-foreground">
+          {t("auth.dontHaveAccount")}{" "}
+          <Link href="/register" className="font-medium text-brand hover:underline">
+            {t("auth.signUp")}
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -12,7 +12,13 @@ router = APIRouter(prefix="/notifications", tags=["Notifications"])
 
 
 @router.get("", response_model=Page[NotificationRead])
-def list_notifications(page: int = 1, page_size: int = 20, unread_only: bool = False, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def list_notifications(
+    page: int = 1,
+    page_size: int = 20,
+    unread_only: bool = False,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     return notification_service.list_notifications(db, current_user, page, page_size, unread_only)
 
 

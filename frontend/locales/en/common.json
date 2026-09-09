@@ -10,7 +10,8 @@
     "analytics": "Analytics",
     "operations": "Operations",
     "reports": "Reports",
-    "knowledge": "Knowledge"
+    "knowledge": "Knowledge",
+    "settings": "Settings"
   },
   "common": {
     "search": "Search",
@@ -84,7 +85,15 @@
     "signOut": "Sign out",
     "changePassword": "Change password",
     "currentPassword": "Current password",
-    "newPassword": "New password"
+    "newPassword": "New password",
+    "createAccount": "Create your account",
+    "createAccountSubtitle": "Set up a new SalesCore workspace account",
+    "fullName": "Full name",
+    "signUp": "Create account",
+    "creatingAccount": "Creating account...",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "emailTaken": "An account with this email already exists."
   },
   "roles": {
     "admin": "Administrator",
@@ -183,6 +192,7 @@
     "winLoss": "Win / Loss",
     "teamPerformance": "Team Performance",
     "segmentation": "Customer Segmentation",
+    "customerGrowth": "Customer Growth",
     "pipelineVelocity": "Pipeline Velocity",
     "avgDaysToClose": "Avg. Days to Close",
     "dealsPerMonth": "Deals / Month",
@@ -283,6 +293,26 @@
       "target_reached": "Target reached",
       "mention": "Mention"
     }
+  },
+  "settingsPage": {
+    "title": "Settings",
+    "subtitle": "Manage your profile, security and preferences",
+    "profile": "Profile",
+    "profileHint": "Your account information, managed by your organization's administrator.",
+    "fullName": "Full name",
+    "role": "Role",
+    "department": "Department",
+    "memberSince": "Member since",
+    "security": "Security",
+    "securityHint": "Update the password used to sign in to SalesCore.",
+    "appearance": "Appearance",
+    "appearanceHint": "Choose how SalesCore looks and which language it's displayed in.",
+    "language": "Language",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "passwordUpdated": "Password updated successfully",
+    "passwordMismatch": "Passwords do not match"
   },
   "ai": {
     "title": "AI Business Assistant",

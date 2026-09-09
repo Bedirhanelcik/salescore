@@ -31,18 +31,32 @@ export default function TasksPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <Select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }} className="w-40">
-          <option value="">{t("common.status")}: {t("common.all")}</option>
+        <Select
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
+          className="w-40"
+        >
+          <option value="">
+            {t("common.status")}: {t("common.all")}
+          </option>
           <option value="todo">{t("operations.taskStatus.todo")}</option>
           <option value="in_progress">{t("operations.taskStatus.in_progress")}</option>
           <option value="completed">{t("operations.taskStatus.completed")}</option>
           <option value="overdue">{t("operations.taskStatus.overdue")}</option>
         </Select>
         <button
-          onClick={() => { setMineOnly((v) => !v); setPage(1); }}
+          onClick={() => {
+            setMineOnly((v) => !v);
+            setPage(1);
+          }}
           className={cn(
             "flex h-9 items-center gap-1.5 rounded-lg border px-3 text-sm font-medium",
-            mineOnly ? "border-brand bg-brand-subtle text-brand" : "border-border text-muted-foreground hover:bg-card-hover"
+            mineOnly
+              ? "border-brand bg-brand-subtle text-brand"
+              : "border-border text-muted-foreground hover:bg-card-hover"
           )}
         >
           {t("operations.myTasksOnly")}
@@ -57,7 +71,12 @@ export default function TasksPage() {
         {isLoading ? (
           <TableSkeleton />
         ) : !data || data.items.length === 0 ? (
-          <EmptyState icon={CheckSquare} title={t("operations.noTasks")} actionLabel={t("operations.addTask")} onAction={() => setModalOpen(true)} />
+          <EmptyState
+            icon={CheckSquare}
+            title={t("operations.noTasks")}
+            actionLabel={t("operations.addTask")}
+            onAction={() => setModalOpen(true)}
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -79,7 +98,13 @@ export default function TasksPage() {
           </div>
         )}
         {data && data.total > 0 && (
-          <Pagination page={data.page} totalPages={data.total_pages} total={data.total} pageSize={data.page_size} onPageChange={setPage} />
+          <Pagination
+            page={data.page}
+            totalPages={data.total_pages}
+            total={data.total}
+            pageSize={data.page_size}
+            onPageChange={setPage}
+          />
         )}
       </Card>
 
@@ -100,7 +125,12 @@ function TaskRow({
   const updateTask = useUpdateTask(task.id);
 
   const cycleStatus = () => {
-    const next: Record<TaskStatus, TaskStatus> = { todo: "in_progress", in_progress: "completed", completed: "todo", overdue: "in_progress" };
+    const next: Record<TaskStatus, TaskStatus> = {
+      todo: "in_progress",
+      in_progress: "completed",
+      completed: "todo",
+      overdue: "in_progress",
+    };
     updateTask.mutate(
       { status: next[task.status] },
       { onError: (err) => toast.error(err instanceof ApiError ? err.message : t("common.somethingWentWrong")) }

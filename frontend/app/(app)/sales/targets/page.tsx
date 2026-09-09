@@ -74,11 +74,15 @@ export default function SalesTargetsPage() {
                       {formatDate(target.period_start, locale)} – {formatDate(target.period_end, locale)}
                     </p>
                   </div>
-                  {target.employee && <Avatar name={target.employee.full_name} color={target.employee.avatar_color} size="sm" />}
+                  {target.employee && (
+                    <Avatar name={target.employee.full_name} color={target.employee.avatar_color} size="sm" />
+                  )}
                 </div>
                 <div className="mt-4 flex items-baseline justify-between">
                   <span className="text-lg font-bold text-foreground">{formatCurrency(target.actual_amount)}</span>
-                  <span className="text-xs text-muted-foreground">{t("sales.target")}: {formatCurrency(target.target_amount)}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {t("sales.target")}: {formatCurrency(target.target_amount)}
+                  </span>
                 </div>
                 <ProgressBar
                   value={target.achievement_pct}
@@ -86,7 +90,11 @@ export default function SalesTargetsPage() {
                   tone={target.achievement_pct >= 100 ? "success" : target.achievement_pct >= 70 ? "brand" : "warning"}
                 />
                 <div className="mt-2 flex items-center justify-between">
-                  <Badge tone={target.achievement_pct >= 100 ? "success" : target.achievement_pct >= 70 ? "brand" : "warning"}>
+                  <Badge
+                    tone={
+                      target.achievement_pct >= 100 ? "success" : target.achievement_pct >= 70 ? "brand" : "warning"
+                    }
+                  >
                     {target.achievement_pct.toFixed(0)}%
                   </Badge>
                   {target.department && <span className="text-xs text-muted-foreground">{target.department.name}</span>}
@@ -111,7 +119,10 @@ function TargetFormModal({ open, onClose }: { open: boolean; onClose: () => void
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<z.input<typeof schema>, unknown, FormValues>({ resolver: zodResolver(schema), defaultValues: { period: "monthly" } });
+  } = useForm<z.input<typeof schema>, unknown, FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { period: "monthly" },
+  });
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -135,7 +146,9 @@ function TargetFormModal({ open, onClose }: { open: boolean; onClose: () => void
         <div>
           <Label>{t("operations.assignee")}</Label>
           <Select {...register("employee_id")} defaultValue="">
-            <option value="">{t("common.none")} ({t("operations.department")}-wide)</option>
+            <option value="">
+              {t("common.none")} ({t("operations.department")}-wide)
+            </option>
             {employees?.items.map((e) => (
               <option key={e.id} value={e.id}>
                 {e.full_name}
