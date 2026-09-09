@@ -327,21 +327,27 @@ cd backend
 pytest -q
 ```
 
-64 tests covering authentication, self-registration (first-user-becomes-admin
+85 tests covering authentication, self-registration (first-user-becomes-admin
 bootstrap, subsequent users, duplicate-email rejection), password change,
-company/contact/lead/deal CRUD, pagination & search/status/source/stage/value
-filters, deal stage-transition rules (including the terminal-state and
-invalid-skip cases), lead conversion, RBAC/IDOR protection on companies,
-contacts, leads and deals (a Sales Rep cannot read or write another rep's
-records of any type; Analyst/Viewer cannot write at all; only Admin can
-create employees), and analytics correctness on both an empty database and
-after creating/won-ing a deal. Also includes a Reports module suite (CSV
-export, pagination, per-report RBAC scoping) that caught a real bug during
-development: `Deal.created_at <= end` on a DateTime column silently drops
-same-day rows once `end` is a bare date (it coerces to midnight) — fixed with
-an exclusive `< end + 1 day` upper bound everywhere a report or the
-Conversion Rate KPI filters a timestamp column by a date range. Tests run
-against an in-memory SQLite database via dependency-injected
+company/contact/lead/deal/task/activity CRUD, pagination & search/status/
+source/stage/value/type filters, deal stage-transition rules (including the
+terminal-state and invalid-skip cases), lead conversion, RBAC/IDOR protection
+on companies, contacts, leads, deals and tasks (a Sales Rep cannot read or
+write another rep's records of any type; Analyst/Viewer cannot write at all;
+only Admin can create employees), and analytics correctness on both an empty
+database and after creating/won-ing a deal.
+
+The suite has directly caught real bugs during development, most notably:
+- `Deal.created_at <= end` (and similar) on a DateTime column, compared
+  against a bare `date` upper bound, silently drops same-day rows (SQLAlchemy
+  coerces the date to midnight) — hit the Reports module and the Conversion
+  Rate KPI; fixed with an exclusive `< end + 1 day` bound everywhere it occurred.
+- Listing tasks crashed (`TypeError: can't compare offset-naive and
+  offset-aware datetimes`) whenever an overdue task existed, because SQLite
+  doesn't round-trip timezone info on DateTime columns - `test_tasks.py`'s
+  `test_list_tasks_with_due_date_does_not_crash` now guards this permanently.
+
+Tests run against an in-memory SQLite database via dependency-injected
 sessions (`backend/tests/conftest.py`), so they don't touch your dev database.
 
 ---

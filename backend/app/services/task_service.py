@@ -19,7 +19,12 @@ def _refresh_overdue(db: Session, tasks: list[Task]) -> None:
     now = datetime.now(UTC)
     changed = False
     for task in tasks:
-        if task.status in (TaskStatus.TODO, TaskStatus.IN_PROGRESS) and task.due_date and task.due_date < now:
+        due_date = task.due_date
+        if due_date and due_date.tzinfo is None:
+            # SQLite doesn't round-trip tzinfo on DateTime columns, so a value read back
+            # from the DB can come back naive even though it was written as UTC-aware.
+            due_date = due_date.replace(tzinfo=UTC)
+        if task.status in (TaskStatus.TODO, TaskStatus.IN_PROGRESS) and due_date and due_date < now:
             task.status = TaskStatus.OVERDUE
             changed = True
     if changed:
