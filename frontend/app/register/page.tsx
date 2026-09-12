@@ -18,11 +18,17 @@ import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import { Logo } from "@/components/layout/Logo";
 import { Splash } from "@/components/layout/Splash";
 
-const schema = z.object({
-  full_name: z.string().min(2, "Required"),
-  email: z.string().email(),
-  password: z.string().min(8, "At least 8 characters"),
-});
+const schema = z
+  .object({
+    full_name: z.string().min(2, "Required"),
+    email: z.string().email(),
+    password: z.string().min(8, "At least 8 characters"),
+    confirm_password: z.string().min(1, "Required"),
+  })
+  .refine((data) => data.password === data.confirm_password, {
+    message: "passwordMismatch",
+    path: ["confirm_password"],
+  });
 type FormValues = z.infer<typeof schema>;
 
 export default function RegisterPage() {
@@ -103,6 +109,20 @@ export default function RegisterPage() {
               <Label htmlFor="password">{t("auth.password")}</Label>
               <Input id="password" type="password" autoComplete="new-password" {...register("password")} />
               <FieldError>{errors.password?.message}</FieldError>
+            </div>
+            <div>
+              <Label htmlFor="confirm_password">{t("auth.confirmPassword")}</Label>
+              <Input
+                id="confirm_password"
+                type="password"
+                autoComplete="new-password"
+                {...register("confirm_password")}
+              />
+              <FieldError>
+                {errors.confirm_password?.message === "passwordMismatch"
+                  ? t("auth.passwordMismatch")
+                  : errors.confirm_password?.message}
+              </FieldError>
             </div>
             {serverError && <p className="rounded-lg bg-danger-subtle px-3 py-2 text-sm text-danger">{serverError}</p>}
             <Button type="submit" className="w-full" isLoading={isSubmitting} size="lg">

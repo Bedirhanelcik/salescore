@@ -100,7 +100,9 @@
     "creatingAccount": "Konto wird erstellt...",
     "alreadyHaveAccount": "Sie haben bereits ein Konto?",
     "dontHaveAccount": "Sie haben noch kein Konto?",
-    "emailTaken": "Für diese E-Mail-Adresse existiert bereits ein Konto."
+    "emailTaken": "Für diese E-Mail-Adresse existiert bereits ein Konto.",
+    "confirmPassword": "Passwort bestätigen",
+    "passwordMismatch": "Passwörter stimmen nicht überein"
   },
   "roles": {
     "admin": "Administrator",

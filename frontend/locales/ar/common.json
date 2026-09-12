@@ -100,7 +100,9 @@
     "creatingAccount": "جارٍ إنشاء الحساب...",
     "alreadyHaveAccount": "لديك حساب بالفعل؟",
     "dontHaveAccount": "ليس لديك حساب؟",
-    "emailTaken": "يوجد حساب بهذا البريد الإلكتروني بالفعل."
+    "emailTaken": "يوجد حساب بهذا البريد الإلكتروني بالفعل.",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين"
   },
   "roles": {
     "admin": "مسؤول النظام",

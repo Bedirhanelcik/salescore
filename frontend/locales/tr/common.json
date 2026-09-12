@@ -100,7 +100,9 @@
     "creatingAccount": "Hesap oluşturuluyor...",
     "alreadyHaveAccount": "Zaten bir hesabınız var mı?",
     "dontHaveAccount": "Hesabınız yok mu?",
-    "emailTaken": "Bu e-posta ile bir hesap zaten mevcut."
+    "emailTaken": "Bu e-posta ile bir hesap zaten mevcut.",
+    "confirmPassword": "Şifre tekrar",
+    "passwordMismatch": "Şifreler eşleşmiyor"
   },
   "roles": {
     "admin": "Yönetici",
