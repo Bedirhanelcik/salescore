@@ -20,13 +20,13 @@ import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", key: "nav.dashboard", icon: LayoutDashboard },
-  { href: "/crm/companies", key: "nav.crm", icon: Users2 },
-  { href: "/sales/pipeline", key: "nav.sales", icon: Briefcase },
-  { href: "/analytics", key: "nav.analytics", icon: BarChart3 },
-  { href: "/reports", key: "nav.reports", icon: ClipboardList },
-  { href: "/operations/tasks", key: "nav.operations", icon: ClipboardList },
-  { href: "/knowledge", key: "nav.knowledge", icon: BookOpen },
+  { href: "/dashboard", key: "nav.dashboard", icon: LayoutDashboard, tour: "nav-dashboard" },
+  { href: "/crm/companies", key: "nav.crm", icon: Users2, tour: "nav-crm" },
+  { href: "/sales/pipeline", key: "nav.sales", icon: Briefcase, tour: "nav-sales" },
+  { href: "/analytics", key: "nav.analytics", icon: BarChart3, tour: "nav-analytics" },
+  { href: "/reports", key: "nav.reports", icon: ClipboardList, tour: "nav-reports" },
+  { href: "/operations/tasks", key: "nav.operations", icon: ClipboardList, tour: "nav-operations" },
+  { href: "/knowledge", key: "nav.knowledge", icon: BookOpen, tour: "nav-knowledge" },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -47,6 +47,7 @@ export function SidebarContent({ collapsed, onNavigate }: { collapsed?: boolean;
             <Link
               key={item.href}
               href={item.href}
+              data-tour={item.tour}
               onClick={onNavigate}
               title={collapsed ? t(item.key) : undefined}
               className={cn(

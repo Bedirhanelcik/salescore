@@ -124,6 +124,16 @@
       "active_customers": "Aktive Kunden",
       "sales_target": "Zielerreichung"
     },
+    "emptyHint": {
+      "revenue": "Noch keine gewonnenen Deals",
+      "pipeline_value": "Erstellen Sie Ihre erste Opportunity",
+      "won_deals": "Noch keine gewonnenen Deals",
+      "conversion_rate": "Noch keine Deals erstellt",
+      "win_rate": "Noch keine abgeschlossenen Deals",
+      "avg_deal_size": "Sichtbar nach dem ersten gewonnenen Deal",
+      "active_customers": "Fügen Sie Ihren ersten Kunden hinzu",
+      "sales_target": "Noch kein Fortschritt erfasst"
+    },
     "funnel": "Verkaufstrichter",
     "revenueTrend": "Umsatztrend",
     "businessInsights": "Geschäftseinblicke",
@@ -383,5 +393,195 @@
     "title": "KI-Business-Assistent",
     "placeholder": "Fragen Sie nach Umsatz, Gewinnrate, Pipeline oder Teamleistung...",
     "send": "Fragen"
+  },
+  "onboarding": {
+    "welcomeTitle": "Willkommen bei SalesCore",
+    "welcomeDescription": "SalesCore hilft Ihnen, Kunden, Verkaufschancen, Teams und Geschäftsleistung an einem Ort zu verwalten.",
+    "welcomeTourPrompt": "Machen wir eine kurze Tour",
+    "continue": "Weiter",
+    "skipForNow": "Vorerst überspringen",
+    "skipTour": "Tour überspringen",
+    "startUsing": "SalesCore jetzt nutzen",
+    "stepOfTemplate": "{current} von {total}",
+    "tour": {
+      "dashboard": {
+        "title": "Dashboard",
+        "description": "Sehen Sie Ihre Vertriebsleistung, Umsatz, Pipeline und wichtige Kennzahlen an einem Ort. Ihre Zahlen stammen aus Ihren eigenen Datensätzen in SalesCore - nicht aus vorgeladenen Demodaten."
+      },
+      "crm": {
+        "title": "CRM",
+        "description": "Verwalten Sie Unternehmen, Kontakte und Leads - die Kundenbeziehungen, auf denen alles andere in SalesCore aufbaut."
+      },
+      "sales": {
+        "title": "Vertriebspipeline",
+        "description": "Verfolgen Sie Deals von der Qualifizierung bis zum Abschluss als Gewonnen oder Verloren und verwalten Sie Wert, Phase und Verantwortlichen jedes Deals."
+      },
+      "operations": {
+        "title": "Operations",
+        "description": "Behalten Sie Anrufe, Meetings, Follow-ups und Vertriebsaufgaben im Blick, die mit Ihren Unternehmen und Deals verknüpft sind."
+      },
+      "analytics": {
+        "title": "Analytics",
+        "description": "Verwandeln Sie Ihre CRM-Daten in Trichter-Konversion, Umsatztrends und Teamleistungs-Einblicke."
+      },
+      "reports": {
+        "title": "Berichte",
+        "description": "Filtern, sortieren und exportieren Sie Ihre Geschäftsdaten für tiefere Analysen."
+      },
+      "knowledge": {
+        "title": "Wissenscenter",
+        "description": "Ein Glossar mit CRM- und Geschäftsbegriffen - öffnen Sie das \"?\"-Symbol einer Kennzahl, um direkt zu ihrer Definition zu gelangen."
+      },
+      "search": {
+        "title": "Globale Suche",
+        "description": "Finden Sie schnell Unternehmen, Kontakte, Deals und andere Datensätze. Drücken Sie jederzeit ⌘K (oder Strg+K)."
+      },
+      "notifications": {
+        "title": "Benachrichtigungen",
+        "description": "Bleiben Sie über fällige Aufgaben, neue Leads sowie gewonnene, verlorene oder nachzuverfolgende Deals informiert."
+      },
+      "guide": {
+        "title": "Anleitung",
+        "description": "Sie können diese Anleitung jederzeit öffnen, um zu erfahren, was jeder Bereich von SalesCore tut, oder diese Tour neu zu starten."
+      }
+    }
+  },
+  "guide": {
+    "title": "Anleitung",
+    "restartTour": "Tour neu starten",
+    "searchPlaceholder": "Anleitung durchsuchen...",
+    "noResults": "Keine passenden Themen",
+    "categories": {
+      "salescore": "SalesCore",
+      "dashboard": "Dashboard",
+      "crm": "CRM",
+      "sales": "Vertrieb",
+      "operations": "Operations",
+      "analytics": "Analytics",
+      "reports": "Berichte",
+      "businessInsights": "Business Insights",
+      "roles": "Rollen",
+      "navigation": "Navigation"
+    },
+    "entries": {
+      "whatIsSalesCore": {
+        "title": "Was ist SalesCore?",
+        "body": "SalesCore ist eine CRM- und Business-Intelligence-Plattform zur Verwaltung von Kunden, Verkaufschancen und Teamleistung an einem Ort."
+      },
+      "howItWorks": {
+        "title": "So funktioniert SalesCore",
+        "body": "Sie erstellen Unternehmen, Kontakte, Leads und Deals, während Sie mit Kunden arbeiten. SalesCore verwandelt diese Datensätze in Live-Dashboards, Analysen und Berichte."
+      },
+      "mainWorkflow": {
+        "title": "Woher Ihre Zahlen kommen",
+        "body": "Ihre Dashboard-Zahlen sind nicht vorgeladen. Sie werden aus den Unternehmen, Deals und Aktivitäten berechnet, die Sie erstellen - mit wachsender Pipeline wachsen auch Ihre KPIs."
+      },
+      "revenue": {
+        "title": "Umsatz",
+        "body": "Der Gesamtwert der von Ihnen als Gewonnen markierten Deals.",
+        "example": "Beispiel: Gewonnene Deals über 10.000 $, 15.000 $ und 30.000 $ ergeben einen Umsatz von 55.000 $."
+      },
+      "pipelineValue": {
+        "title": "Pipeline-Wert",
+        "body": "Der Gesamtwert Ihrer offenen (noch nicht gewonnenen oder verlorenen) Opportunities.",
+        "example": "Beispiel: Drei offene Deals über 10.000 $, 25.000 $ und 40.000 $ ergeben einen Pipeline-Wert von 75.000 $."
+      },
+      "winRate": {
+        "title": "Gewinnrate",
+        "body": "Ihr Anteil gewonnener abgeschlossener Deals: Gewonnen ÷ (Gewonnen + Verloren). Offene Deals werden nicht mitgezählt."
+      },
+      "avgDealSize": {
+        "title": "Durchschnittliche Dealgröße",
+        "body": "Ihr Gesamtumsatz geteilt durch die Anzahl der von Ihnen gewonnenen Deals."
+      },
+      "salesTarget": {
+        "title": "Zielerreichung",
+        "body": "Ihr Umsatz im aktuellen Monat im Vergleich zu dem Ihnen zugewiesenen Vertriebsziel."
+      },
+      "companies": {
+        "title": "Unternehmen",
+        "body": "Organisationen, an die Sie verkaufen - Branche, Größe, Land sowie die verknüpften Deals und Kontakte."
+      },
+      "contacts": {
+        "title": "Kontakte",
+        "body": "Die Personen, mit denen Sie in jedem Unternehmen sprechen, mit Rolle, E-Mail und Telefonnummer."
+      },
+      "leads": {
+        "title": "Leads",
+        "body": "Frühes Interesse, das noch keine Opportunity ist. Wandeln Sie einen qualifizierten Lead in einen Deal um, um ihn durch Ihre Pipeline zu verfolgen."
+      },
+      "pipeline": {
+        "title": "Vertriebspipeline",
+        "body": "Eine Board-Ansicht aller offenen Deals, gruppiert nach Phase, damit Sie sehen, was sich bewegt und was feststeckt."
+      },
+      "deals": {
+        "title": "Deals",
+        "body": "Eine einzelne Verkaufschance - ihr Wert, ihre Phase, ihr Verantwortlicher und das erwartete Abschlussdatum."
+      },
+      "stagesWonLost": {
+        "title": "Phasen, Gewonnen & Verloren",
+        "body": "Deals durchlaufen Phasen, bis sie als Gewonnen oder Verloren markiert und damit aus der Pipeline geschlossen werden."
+      },
+      "activities": {
+        "title": "Aktivitäten",
+        "body": "Ein Protokoll von Anrufen, Meetings, E-Mails und Notizen zu einem Unternehmen oder Deal."
+      },
+      "tasks": {
+        "title": "Aufgaben",
+        "body": "Aktionspunkte und Follow-ups mit Fälligkeitsdatum, Priorität und Verantwortlichem."
+      },
+      "kpisTrends": {
+        "title": "KPIs & Trends",
+        "body": "Trichter-Konversion, Umsatztrend und Prognose - alles berechnet aus Ihrer echten Deal-Historie."
+      },
+      "teamPerformance": {
+        "title": "Teamleistung",
+        "body": "Umsatz, Gewinnrate und Zielerreichung je Vertriebsmitarbeiter - sichtbar für Admins, Manager, Analysten und Viewer."
+      },
+      "filtersExport": {
+        "title": "Filter, Sortierung & Export",
+        "body": "Erstellen Sie mit Zeiträumen und Filtern eine individuelle Ansicht Ihrer Daten und exportieren Sie diese zur Offline-Analyse."
+      },
+      "insightsWhat": {
+        "title": "Was Insights bedeuten",
+        "body": "Kurze, automatisierte Hinweise - etwa ein verfehltes Ziel oder ein Rückgang der Gewinnrate - basierend auf Ihren eigenen KPIs, keine generischen Ratschläge."
+      },
+      "insightsHow": {
+        "title": "Wie Insights berechnet werden",
+        "body": "Jeder Insight vergleicht Ihre aktuellen Kennzahlen mit einer vorherigen Periode oder einem Schwellenwert. Fällt nichts auf, sagt SalesCore das, statt einen Trend zu erfinden."
+      },
+      "roleAdmin": {
+        "title": "Admin",
+        "body": "Voller Zugriff auf alle Daten sowie Mitarbeiter- und Abteilungsverwaltung."
+      },
+      "roleManager": {
+        "title": "Manager",
+        "body": "Sieht und verwaltet die CRM-Daten, Ziele und Berichte des gesamten Teams."
+      },
+      "roleSalesRep": {
+        "title": "Vertriebsmitarbeiter",
+        "body": "Sieht und verwaltet nur die Kunden, Leads und Deals, die er selbst besitzt - deshalb startet ein neues Konto mit einem leeren Dashboard."
+      },
+      "roleAnalyst": {
+        "title": "Analyst",
+        "body": "Lesezugriff auf alle Daten, mit Fokus auf Analysen und Berichte."
+      },
+      "roleViewer": {
+        "title": "Viewer",
+        "body": "Lesezugriff auf alle Daten."
+      },
+      "globalSearch": {
+        "title": "Globale Suche",
+        "body": "Drücken Sie ⌘K (oder Strg+K), um direkt zu einem Unternehmen, Kontakt, Deal oder Lead zu springen."
+      },
+      "notifications": {
+        "title": "Benachrichtigungen",
+        "body": "Hinweise zu fälligen Aufgaben, neuen Leads sowie gewonnenen, verlorenen oder nachzuverfolgenden Deals."
+      },
+      "settings": {
+        "title": "Einstellungen",
+        "body": "Verwalten Sie Ihr Profil, Passwort und Ihre Workspace-Einstellungen."
+      }
+    }
   }
 }

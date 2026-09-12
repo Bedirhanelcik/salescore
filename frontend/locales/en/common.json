@@ -124,6 +124,16 @@
       "active_customers": "Active Customers",
       "sales_target": "Sales Target Achievement"
     },
+    "emptyHint": {
+      "revenue": "No won deals yet",
+      "pipeline_value": "Create your first opportunity",
+      "won_deals": "No deals won yet",
+      "conversion_rate": "No deals created yet",
+      "win_rate": "No closed deals yet",
+      "avg_deal_size": "Win a deal to see this",
+      "active_customers": "Add your first customer",
+      "sales_target": "No progress recorded yet"
+    },
     "funnel": "Sales Funnel",
     "revenueTrend": "Revenue Trend",
     "businessInsights": "Business Insights",
@@ -383,5 +393,195 @@
     "title": "AI Business Assistant",
     "placeholder": "Ask about revenue, win rate, pipeline, or team performance...",
     "send": "Ask"
+  },
+  "onboarding": {
+    "welcomeTitle": "Welcome to SalesCore",
+    "welcomeDescription": "SalesCore helps you manage customers, sales opportunities, teams and business performance in one place.",
+    "welcomeTourPrompt": "Let's take a quick tour",
+    "continue": "Continue",
+    "skipForNow": "Skip for now",
+    "skipTour": "Skip tour",
+    "startUsing": "Start using SalesCore",
+    "stepOfTemplate": "{current} of {total}",
+    "tour": {
+      "dashboard": {
+        "title": "Dashboard",
+        "description": "See your sales performance, revenue, pipeline and key business KPIs in one place. Your numbers come from the records you create in SalesCore - not pre-loaded demo data."
+      },
+      "crm": {
+        "title": "CRM",
+        "description": "Manage companies, contacts and leads - the customer relationships everything else in SalesCore is built on."
+      },
+      "sales": {
+        "title": "Sales Pipeline",
+        "description": "Track deals from qualification to closed Won or Lost, and manage each deal's value, stage and owner."
+      },
+      "operations": {
+        "title": "Operations",
+        "description": "Keep track of calls, meetings, follow-ups and sales tasks tied to your companies and deals."
+      },
+      "analytics": {
+        "title": "Analytics",
+        "description": "Turn your CRM data into funnel conversion, revenue trends and team performance insights."
+      },
+      "reports": {
+        "title": "Reports",
+        "description": "Filter, sort and export your business data for deeper analysis."
+      },
+      "knowledge": {
+        "title": "Knowledge",
+        "description": "A glossary of CRM and business terms - open any metric's \"?\" icon to jump straight to its definition."
+      },
+      "search": {
+        "title": "Global Search",
+        "description": "Quickly find companies, contacts, deals and other records. Press ⌘K (or Ctrl+K) anytime."
+      },
+      "notifications": {
+        "title": "Notifications",
+        "description": "Stay informed about due tasks, new leads, and deals that were won, lost or need follow-up."
+      },
+      "guide": {
+        "title": "Guide",
+        "description": "You can open this guide anytime to learn what each part of SalesCore does, or restart this tour."
+      }
+    }
+  },
+  "guide": {
+    "title": "Guide",
+    "restartTour": "Restart tour",
+    "searchPlaceholder": "Search the guide...",
+    "noResults": "No matching topics",
+    "categories": {
+      "salescore": "SalesCore",
+      "dashboard": "Dashboard",
+      "crm": "CRM",
+      "sales": "Sales",
+      "operations": "Operations",
+      "analytics": "Analytics",
+      "reports": "Reports",
+      "businessInsights": "Business Insights",
+      "roles": "Roles",
+      "navigation": "Navigation"
+    },
+    "entries": {
+      "whatIsSalesCore": {
+        "title": "What is SalesCore?",
+        "body": "SalesCore is a CRM and business intelligence platform for managing customers, sales opportunities and team performance in one place."
+      },
+      "howItWorks": {
+        "title": "How SalesCore works",
+        "body": "You create companies, contacts, leads and deals as you work with customers. SalesCore turns those records into live dashboards, analytics and reports."
+      },
+      "mainWorkflow": {
+        "title": "Where your numbers come from",
+        "body": "Your dashboard numbers are not pre-loaded. They're calculated from the companies, deals and activities you create - as your pipeline grows, so do your KPIs."
+      },
+      "revenue": {
+        "title": "Revenue",
+        "body": "The total value of deals you have marked Won.",
+        "example": "Example: Won deals of $10K, $15K and $30K give a Revenue of $55K."
+      },
+      "pipelineValue": {
+        "title": "Pipeline Value",
+        "body": "The total value of your open (not yet won or lost) opportunities.",
+        "example": "Example: three open deals worth $10K, $25K and $40K give a Pipeline Value of $75K."
+      },
+      "winRate": {
+        "title": "Win Rate",
+        "body": "The share of closed deals you won: Won ÷ (Won + Lost). Open deals aren't counted."
+      },
+      "avgDealSize": {
+        "title": "Average Deal Size",
+        "body": "Your total Revenue divided by the number of deals you've won."
+      },
+      "salesTarget": {
+        "title": "Sales Target Achievement",
+        "body": "Your Revenue for the current month compared against the sales target assigned to you."
+      },
+      "companies": {
+        "title": "Companies",
+        "body": "Organizations you sell to - industry, size, country, and the deals and contacts linked to them."
+      },
+      "contacts": {
+        "title": "Contacts",
+        "body": "The people you talk to at each company, with their role, email and phone number."
+      },
+      "leads": {
+        "title": "Leads",
+        "body": "Early-stage interest that hasn't become an opportunity yet. Convert a qualified lead into a deal to track it through your pipeline."
+      },
+      "pipeline": {
+        "title": "Sales Pipeline",
+        "body": "A board view of every open deal, grouped by stage, so you can see what's moving and what's stuck."
+      },
+      "deals": {
+        "title": "Deals",
+        "body": "An individual sales opportunity - its value, stage, owner and expected close date."
+      },
+      "stagesWonLost": {
+        "title": "Stages, Won & Lost",
+        "body": "Deals move through stages until they're marked Won or Lost, which closes them out of the pipeline."
+      },
+      "activities": {
+        "title": "Activities",
+        "body": "A log of calls, meetings, emails and notes tied to a company or deal."
+      },
+      "tasks": {
+        "title": "Tasks",
+        "body": "Action items and follow-ups with a due date, priority and assignee."
+      },
+      "kpisTrends": {
+        "title": "KPIs & Trends",
+        "body": "Funnel conversion, revenue trend and forecast, all computed from your real deal history."
+      },
+      "teamPerformance": {
+        "title": "Team Performance",
+        "body": "Revenue, win rate and target achievement per sales rep - visible to Admins, Managers, Analysts and Viewers."
+      },
+      "filtersExport": {
+        "title": "Filters, Sorting & Export",
+        "body": "Build a custom view of your data with date ranges and filters, then export it for offline analysis."
+      },
+      "insightsWhat": {
+        "title": "What insights mean",
+        "body": "Short, automated call-outs - like a target miss or a win-rate drop - drawn from your own KPIs, not generic advice."
+      },
+      "insightsHow": {
+        "title": "How insights are calculated",
+        "body": "Each insight compares your current metrics against a prior period or a threshold. If nothing stands out, SalesCore says so instead of inventing a trend."
+      },
+      "roleAdmin": {
+        "title": "Admin",
+        "body": "Full access to all data, plus employee and department management."
+      },
+      "roleManager": {
+        "title": "Manager",
+        "body": "Sees and manages the whole team's CRM data, targets and reports."
+      },
+      "roleSalesRep": {
+        "title": "Sales Representative",
+        "body": "Sees and manages only the customers, leads and deals they own - this is why a new account starts with an empty dashboard."
+      },
+      "roleAnalyst": {
+        "title": "Analyst",
+        "body": "Read-only access to all data, focused on analytics and reports."
+      },
+      "roleViewer": {
+        "title": "Viewer",
+        "body": "Read-only access to all data."
+      },
+      "globalSearch": {
+        "title": "Global Search",
+        "body": "Press ⌘K (or Ctrl+K) to jump straight to any company, contact, deal or lead."
+      },
+      "notifications": {
+        "title": "Notifications",
+        "body": "Alerts for due tasks, new leads, and deals that were won, lost or need follow-up."
+      },
+      "settings": {
+        "title": "Settings",
+        "body": "Manage your profile, password and workspace preferences."
+      }
+    }
   }
 }

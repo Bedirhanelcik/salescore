@@ -124,6 +124,16 @@
       "active_customers": "Aktif Müşteriler",
       "sales_target": "Satış Hedefi Başarımı"
     },
+    "emptyHint": {
+      "revenue": "Henüz kazanılan fırsat yok",
+      "pipeline_value": "İlk fırsatınızı oluşturun",
+      "won_deals": "Henüz kazanılan fırsat yok",
+      "conversion_rate": "Henüz oluşturulan fırsat yok",
+      "win_rate": "Henüz kapanan fırsat yok",
+      "avg_deal_size": "Bir fırsat kazandığınızda görünür",
+      "active_customers": "İlk müşterinizi ekleyin",
+      "sales_target": "Henüz ilerleme kaydedilmedi"
+    },
     "funnel": "Satış Hunisi",
     "revenueTrend": "Gelir Trendi",
     "businessInsights": "İş Öngörüleri",
@@ -383,5 +393,195 @@
     "title": "AI İş Asistanı",
     "placeholder": "Gelir, kazanma oranı, pipeline veya ekip performansı hakkında soru sorun...",
     "send": "Sor"
+  },
+  "onboarding": {
+    "welcomeTitle": "SalesCore'a Hoş Geldiniz",
+    "welcomeDescription": "SalesCore; müşterilerinizi, satış fırsatlarınızı, ekiplerinizi ve iş performansınızı tek bir yerden yönetmenizi sağlar.",
+    "welcomeTourPrompt": "Kısa bir tur atalım",
+    "continue": "Devam et",
+    "skipForNow": "Şimdilik atla",
+    "skipTour": "Turu atla",
+    "startUsing": "SalesCore'u kullanmaya başla",
+    "stepOfTemplate": "{current} / {total}",
+    "tour": {
+      "dashboard": {
+        "title": "Panel",
+        "description": "Satış performansınızı, gelirinizi, pipeline'ınızı ve temel iş KPI'larınızı tek bir yerde görün. Rakamlarınız hazır demo verisi değil, SalesCore'da oluşturduğunuz gerçek kayıtlardan gelir."
+      },
+      "crm": {
+        "title": "CRM",
+        "description": "Şirketleri, kişileri ve potansiyel müşterileri (lead) yönetin - SalesCore'daki her şey bu müşteri ilişkileri üzerine kuruludur."
+      },
+      "sales": {
+        "title": "Satış Hattı",
+        "description": "Fırsatları nitelendirmeden kazanıldı veya kaybedildi durumuna kadar takip edin; her fırsatın değerini, aşamasını ve sahibini yönetin."
+      },
+      "operations": {
+        "title": "Operasyonlar",
+        "description": "Şirketlerinize ve fırsatlarınıza bağlı aramaları, toplantıları, takipleri ve satış görevlerini takip edin."
+      },
+      "analytics": {
+        "title": "Analitik",
+        "description": "CRM verilerinizi huni dönüşümüne, gelir trendlerine ve ekip performansı bilgilerine dönüştürün."
+      },
+      "reports": {
+        "title": "Raporlar",
+        "description": "İş verilerinizi filtreleyin, sıralayın ve daha derin analiz için dışa aktarın."
+      },
+      "knowledge": {
+        "title": "Bilgi Merkezi",
+        "description": "CRM ve iş terimleri sözlüğü - herhangi bir metriğin \"?\" simgesine tıklayarak doğrudan tanımına ulaşın."
+      },
+      "search": {
+        "title": "Genel Arama",
+        "description": "Şirketleri, kişileri, fırsatları ve diğer kayıtları hızlıca bulun. İstediğiniz zaman ⌘K (veya Ctrl+K) tuşuna basın."
+      },
+      "notifications": {
+        "title": "Bildirimler",
+        "description": "Vadesi gelen görevler, yeni potansiyel müşteriler ve kazanılan, kaybedilen veya takip gerektiren fırsatlar hakkında bilgi alın."
+      },
+      "guide": {
+        "title": "Rehber",
+        "description": "SalesCore'un her bölümünün ne işe yaradığını öğrenmek veya bu turu yeniden başlatmak için bu rehberi istediğiniz zaman açabilirsiniz."
+      }
+    }
+  },
+  "guide": {
+    "title": "Rehber",
+    "restartTour": "Turu yeniden başlat",
+    "searchPlaceholder": "Rehberde ara...",
+    "noResults": "Eşleşen konu bulunamadı",
+    "categories": {
+      "salescore": "SalesCore",
+      "dashboard": "Panel",
+      "crm": "CRM",
+      "sales": "Satış",
+      "operations": "Operasyonlar",
+      "analytics": "Analitik",
+      "reports": "Raporlar",
+      "businessInsights": "İş Öngörüleri",
+      "roles": "Roller",
+      "navigation": "Gezinme"
+    },
+    "entries": {
+      "whatIsSalesCore": {
+        "title": "SalesCore nedir?",
+        "body": "SalesCore; müşterilerinizi, satış fırsatlarınızı ve ekip performansınızı tek bir yerden yönetmenizi sağlayan bir CRM ve iş zekası platformudur."
+      },
+      "howItWorks": {
+        "title": "SalesCore nasıl çalışır?",
+        "body": "Müşterilerinizle çalışırken şirketler, kişiler, potansiyel müşteriler ve fırsatlar oluşturursunuz. SalesCore bu kayıtları canlı panolara, analizlere ve raporlara dönüştürür."
+      },
+      "mainWorkflow": {
+        "title": "Rakamlarınız nereden geliyor?",
+        "body": "Panel rakamlarınız önceden yüklenmiş değildir. Oluşturduğunuz şirketler, fırsatlar ve aktivitelerden hesaplanır - pipeline'ınız büyüdükçe KPI'larınız da büyür."
+      },
+      "revenue": {
+        "title": "Gelir",
+        "body": "Kazanıldı olarak işaretlediğiniz fırsatların toplam değeri.",
+        "example": "Örnek: 10.000 $, 15.000 $ ve 30.000 $ değerinde kazanılan fırsatlar toplamda 55.000 $ gelir verir."
+      },
+      "pipelineValue": {
+        "title": "Pipeline Değeri",
+        "body": "Açık (henüz kazanılmamış veya kaybedilmemiş) fırsatlarınızın toplam değeri.",
+        "example": "Örnek: 10.000 $, 25.000 $ ve 40.000 $ değerinde üç açık fırsat toplamda 75.000 $ pipeline değeri verir."
+      },
+      "winRate": {
+        "title": "Kazanma Oranı",
+        "body": "Kapanan fırsatlar içindeki kazanma payınız: Kazanılan ÷ (Kazanılan + Kaybedilen). Açık fırsatlar hesaba katılmaz."
+      },
+      "avgDealSize": {
+        "title": "Ortalama Fırsat Büyüklüğü",
+        "body": "Toplam gelirinizin kazandığınız fırsat sayısına bölünmesiyle bulunur."
+      },
+      "salesTarget": {
+        "title": "Satış Hedefi Başarımı",
+        "body": "Bu ayki gelirinizin, size atanan satış hedefiyle karşılaştırılmasıdır."
+      },
+      "companies": {
+        "title": "Şirketler",
+        "body": "Satış yaptığınız kurumlar - sektör, büyüklük, ülke ve bunlara bağlı fırsatlar ile kişiler."
+      },
+      "contacts": {
+        "title": "Kişiler",
+        "body": "Her şirkette görüştüğünüz kişiler; unvanları, e-postaları ve telefon numaraları."
+      },
+      "leads": {
+        "title": "Potansiyel Müşteriler (Lead)",
+        "body": "Henüz fırsata dönüşmemiş erken aşama ilgi. Nitelikli bir lead'i fırsata dönüştürerek satış hattında takip etmeye başlayın."
+      },
+      "pipeline": {
+        "title": "Satış Hattı",
+        "body": "Her açık fırsatın aşamasına göre gruplandığı bir pano görünümü; neyin ilerlediğini, neyin takıldığını görebilirsiniz."
+      },
+      "deals": {
+        "title": "Fırsatlar",
+        "body": "Tekil bir satış fırsatı - değeri, aşaması, sahibi ve beklenen kapanış tarihi."
+      },
+      "stagesWonLost": {
+        "title": "Aşamalar, Kazanıldı ve Kaybedildi",
+        "body": "Fırsatlar, kazanıldı veya kaybedildi olarak işaretlenip pipeline'dan kapanana kadar aşamalar arasında ilerler."
+      },
+      "activities": {
+        "title": "Aktiviteler",
+        "body": "Bir şirkete veya fırsata bağlı arama, toplantı, e-posta ve not kayıtları."
+      },
+      "tasks": {
+        "title": "Görevler",
+        "body": "Son tarihi, önceliği ve atanan kişisi olan yapılacaklar ve takip işleri."
+      },
+      "kpisTrends": {
+        "title": "KPI'lar ve Trendler",
+        "body": "Huni dönüşümü, gelir trendi ve tahmin - hepsi gerçek fırsat geçmişinizden hesaplanır."
+      },
+      "teamPerformance": {
+        "title": "Ekip Performansı",
+        "body": "Satış temsilcisi başına gelir, kazanma oranı ve hedef başarımı - Yönetici, Müdür, Analist ve İzleyici rollerine görünür."
+      },
+      "filtersExport": {
+        "title": "Filtreleme, Sıralama ve Dışa Aktarma",
+        "body": "Tarih aralıkları ve filtrelerle özel bir veri görünümü oluşturun, ardından çevrimdışı analiz için dışa aktarın."
+      },
+      "insightsWhat": {
+        "title": "Öngörüler ne anlama gelir?",
+        "body": "Hedef kaçırma veya kazanma oranı düşüşü gibi kısa, otomatik uyarılar - genel tavsiyeler değil, kendi KPI'larınızdan türetilir."
+      },
+      "insightsHow": {
+        "title": "Öngörüler nasıl hesaplanır?",
+        "body": "Her öngörü, mevcut metriklerinizi önceki bir dönemle veya bir eşik değeriyle karşılaştırır. Dikkat çekici bir şey yoksa SalesCore, olmayan bir trend uydurmak yerine bunu belirtir."
+      },
+      "roleAdmin": {
+        "title": "Yönetici (Admin)",
+        "body": "Tüm verilere tam erişimin yanı sıra çalışan ve departman yönetimi."
+      },
+      "roleManager": {
+        "title": "Müdür",
+        "body": "Tüm ekibin CRM verilerini, hedeflerini ve raporlarını görür ve yönetir."
+      },
+      "roleSalesRep": {
+        "title": "Satış Temsilcisi",
+        "body": "Yalnızca sahip olduğu müşterileri, lead'leri ve fırsatları görür ve yönetir - yeni bir hesabın boş bir panoyla başlamasının nedeni budur."
+      },
+      "roleAnalyst": {
+        "title": "Analist",
+        "body": "Tüm verilere salt okunur erişim; analiz ve raporlara odaklanır."
+      },
+      "roleViewer": {
+        "title": "İzleyici",
+        "body": "Tüm verilere salt okunur erişim."
+      },
+      "globalSearch": {
+        "title": "Genel Arama",
+        "body": "Herhangi bir şirkete, kişiye, fırsata veya lead'e ulaşmak için ⌘K (veya Ctrl+K) tuşuna basın."
+      },
+      "notifications": {
+        "title": "Bildirimler",
+        "body": "Vadesi gelen görevler, yeni lead'ler ve kazanılan, kaybedilen veya takip gerektiren fırsatlar için uyarılar."
+      },
+      "settings": {
+        "title": "Ayarlar",
+        "body": "Profilinizi, şifrenizi ve çalışma alanı tercihlerinizi yönetin."
+      }
+    }
   }
 }

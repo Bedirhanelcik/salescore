@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Menu, Moon, Search, Sun } from "lucide-react";
+import { CircleHelp, Menu, Moon, Search, Sun } from "lucide-react";
 
 import { useI18n } from "@/lib/contexts/i18n-context";
+import { useOnboarding } from "@/lib/contexts/onboarding-context";
 import { useTheme } from "@/lib/contexts/theme-context";
 import { GlobalSearch } from "./GlobalSearch";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -13,6 +14,7 @@ import { UserMenu } from "./UserMenu";
 export function Navbar({ onOpenMobileNav }: { onOpenMobileNav: () => void }) {
   const { t } = useI18n();
   const { theme, toggleTheme } = useTheme();
+  const { openGuide } = useOnboarding();
   const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
@@ -47,6 +49,7 @@ export function Navbar({ onOpenMobileNav }: { onOpenMobileNav: () => void }) {
           </button>
 
           <button
+            data-tour="navbar-search"
             onClick={() => setSearchOpen(true)}
             className="flex h-9 w-full max-w-sm items-center gap-2 rounded-lg border border-border px-3 text-muted-foreground hover:bg-card-hover sm:max-w-xs"
           >
@@ -64,7 +67,17 @@ export function Navbar({ onOpenMobileNav }: { onOpenMobileNav: () => void }) {
             >
               {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
             </button>
-            <NotificationsDropdown />
+            <button
+              data-tour="navbar-guide"
+              onClick={openGuide}
+              aria-label={t("guide.title")}
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-card-hover hover:text-foreground"
+            >
+              <CircleHelp className="h-[18px] w-[18px]" />
+            </button>
+            <div data-tour="navbar-notifications">
+              <NotificationsDropdown />
+            </div>
             <div className="ms-1">
               <UserMenu />
             </div>

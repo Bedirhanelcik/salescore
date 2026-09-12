@@ -48,13 +48,13 @@ def test_register_first_user_becomes_admin(client):
     assert body["access_token"]
 
 
-def test_register_subsequent_user_becomes_viewer(client, admin_user):
+def test_register_subsequent_user_becomes_sales_rep(client, admin_user):
     response = client.post(
         "/api/v1/auth/register",
         json={"email": "newperson@test.io", "password": "Password123!", "full_name": "New Person"},
     )
     assert response.status_code == 201
-    assert response.json()["user"]["role"] == "viewer"
+    assert response.json()["user"]["role"] == "sales_rep"
 
 
 def test_register_duplicate_email_rejected(client, admin_user):

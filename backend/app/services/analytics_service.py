@@ -52,58 +52,90 @@ def _pct_change(current: float, previous: float) -> float | None:
     return round(((current - previous) / previous) * 100, 1)
 
 
-def _won_value(db: Session, start: date, end: date) -> float:
+def _owner_scope(user: User | None) -> int | None:
+    """Returns the user id that dashboard/analytics queries must be filtered to, or
+    None for full (organization-wide) visibility. Reuses the exact same RBAC rule
+    already enforced on the deals/leads/companies list endpoints (see app.core.rbac) -
+    a Sales Rep's dashboard must be computed from only the deals they own, never the
+    whole company's pipeline."""
+    if user is not None and scope_to_owner_only(user):
+        return user.id
+    return None
+
+
+def _won_value(db: Session, start: date, end: date, owner_id: int | None = None) -> float:
     stmt = select(func.coalesce(func.sum(Deal.value), 0)).where(
         Deal.stage == DealStage.WON, Deal.actual_close_date >= start, Deal.actual_close_date <= end
     )
+    if owner_id is not None:
+        stmt = stmt.where(Deal.owner_id == owner_id)
     return float(db.execute(stmt).scalar_one())
 
 
-def _won_count(db: Session, start: date, end: date) -> int:
+def _won_count(db: Session, start: date, end: date, owner_id: int | None = None) -> int:
     stmt = select(func.count()).where(
         Deal.stage == DealStage.WON, Deal.actual_close_date >= start, Deal.actual_close_date <= end
     )
+    if owner_id is not None:
+        stmt = stmt.where(Deal.owner_id == owner_id)
     return db.execute(stmt).scalar_one()
 
 
-def get_kpi_summary(db: Session, days: int = 30) -> KpiSummary:
+def has_any_deals(db: Session, user: User | None = None) -> bool:
+    """Whether the caller's scope (their own deals, or the whole org) has ever
+    contained a single deal - used to tell a genuinely empty CRM apart from one
+    that simply has no activity in the current window."""
+    owner_id = _owner_scope(user)
+    stmt = select(func.count()).select_from(Deal)
+    if owner_id is not None:
+        stmt = stmt.where(Deal.owner_id == owner_id)
+    return db.execute(stmt).scalar_one() > 0
+
+
+def get_kpi_summary(db: Session, days: int = 30, user: User | None = None) -> KpiSummary:
+    owner_id = _owner_scope(user)
     cache = get_cache()
-    cache_key = f"analytics:kpis:{days}"
+    cache_key = f"analytics:kpis:{days}:{owner_id or 'org'}"
     cached = cache.get(cache_key)
     if cached:
         return KpiSummary(**cached)
 
     start, end, prev_start, prev_end = _period_bounds(days)
 
-    revenue = _won_value(db, start, end)
-    prev_revenue = _won_value(db, prev_start, prev_end)
+    revenue = _won_value(db, start, end, owner_id)
+    prev_revenue = _won_value(db, prev_start, prev_end, owner_id)
 
-    pipeline_value = float(
-        db.execute(
-            select(func.coalesce(func.sum(Deal.value), 0)).where(Deal.stage.not_in([DealStage.WON, DealStage.LOST]))
-        ).scalar_one()
+    pipeline_stmt = select(func.coalesce(func.sum(Deal.value), 0)).where(
+        Deal.stage.not_in([DealStage.WON, DealStage.LOST])
     )
+    if owner_id is not None:
+        pipeline_stmt = pipeline_stmt.where(Deal.owner_id == owner_id)
+    pipeline_value = float(db.execute(pipeline_stmt).scalar_one())
+
     # `Deal.created_at` is a DateTime column - an exclusive upper bound is required or deals
     # created on `prev_end` itself (after midnight) are silently dropped.
     prev_end_exclusive = prev_end + timedelta(days=1)
     prev_pipeline_stmt = select(func.coalesce(func.sum(Deal.value), 0)).where(
         Deal.stage.not_in([DealStage.WON, DealStage.LOST]), Deal.created_at < prev_end_exclusive
     )
+    if owner_id is not None:
+        prev_pipeline_stmt = prev_pipeline_stmt.where(Deal.owner_id == owner_id)
     prev_pipeline_value = float(db.execute(prev_pipeline_stmt).scalar_one())
 
-    won_deals = _won_count(db, start, end)
-    prev_won_deals = _won_count(db, prev_start, prev_end)
+    won_deals = _won_count(db, start, end, owner_id)
+    prev_won_deals = _won_count(db, prev_start, prev_end, owner_id)
 
-    lost_deals = db.execute(
-        select(func.count()).where(
-            Deal.stage == DealStage.LOST, Deal.actual_close_date >= start, Deal.actual_close_date <= end
-        )
-    ).scalar_one()
-    prev_lost_deals = db.execute(
-        select(func.count()).where(
-            Deal.stage == DealStage.LOST, Deal.actual_close_date >= prev_start, Deal.actual_close_date <= prev_end
-        )
-    ).scalar_one()
+    lost_deals_stmt = select(func.count()).where(
+        Deal.stage == DealStage.LOST, Deal.actual_close_date >= start, Deal.actual_close_date <= end
+    )
+    prev_lost_deals_stmt = select(func.count()).where(
+        Deal.stage == DealStage.LOST, Deal.actual_close_date >= prev_start, Deal.actual_close_date <= prev_end
+    )
+    if owner_id is not None:
+        lost_deals_stmt = lost_deals_stmt.where(Deal.owner_id == owner_id)
+        prev_lost_deals_stmt = prev_lost_deals_stmt.where(Deal.owner_id == owner_id)
+    lost_deals = db.execute(lost_deals_stmt).scalar_one()
+    prev_lost_deals = db.execute(prev_lost_deals_stmt).scalar_one()
 
     win_rate = round((won_deals / (won_deals + lost_deals)) * 100, 1) if (won_deals + lost_deals) else 0
     prev_win_rate = (
@@ -117,36 +149,42 @@ def get_kpi_summary(db: Session, days: int = 30) -> KpiSummary:
     # `Deal.created_at` is a DateTime column, so the upper bound must be exclusive of the day
     # *after* `end` - a bare `<= end` coerces to midnight and silently drops deals created today.
     end_exclusive = end + timedelta(days=1)
-    created_count = db.execute(
-        select(func.count()).where(Deal.created_at >= start, Deal.created_at < end_exclusive)
-    ).scalar_one()
-    created_won_count = db.execute(
-        select(func.count()).where(
-            Deal.created_at >= start, Deal.created_at < end_exclusive, Deal.stage == DealStage.WON
-        )
-    ).scalar_one()
-    prev_created_count = db.execute(
-        select(func.count()).where(Deal.created_at >= prev_start, Deal.created_at < prev_end_exclusive)
-    ).scalar_one()
-    prev_created_won_count = db.execute(
-        select(func.count()).where(
-            Deal.created_at >= prev_start, Deal.created_at < prev_end_exclusive, Deal.stage == DealStage.WON
-        )
-    ).scalar_one()
+    created_count_stmt = select(func.count()).where(Deal.created_at >= start, Deal.created_at < end_exclusive)
+    created_won_count_stmt = select(func.count()).where(
+        Deal.created_at >= start, Deal.created_at < end_exclusive, Deal.stage == DealStage.WON
+    )
+    prev_created_count_stmt = select(func.count()).where(
+        Deal.created_at >= prev_start, Deal.created_at < prev_end_exclusive
+    )
+    prev_created_won_count_stmt = select(func.count()).where(
+        Deal.created_at >= prev_start, Deal.created_at < prev_end_exclusive, Deal.stage == DealStage.WON
+    )
+    if owner_id is not None:
+        created_count_stmt = created_count_stmt.where(Deal.owner_id == owner_id)
+        created_won_count_stmt = created_won_count_stmt.where(Deal.owner_id == owner_id)
+        prev_created_count_stmt = prev_created_count_stmt.where(Deal.owner_id == owner_id)
+        prev_created_won_count_stmt = prev_created_won_count_stmt.where(Deal.owner_id == owner_id)
+    created_count = db.execute(created_count_stmt).scalar_one()
+    created_won_count = db.execute(created_won_count_stmt).scalar_one()
+    prev_created_count = db.execute(prev_created_count_stmt).scalar_one()
+    prev_created_won_count = db.execute(prev_created_won_count_stmt).scalar_one()
     conversion_rate = round((created_won_count / created_count) * 100, 1) if created_count else 0
     prev_conversion_rate = round((prev_created_won_count / prev_created_count) * 100, 1) if prev_created_count else 0
 
     avg_deal_size = round(revenue / won_deals, 2) if won_deals else 0
     prev_avg_deal_size = round(prev_revenue / prev_won_deals, 2) if prev_won_deals else 0
 
-    active_customers = db.execute(
-        select(func.count(func.distinct(Deal.company_id))).where(Deal.company_id.is_not(None), Deal.updated_at >= start)
-    ).scalar_one()
-    prev_active_customers = db.execute(
-        select(func.count(func.distinct(Deal.company_id))).where(
-            Deal.company_id.is_not(None), Deal.updated_at >= prev_start, Deal.updated_at < prev_end_exclusive
-        )
-    ).scalar_one()
+    active_customers_stmt = select(func.count(func.distinct(Deal.company_id))).where(
+        Deal.company_id.is_not(None), Deal.updated_at >= start
+    )
+    prev_active_customers_stmt = select(func.count(func.distinct(Deal.company_id))).where(
+        Deal.company_id.is_not(None), Deal.updated_at >= prev_start, Deal.updated_at < prev_end_exclusive
+    )
+    if owner_id is not None:
+        active_customers_stmt = active_customers_stmt.where(Deal.owner_id == owner_id)
+        prev_active_customers_stmt = prev_active_customers_stmt.where(Deal.owner_id == owner_id)
+    active_customers = db.execute(active_customers_stmt).scalar_one()
+    prev_active_customers = db.execute(prev_active_customers_stmt).scalar_one()
 
     # Sales target achievement is measured against the current calendar month's targets
     # (the period a "Sales Target" tile intuitively refers to), not the rolling N-day window.
@@ -154,15 +192,20 @@ def get_kpi_summary(db: Session, days: int = 30) -> KpiSummary:
     month_start = date(today.year, today.month, 1)
     _, last_day = monthrange(today.year, today.month)
     month_end = date(today.year, today.month, last_day)
-    # Only company/department-wide targets count toward this KPI - individual rep quotas
-    # are summed separately on the Team Performance view, so combining both here would
-    # double-count the same revenue goal.
-    targets = db.execute(select(SalesTarget).where(SalesTarget.employee_id.is_(None))).scalars().all()
-    total_target = (
-        sum(float(t.target_amount) for t in targets if t.period_start <= month_end and t.period_end >= month_start) or 1
+    if owner_id is not None:
+        # A Sales Rep's target tile is their own personal quota, not the company-wide goal.
+        targets_stmt = select(SalesTarget).where(SalesTarget.employee_id == owner_id)
+    else:
+        # Only company/department-wide targets count toward this KPI - individual rep quotas
+        # are summed separately on the Team Performance view, so combining both here would
+        # double-count the same revenue goal.
+        targets_stmt = select(SalesTarget).where(SalesTarget.employee_id.is_(None))
+    targets = db.execute(targets_stmt).scalars().all()
+    total_target = sum(
+        float(t.target_amount) for t in targets if t.period_start <= month_end and t.period_end >= month_start
     )
-    month_revenue = _won_value(db, month_start, min(month_end, today))
-    sales_target_pct = round((month_revenue / total_target) * 100, 1)
+    month_revenue = _won_value(db, month_start, min(month_end, today), owner_id)
+    sales_target_pct = round((month_revenue / total_target) * 100, 1) if total_target else 0
 
     metrics = [
         KpiMetric(
@@ -227,9 +270,10 @@ def get_kpi_summary(db: Session, days: int = 30) -> KpiSummary:
     return result
 
 
-def get_funnel(db: Session, days: int = 90) -> FunnelAnalytics:
+def get_funnel(db: Session, days: int = 90, user: User | None = None) -> FunnelAnalytics:
+    owner_id = _owner_scope(user)
     cache = get_cache()
-    cache_key = f"analytics:funnel:{days}"
+    cache_key = f"analytics:funnel:{days}:{owner_id or 'org'}"
     cached = cache.get(cache_key)
     if cached:
         return FunnelAnalytics(**cached)
@@ -245,6 +289,8 @@ def get_funnel(db: Session, days: int = 90) -> FunnelAnalytics:
             .join(Deal, Deal.id == DealStageHistory.deal_id)
             .where(DealStageHistory.to_stage == stage, Deal.created_at >= start)
         )
+        if owner_id is not None:
+            deal_ids_stmt = deal_ids_stmt.where(Deal.owner_id == owner_id)
         deal_ids = [row[0] for row in db.execute(deal_ids_stmt).all()]
         reached_counts[stage] = len(deal_ids)
         if deal_ids:
@@ -279,9 +325,10 @@ def get_funnel(db: Session, days: int = 90) -> FunnelAnalytics:
     return result
 
 
-def get_revenue_trend(db: Session, months: int = 12) -> RevenueAnalytics:
+def get_revenue_trend(db: Session, months: int = 12, user: User | None = None) -> RevenueAnalytics:
+    owner_id = _owner_scope(user)
     cache = get_cache()
-    cache_key = f"analytics:revenue_trend:{months}"
+    cache_key = f"analytics:revenue_trend:{months}:{owner_id or 'org'}"
     cached = cache.get(cache_key)
     if cached:
         return RevenueAnalytics(**cached)
@@ -303,11 +350,12 @@ def get_revenue_trend(db: Session, months: int = 12) -> RevenueAnalytics:
         _, last_day = monthrange(month_start.year, month_start.month)
         month_end = date(month_start.year, month_start.month, last_day)
 
-        actual = _won_value(db, month_start, month_end)
+        actual = _won_value(db, month_start, month_end, owner_id)
 
+        target_owner_filter = SalesTarget.employee_id == owner_id if owner_id is not None else SalesTarget.employee_id.is_(None)
         targets = db.execute(
             select(func.coalesce(func.sum(SalesTarget.target_amount), 0)).where(
-                SalesTarget.employee_id.is_(None),
+                target_owner_filter,
                 SalesTarget.period_start <= month_end,
                 SalesTarget.period_end >= month_start,
             )
@@ -317,13 +365,15 @@ def get_revenue_trend(db: Session, months: int = 12) -> RevenueAnalytics:
         prev_month_end = date(
             prev_month_start.year, prev_month_start.month, monthrange(prev_month_start.year, prev_month_start.month)[1]
         )
-        previous_period = _won_value(db, prev_month_start, prev_month_end)
+        previous_period = _won_value(db, prev_month_start, prev_month_end, owner_id)
 
         forecast_stmt = select(func.coalesce(func.sum(Deal.value * Deal.probability / 100), 0)).where(
             Deal.stage.not_in([DealStage.WON, DealStage.LOST]),
             Deal.expected_close_date >= month_start,
             Deal.expected_close_date <= month_end,
         )
+        if owner_id is not None:
+            forecast_stmt = forecast_stmt.where(Deal.owner_id == owner_id)
         forecast = float(db.execute(forecast_stmt).scalar_one())
 
         points.append(
@@ -435,13 +485,16 @@ SEGMENT_LABELS = {
 }
 
 
-def get_segmentation(db: Session) -> list[SegmentationRow]:
+def get_segmentation(db: Session, user: User | None = None) -> list[SegmentationRow]:
+    owner_id = _owner_scope(user)
     stmt = (
         select(Company.size, func.count(func.distinct(Company.id)), func.coalesce(func.sum(Deal.value), 0))
         .join(Deal, Deal.company_id == Company.id)
         .where(Deal.stage == DealStage.WON)
         .group_by(Company.size)
     )
+    if owner_id is not None:
+        stmt = stmt.where(Deal.owner_id == owner_id)
     rows = db.execute(stmt).all()
     total = sum(float(r[2]) for r in rows) or 1
     return [
@@ -455,7 +508,8 @@ def get_segmentation(db: Session) -> list[SegmentationRow]:
     ]
 
 
-def get_win_loss_trend(db: Session, months: int = 6) -> list[WinLossRow]:
+def get_win_loss_trend(db: Session, months: int = 6, user: User | None = None) -> list[WinLossRow]:
+    owner_id = _owner_scope(user)
     today = date.today()
     rows: list[WinLossRow] = []
     month_cursor = date(today.year, today.month, 1)
@@ -469,18 +523,21 @@ def get_win_loss_trend(db: Session, months: int = 6) -> list[WinLossRow]:
     for month_start in month_starts:
         _, last_day = monthrange(month_start.year, month_start.month)
         month_end = date(month_start.year, month_start.month, last_day)
-        won = _won_count(db, month_start, month_end)
-        lost = db.execute(
-            select(func.count()).where(
-                Deal.stage == DealStage.LOST, Deal.actual_close_date >= month_start, Deal.actual_close_date <= month_end
-            )
-        ).scalar_one()
+        won = _won_count(db, month_start, month_end, owner_id)
+        lost_stmt = select(func.count()).where(
+            Deal.stage == DealStage.LOST, Deal.actual_close_date >= month_start, Deal.actual_close_date <= month_end
+        )
+        if owner_id is not None:
+            lost_stmt = lost_stmt.where(Deal.owner_id == owner_id)
+        lost = db.execute(lost_stmt).scalar_one()
         win_rate = round((won / (won + lost)) * 100, 1) if (won + lost) else 0
         rows.append(WinLossRow(period_label=month_start.strftime("%b %Y"), won=won, lost=lost, win_rate=win_rate))
     return rows
 
 
-def get_customer_growth(db: Session, months: int = 12) -> list[CustomerGrowthPoint]:
+def get_customer_growth(db: Session, months: int = 12, user: User | None = None) -> list[CustomerGrowthPoint]:
+    # A Sales Rep's "customers" are the companies they personally own, not the whole org's.
+    owner_id = _owner_scope(user)
     today = date.today()
     month_cursor = date(today.year, today.month, 1)
     month_starts = []
@@ -491,7 +548,10 @@ def get_customer_growth(db: Session, months: int = 12) -> list[CustomerGrowthPoi
         month_cursor = date(prev_year, prev_month, 1)
 
     points: list[CustomerGrowthPoint] = []
-    running_total = db.execute(select(func.count()).where(Company.created_at < month_starts[0])).scalar_one()
+    running_total_stmt = select(func.count()).where(Company.created_at < month_starts[0])
+    if owner_id is not None:
+        running_total_stmt = running_total_stmt.where(Company.owner_id == owner_id)
+    running_total = db.execute(running_total_stmt).scalar_one()
 
     for month_start in month_starts:
         _, last_day = monthrange(month_start.year, month_start.month)
@@ -499,9 +559,12 @@ def get_customer_growth(db: Session, months: int = 12) -> list[CustomerGrowthPoi
         # `Company.created_at` is a DateTime column - an exclusive upper bound is required or
         # companies created on the last day of the month (after midnight) are silently dropped.
         month_end_exclusive = month_end + timedelta(days=1)
-        new_customers = db.execute(
-            select(func.count()).where(Company.created_at >= month_start, Company.created_at < month_end_exclusive)
-        ).scalar_one()
+        new_customers_stmt = select(func.count()).where(
+            Company.created_at >= month_start, Company.created_at < month_end_exclusive
+        )
+        if owner_id is not None:
+            new_customers_stmt = new_customers_stmt.where(Company.owner_id == owner_id)
+        new_customers = db.execute(new_customers_stmt).scalar_one()
         running_total += new_customers
         points.append(
             CustomerGrowthPoint(
@@ -511,11 +574,13 @@ def get_customer_growth(db: Session, months: int = 12) -> list[CustomerGrowthPoi
     return points
 
 
-def get_pipeline_velocity(db: Session, days: int = 90) -> PipelineVelocity:
+def get_pipeline_velocity(db: Session, days: int = 90, user: User | None = None) -> PipelineVelocity:
+    owner_id = _owner_scope(user)
     start = date.today() - timedelta(days=days)
-    won_deals = (
-        db.execute(select(Deal).where(Deal.stage == DealStage.WON, Deal.actual_close_date >= start)).scalars().all()
-    )
+    won_stmt = select(Deal).where(Deal.stage == DealStage.WON, Deal.actual_close_date >= start)
+    if owner_id is not None:
+        won_stmt = won_stmt.where(Deal.owner_id == owner_id)
+    won_deals = db.execute(won_stmt).scalars().all()
 
     if not won_deals:
         return PipelineVelocity(average_days_to_close=0, average_deal_size=0, deals_per_month=0, velocity_score=0)
@@ -529,9 +594,10 @@ def get_pipeline_velocity(db: Session, days: int = 90) -> PipelineVelocity:
     months_span = max(days / 30, 1)
     deals_per_month = round(len(won_deals) / months_span, 1)
 
-    lost_count = db.execute(
-        select(func.count()).where(Deal.stage == DealStage.LOST, Deal.actual_close_date >= start)
-    ).scalar_one()
+    lost_stmt = select(func.count()).where(Deal.stage == DealStage.LOST, Deal.actual_close_date >= start)
+    if owner_id is not None:
+        lost_stmt = lost_stmt.where(Deal.owner_id == owner_id)
+    lost_count = db.execute(lost_stmt).scalar_one()
     closed_count = len(won_deals) + lost_count
     win_rate = len(won_deals) / closed_count if closed_count else 0
     velocity_score = round((len(won_deals) * win_rate * avg_deal_size) / max(avg_days, 1), 2)
@@ -547,7 +613,21 @@ def get_pipeline_velocity(db: Session, days: int = 90) -> PipelineVelocity:
 def get_business_insights(db: Session, user: User | None = None) -> list[BusinessInsight]:
     insights: list[BusinessInsight] = []
 
-    kpis = get_kpi_summary(db, days=30)
+    if not has_any_deals(db, user):
+        # A genuinely empty CRM (new user, or a Sales Rep who hasn't created a deal yet)
+        # has no trend to report - "Performance is stable" would be a fabricated claim
+        # about data that doesn't exist yet.
+        return [
+            BusinessInsight(
+                id="no_data_yet",
+                severity="info",
+                title="No sales data yet",
+                description="Insights appear here once you add companies, contacts and deals. "
+                "Create your first opportunity to start building your pipeline.",
+            )
+        ]
+
+    kpis = get_kpi_summary(db, days=30, user=user)
     target_pct = next(m for m in kpis.metrics if m.key == "sales_target")
 
     if target_pct.value >= 105:
@@ -571,7 +651,7 @@ def get_business_insights(db: Session, user: User | None = None) -> list[Busines
             )
         )
 
-    segmentation = get_segmentation(db)
+    segmentation = get_segmentation(db, user=user)
     if segmentation:
         top = max(segmentation, key=lambda s: s.revenue_share_pct)
         if top.revenue_share_pct >= 55:
@@ -585,7 +665,7 @@ def get_business_insights(db: Session, user: User | None = None) -> list[Busines
                 )
             )
 
-    funnel = get_funnel(db, days=90)
+    funnel = get_funnel(db, days=90, user=user)
     stage_map = {s.stage: s for s in funnel.stages}
     proposal = stage_map.get(DealStage.PROPOSAL)
     negotiation = stage_map.get(DealStage.NEGOTIATION)
@@ -618,7 +698,7 @@ def get_business_insights(db: Session, user: User | None = None) -> list[Busines
                 )
             )
 
-    win_loss = get_win_loss_trend(db, months=2)
+    win_loss = get_win_loss_trend(db, months=2, user=user)
     if len(win_loss) == 2 and win_loss[0].win_rate > 0:
         change = win_loss[1].win_rate - win_loss[0].win_rate
         if change <= -8:

@@ -31,11 +31,14 @@ def register(db: Session, email: str, password: str, full_name: str) -> User:
         raise ConflictError("An account with this email already exists.", code="EMAIL_TAKEN")
 
     # The very first account in a fresh workspace bootstraps as Admin so there is always
-    # someone able to manage employees/departments; everyone after that self-registers
-    # with the safest (read-only) role and waits to be promoted by an admin or manager -
-    # this mirrors how most B2B SaaS products (Slack, Notion, etc.) bootstrap a workspace.
+    # someone able to manage employees/departments. Everyone after that self-registers as
+    # a Sales Rep: the RBAC rule for that role (see app.core.rbac.scope_to_owner_only)
+    # scopes every list/dashboard/analytics query to records the user themselves owns, so
+    # a new signup starts with a genuinely empty CRM/dashboard instead of immediately
+    # seeing the whole company's existing pipeline and revenue. An admin or manager can
+    # still promote the account to Viewer/Analyst/Manager for org-wide visibility later.
     user_count = db.execute(select(func.count()).select_from(User)).scalar_one()
-    role = UserRole.ADMIN if user_count == 0 else UserRole.VIEWER
+    role = UserRole.ADMIN if user_count == 0 else UserRole.SALES_REP
 
     user = User(email=email, password_hash=hash_password(password), full_name=full_name, role=role)
     db.add(user)

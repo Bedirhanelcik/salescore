@@ -121,7 +121,7 @@ def test_manager_sees_full_team_performance(client, manager_user, sales_rep_user
 
 def test_manager_cannot_grant_admin_role(client, admin_user, manager_user):
     # Privilege-escalation check: PATCH /employees/{id} is open to Managers so they can promote
-    # a self-registered Viewer to a working role, but only an Admin may grant the Admin role.
+    # a self-registered Sales Rep to a broader-visibility role, but only an Admin may grant Admin.
     manager_headers = auth_headers(client, "manager@test.io")
     response = client.patch(f"/api/v1/employees/{manager_user.id}", headers=manager_headers, json={"role": "admin"})
     assert response.status_code == 403
@@ -133,19 +133,19 @@ def test_manager_cannot_grant_admin_role(client, admin_user, manager_user):
     assert response.json()["role"] == "admin"
 
 
-def test_manager_can_promote_viewer_to_sales_rep(client, manager_user):
+def test_manager_can_promote_sales_rep_to_analyst(client, manager_user):
     manager_headers = auth_headers(client, "manager@test.io")
     registered = client.post(
         "/api/v1/auth/register",
         json={"email": "newbie@test.io", "password": "Password123!", "full_name": "New Bie"},
     ).json()
-    assert registered["user"]["role"] == "viewer"
+    assert registered["user"]["role"] == "sales_rep"
 
     response = client.patch(
-        f"/api/v1/employees/{registered['user']['id']}", headers=manager_headers, json={"role": "sales_rep"}
+        f"/api/v1/employees/{registered['user']['id']}", headers=manager_headers, json={"role": "analyst"}
     )
     assert response.status_code == 200
-    assert response.json()["role"] == "sales_rep"
+    assert response.json()["role"] == "analyst"
 
 
 def test_only_admin_or_manager_can_create_sales_target(client, admin_user, analyst_user, sales_rep_user):

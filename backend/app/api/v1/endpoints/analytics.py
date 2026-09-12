@@ -22,17 +22,17 @@ router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
 @router.get("/kpis", response_model=KpiSummary)
 def get_kpis(days: int = 30, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    return analytics_service.get_kpi_summary(db, days)
+    return analytics_service.get_kpi_summary(db, days, current_user)
 
 
 @router.get("/funnel", response_model=FunnelAnalytics)
 def get_funnel(days: int = 90, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    return analytics_service.get_funnel(db, days)
+    return analytics_service.get_funnel(db, days, current_user)
 
 
 @router.get("/revenue", response_model=RevenueAnalytics)
 def get_revenue(months: int = 12, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    return analytics_service.get_revenue_trend(db, months)
+    return analytics_service.get_revenue_trend(db, months, current_user)
 
 
 @router.get("/team-performance", response_model=TeamPerformance)
@@ -42,26 +42,26 @@ def get_team_performance(days: int = 30, db: Session = Depends(get_db), current_
 
 @router.get("/segmentation", response_model=list[SegmentationRow])
 def get_segmentation(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    return analytics_service.get_segmentation(db)
+    return analytics_service.get_segmentation(db, current_user)
 
 
 @router.get("/win-loss", response_model=list[WinLossRow])
 def get_win_loss(months: int = 6, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    return analytics_service.get_win_loss_trend(db, months)
+    return analytics_service.get_win_loss_trend(db, months, current_user)
 
 
 @router.get("/pipeline-velocity", response_model=PipelineVelocity)
 def get_pipeline_velocity(
     days: int = 90, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
-    return analytics_service.get_pipeline_velocity(db, days)
+    return analytics_service.get_pipeline_velocity(db, days, current_user)
 
 
 @router.get("/customer-growth", response_model=list[CustomerGrowthPoint])
 def get_customer_growth(
     months: int = 12, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
-    return analytics_service.get_customer_growth(db, months)
+    return analytics_service.get_customer_growth(db, months, current_user)
 
 
 @router.get("/insights", response_model=BusinessInsights)

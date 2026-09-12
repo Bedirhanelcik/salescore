@@ -25,6 +25,10 @@ export default function DashboardPage() {
   const { data: insights, isLoading: insightsLoading } = useBusinessInsights();
   const { data: myTasks } = useTasks({ mine_only: true, page_size: 5, page: 1 });
 
+  // True only when this user's whole dashboard scope has no deals at all yet - see the
+  // `isEmpty` doc on KpiCard for why this must be "every metric is zero", not per-metric.
+  const dashboardIsEmpty = kpis ? kpis.metrics.every((m) => m.value === 0) : false;
+
   return (
     <div className="space-y-6">
       <div>
@@ -35,11 +39,16 @@ export default function DashboardPage() {
         <p className="text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div data-tour="dashboard-kpis" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {kpisLoading || !kpis
           ? Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)
           : kpis.metrics.map((metric) => (
-              <KpiCard key={metric.key} metric={metric} label={t(`dashboard.kpi.${metric.key}`)} />
+              <KpiCard
+                key={metric.key}
+                metric={metric}
+                label={t(`dashboard.kpi.${metric.key}`)}
+                isEmpty={dashboardIsEmpty}
+              />
             ))}
       </div>
 
