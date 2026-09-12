@@ -16,6 +16,20 @@ def test_create_deal_defaults_to_lead_stage(client, admin_user):
     assert deal["probability"] == 20
 
 
+def test_sort_by_relationship_name_does_not_crash(client, admin_user):
+    # Regression test: sort_by is a free-text query param. "company"/"owner" are relationship
+    # attributes on Deal, not sortable columns, and used to raise NotImplementedError from
+    # .desc()/.asc(), producing a 500. An unrecognized sort_by must fall back silently instead.
+    headers = auth_headers(client, "admin@test.io")
+    _create_deal(client, headers)
+
+    response = client.get("/api/v1/deals?sort_by=company", headers=headers)
+    assert response.status_code == 200
+
+    response = client.get("/api/v1/deals?sort_by=owner", headers=headers)
+    assert response.status_code == 200
+
+
 def test_valid_stage_transition(client, admin_user):
     headers = auth_headers(client, "admin@test.io")
     deal = _create_deal(client, headers)

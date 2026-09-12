@@ -11,19 +11,20 @@ from abc import ABC, abstractmethod
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
+from app.models.user import User
 from app.services import analytics_service
 
 
 class AIProvider(ABC):
     @abstractmethod
-    def answer(self, db: Session, question: str) -> str: ...
+    def answer(self, db: Session, question: str, user: User) -> str: ...
 
 
 class MockAIProvider(AIProvider):
     """Rule-based assistant: matches the question to a topic and answers using
     live analytics data pulled from the database - no external network call."""
 
-    def answer(self, db: Session, question: str) -> str:
+    def answer(self, db: Session, question: str, user: User) -> str:
         q = question.lower()
 
         kpis = analytics_service.get_kpi_summary(db, days=30)
@@ -33,7 +34,9 @@ class MockAIProvider(AIProvider):
             revenue = metrics["revenue"]
             trend = "up" if (revenue.change_pct or 0) >= 0 else "down"
             insights = [
-                i for i in analytics_service.get_business_insights(db) if i.metric_key in ("revenue", "sales_target")
+                i
+                for i in analytics_service.get_business_insights(db, user)
+                if i.metric_key in ("revenue", "sales_target")
             ]
             extra = f" {insights[0].description}" if insights else ""
             return (
@@ -57,7 +60,7 @@ class MockAIProvider(AIProvider):
             )
 
         if any(word in q for word in ["team", "rep", "performance", "ekip"]):
-            team = analytics_service.get_team_performance(db, days=30)
+            team = analytics_service.get_team_performance(db, days=30, user=user)
             if not team.rows:
                 return "No sales representative performance data is available yet."
             top = team.rows[0]
@@ -72,7 +75,7 @@ class MockAIProvider(AIProvider):
                 )
             )
 
-        insights = analytics_service.get_business_insights(db)
+        insights = analytics_service.get_business_insights(db, user)
         if insights:
             top_insight = insights[0]
             return f"{top_insight.title}. {top_insight.description}"
@@ -84,13 +87,13 @@ class OpenAIProvider(AIProvider):
     """Optional real-LLM backend. Only instantiated when AI_PROVIDER=openai
     and OPENAI_API_KEY is set; otherwise the app falls back to MockAIProvider."""
 
-    def answer(self, db: Session, question: str) -> str:
+    def answer(self, db: Session, question: str, user: User) -> str:
         try:
             from openai import OpenAI
         except ImportError:
-            return MockAIProvider().answer(db, question)
+            return MockAIProvider().answer(db, question, user)
 
-        insights = analytics_service.get_business_insights(db)
+        insights = analytics_service.get_business_insights(db, user)
         kpis = analytics_service.get_kpi_summary(db, days=30)
         context = "\n".join(f"- {i.title}: {i.description}" for i in insights)
         context += "\n" + "\n".join(f"- {m.label}: {m.value} ({m.change_pct}% change)" for m in kpis.metrics)

@@ -35,9 +35,3 @@ def require_roles(*roles: UserRole):
         return current_user
 
     return dependency
-
-
-def get_current_manager_or_admin(current_user: User = Depends(get_current_user)) -> User:
-    if not current_user.is_manager_or_above:
-        raise ForbiddenError("This action requires manager or admin privileges.")
-    return current_user

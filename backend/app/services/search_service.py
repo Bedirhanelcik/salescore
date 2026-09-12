@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.core.rbac import scope_to_owner_only
@@ -81,11 +81,19 @@ def global_search(db: Session, user: User, query: str) -> list[SearchResultItem]
             )
         )
 
-    for k in (
-        db.execute(select(KnowledgeTerm).where(KnowledgeTerm.term_en.ilike(pattern)).limit(LIMIT_PER_TYPE))
-        .scalars()
-        .all()
-    ):
+    knowledge_stmt = (
+        select(KnowledgeTerm)
+        .where(
+            or_(
+                KnowledgeTerm.term_en.ilike(pattern),
+                KnowledgeTerm.term_tr.ilike(pattern),
+                KnowledgeTerm.term_de.ilike(pattern),
+                KnowledgeTerm.term_ar.ilike(pattern),
+            )
+        )
+        .limit(LIMIT_PER_TYPE)
+    )
+    for k in db.execute(knowledge_stmt).scalars().all():
         results.append(
             SearchResultItem(
                 type="knowledge_term",
@@ -93,6 +101,13 @@ def global_search(db: Session, user: User, query: str) -> list[SearchResultItem]
                 title=k.term_en,
                 subtitle=k.short_definition_en,
                 url=f"/knowledge/{k.key}",
+                title_i18n={"en": k.term_en, "tr": k.term_tr, "de": k.term_de, "ar": k.term_ar},
+                subtitle_i18n={
+                    "en": k.short_definition_en,
+                    "tr": k.short_definition_tr,
+                    "de": k.short_definition_de,
+                    "ar": k.short_definition_ar,
+                },
             )
         )
 

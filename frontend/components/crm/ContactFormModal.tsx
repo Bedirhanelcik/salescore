@@ -53,15 +53,15 @@ export function ContactFormModal({
   return (
     <Modal open={open} onClose={onClose} title={t("crm.addContact")}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <Label>{t("common.name")}</Label>
-            <Input {...register("first_name")} placeholder="First name" autoFocus />
+            <Label>{t("crm.firstName")}</Label>
+            <Input {...register("first_name")} autoFocus />
             <FieldError>{errors.first_name?.message}</FieldError>
           </div>
           <div>
-            <Label>&nbsp;</Label>
-            <Input {...register("last_name")} placeholder="Last name" />
+            <Label>{t("crm.lastName")}</Label>
+            <Input {...register("last_name")} />
             <FieldError>{errors.last_name?.message}</FieldError>
           </div>
         </div>
@@ -70,7 +70,7 @@ export function ContactFormModal({
           <Input {...register("email")} />
           <FieldError>{errors.email?.message}</FieldError>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <Label>{t("common.phone")}</Label>
             <Input {...register("phone")} />

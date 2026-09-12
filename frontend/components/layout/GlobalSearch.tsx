@@ -23,7 +23,7 @@ export function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => 
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { data, isFetching } = useGlobalSearch(query);
 
   useEffect(() => {
@@ -89,20 +89,20 @@ export function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => 
               </p>
               {items.map((item) => {
                 const Icon = ICONS[item.type] ?? Search;
+                const title = item.title_i18n?.[locale] ?? item.title;
+                const subtitle = item.subtitle_i18n?.[locale] ?? item.subtitle;
                 return (
                   <button
                     key={`${item.type}-${item.id}`}
                     onClick={() => goTo(item.url)}
                     className={cn(
-                      "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm hover:bg-card-hover"
+                      "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-start text-sm hover:bg-card-hover"
                     )}
                   >
                     <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate font-medium text-foreground">{item.title}</span>
-                      {item.subtitle && (
-                        <span className="block truncate text-xs text-muted-foreground">{item.subtitle}</span>
-                      )}
+                      <span className="block truncate font-medium text-foreground">{title}</span>
+                      {subtitle && <span className="block truncate text-xs text-muted-foreground">{subtitle}</span>}
                     </span>
                   </button>
                 );

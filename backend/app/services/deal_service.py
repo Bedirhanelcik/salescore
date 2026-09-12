@@ -54,7 +54,9 @@ def list_deals(
     if max_value is not None:
         stmt = stmt.where(Deal.value <= max_value)
 
-    sort_column = getattr(Deal, sort_by, Deal.updated_at)
+    # getattr(Deal, sort_by) must be restricted to real columns - Deal also exposes relationship
+    # attributes (company, contact, owner, ...) that raise NotImplementedError from .desc()/.asc().
+    sort_column = getattr(Deal, sort_by) if sort_by in Deal.__table__.columns else Deal.updated_at
     stmt = stmt.order_by(sort_column.desc() if sort_dir == "desc" else sort_column.asc())
 
     return paginate(db, stmt, page, page_size)
@@ -170,6 +172,7 @@ def change_deal_stage(db: Session, user: User, deal_id: int, data: DealStageUpda
                 type_="deal_won",
                 title="Deal won!",
                 message=f"'{deal.title}' was marked as Won.",
+                params={"deal_title": deal.title},
                 related_entity_type="deal",
                 related_entity_id=deal.id,
             )
@@ -180,6 +183,7 @@ def change_deal_stage(db: Session, user: User, deal_id: int, data: DealStageUpda
                 type_="deal_lost",
                 title="Deal lost",
                 message=f"'{deal.title}' was marked as Lost.",
+                params={"deal_title": deal.title},
                 related_entity_type="deal",
                 related_entity_id=deal.id,
             )

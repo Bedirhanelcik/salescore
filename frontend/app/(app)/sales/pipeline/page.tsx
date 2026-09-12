@@ -138,7 +138,7 @@ export default function PipelinePage() {
               <div key={col.stage} className={highlightStage === col.stage ? "ring-2 ring-brand rounded-xl" : ""}>
                 <PipelineColumn
                   stage={col.stage}
-                  label={col.label}
+                  label={t(`sales.stages.${col.stage}`, col.label)}
                   deals={col.deals}
                   totalValue={col.total_value}
                   isValidDropTarget={

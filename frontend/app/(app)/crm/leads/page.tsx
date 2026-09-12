@@ -64,11 +64,11 @@ export default function LeadsPage() {
           <option value="">
             {t("common.status")}: {t("common.all")}
           </option>
-          <option value="new">New</option>
-          <option value="contacted">Contacted</option>
-          <option value="qualified">Qualified</option>
-          <option value="unqualified">Unqualified</option>
-          <option value="converted">Converted</option>
+          <option value="new">{t("crm.leadStatus.new")}</option>
+          <option value="contacted">{t("crm.leadStatus.contacted")}</option>
+          <option value="qualified">{t("crm.leadStatus.qualified")}</option>
+          <option value="unqualified">{t("crm.leadStatus.unqualified")}</option>
+          <option value="converted">{t("crm.leadStatus.converted")}</option>
         </Select>
         <Button onClick={() => setModalOpen(true)} size="sm">
           <Plus className="h-4 w-4" />
@@ -108,10 +108,12 @@ export default function LeadsPage() {
                   >
                     <td className="px-5 py-3 font-medium text-foreground">{lead.name}</td>
                     <td className="px-5 py-3 text-muted-foreground">{lead.company_name ?? "—"}</td>
-                    <td className="px-5 py-3 text-muted-foreground capitalize">{lead.source}</td>
+                    <td className="px-5 py-3 text-muted-foreground">
+                      {t(`crm.leadSource.${lead.source}`, lead.source)}
+                    </td>
                     <td className="px-5 py-3 text-muted-foreground">{lead.score}</td>
                     <td className="px-5 py-3">
-                      <Badge tone={STATUS_TONE[lead.status]}>{lead.status}</Badge>
+                      <Badge tone={STATUS_TONE[lead.status]}>{t(`crm.leadStatus.${lead.status}`)}</Badge>
                     </td>
                   </tr>
                 ))}

@@ -2,13 +2,13 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.audit import record_audit
-from app.core.exceptions import NotFoundError
+from app.core.exceptions import ForbiddenError, NotFoundError
+from app.core.rbac import scope_to_owner_only
 from app.models.deal import Deal
 from app.models.enums import DealStage
 from app.models.sales_target import SalesTarget
 from app.models.user import User
 from app.schemas.sales_target import SalesTargetCreate
-from app.services.notification_service import notify
 
 
 def _actual_amount(db: Session, target: SalesTarget) -> float:
@@ -24,10 +24,21 @@ def _actual_amount(db: Session, target: SalesTarget) -> float:
     return float(db.execute(stmt).scalar_one())
 
 
-def list_targets(db: Session, employee_id: int | None = None, department_id: int | None = None) -> list[dict]:
+def list_targets(
+    db: Session, user: User, employee_id: int | None = None, department_id: int | None = None
+) -> list[dict]:
     stmt = select(SalesTarget).options(joinedload(SalesTarget.employee), joinedload(SalesTarget.department))
-    if employee_id:
+
+    if scope_to_owner_only(user):
+        # A Sales Rep may only see their own quota (individual target_amount/achievement
+        # is compensation-adjacent) plus any department-wide target, which is shared team
+        # context, not another individual's data - never another rep's personal target.
+        if employee_id is not None and employee_id != user.id:
+            raise ForbiddenError("You can only view your own sales targets.")
+        stmt = stmt.where((SalesTarget.employee_id == user.id) | (SalesTarget.employee_id.is_(None)))
+    elif employee_id:
         stmt = stmt.where(SalesTarget.employee_id == employee_id)
+
     if department_id:
         stmt = stmt.where(SalesTarget.department_id == department_id)
     stmt = stmt.order_by(SalesTarget.period_start.desc())
@@ -57,21 +68,4 @@ def delete_target(db: Session, actor: User, target_id: int) -> None:
         db, user_id=actor.id, action="delete", entity_type="sales_target", entity_id=target.id, entity_label=target.name
     )
     db.delete(target)
-    db.commit()
-
-
-def check_target_achievements(db: Session) -> None:
-    """Notify employees whose personal target has just been reached (called after seeding / periodically)."""
-    for row in list_targets(db):
-        target = row["target"]
-        if target.employee_id and row["achievement_pct"] >= 100:
-            notify(
-                db,
-                user_id=target.employee_id,
-                type_="target_reached",
-                title="Target reached!",
-                message=f"You reached your target '{target.name}' ({row['achievement_pct']}%).",
-                related_entity_type="sales_target",
-                related_entity_id=target.id,
-            )
     db.commit()

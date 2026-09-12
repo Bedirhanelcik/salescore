@@ -68,6 +68,7 @@ def create_lead(db: Session, user: User, data: LeadCreate) -> Lead:
             type_="new_lead",
             title="New lead assigned",
             message=f"You have a new lead: {lead.name}.",
+            params={"lead_name": lead.name},
             related_entity_type="lead",
             related_entity_id=lead.id,
         )

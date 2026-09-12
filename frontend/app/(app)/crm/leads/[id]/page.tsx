@@ -11,6 +11,7 @@ import { ArrowLeft, Target } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { ErrorState } from "@/components/ui/EmptyState";
 import { FieldError, Input, Label } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -32,7 +33,7 @@ export default function LeadDetailPage() {
   const { t, locale } = useI18n();
   const [convertOpen, setConvertOpen] = useState(false);
 
-  const { data: lead, isLoading } = useLead(leadId);
+  const { data: lead, isLoading, isError, refetch } = useLead(leadId);
   const convertLead = useConvertLead(leadId);
 
   const {
@@ -54,6 +55,10 @@ export default function LeadDetailPage() {
       toast.error(err instanceof ApiError ? err.message : t("common.somethingWentWrong"));
     }
   };
+
+  if (isError) {
+    return <ErrorState message={t("common.somethingWentWrong")} onRetry={refetch} />;
+  }
 
   if (isLoading || !lead) {
     return (
@@ -95,9 +100,9 @@ export default function LeadDetailPage() {
         <CardContent className="pt-5 grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
           <Field label={t("common.email")} value={lead.email} />
           <Field label={t("common.phone")} value={lead.phone} />
-          <Field label={t("crm.source")} value={lead.source} />
+          <Field label={t("crm.source")} value={t(`crm.leadSource.${lead.source}`, lead.source)} />
           <Field label={t("crm.score")} value={String(lead.score)} />
-          <Field label={t("common.status")} value={lead.status} />
+          <Field label={t("common.status")} value={t(`crm.leadStatus.${lead.status}`)} />
           <Field label={t("common.owner")} value={lead.owner?.full_name} />
           <Field label={t("common.createdAt")} value={formatDate(lead.created_at, locale)} />
         </CardContent>
@@ -141,7 +146,7 @@ function Field({ label, value }: { label: string; value?: string | null }) {
   return (
     <div>
       <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="mt-0.5 font-medium capitalize text-foreground">{value || "—"}</p>
+      <p className="mt-0.5 font-medium text-foreground">{value || "—"}</p>
     </div>
   );
 }

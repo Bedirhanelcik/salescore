@@ -15,6 +15,7 @@ def notify(
     type_: str,
     title: str,
     message: str,
+    params: dict | None = None,
     related_entity_type: str | None = None,
     related_entity_id: int | None = None,
 ) -> Notification:
@@ -23,6 +24,7 @@ def notify(
         type=NotificationType(type_),
         title=title,
         message=message,
+        params=params,
         related_entity_type=related_entity_type,
         related_entity_id=related_entity_id,
     )

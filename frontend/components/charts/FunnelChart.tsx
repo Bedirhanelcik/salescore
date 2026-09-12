@@ -27,7 +27,7 @@ export function FunnelChart({ stages }: { stages: FunnelStage[] }) {
           <button
             key={stage.stage}
             onClick={() => router.push(`/sales/pipeline?stage=${stage.stage}`)}
-            className="group flex w-full items-center gap-3 rounded-lg px-1 py-1 text-left hover:bg-card-hover"
+            className="group flex w-full items-center gap-3 rounded-lg px-1 py-1 text-start hover:bg-card-hover"
           >
             <span className="w-24 shrink-0 text-xs font-medium text-muted-foreground">{stage.label}</span>
             <span className="relative h-7 flex-1 overflow-hidden rounded-md bg-border/40">

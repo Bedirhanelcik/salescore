@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "SalesCore",
-    "tagline": "Business Sales & Customer Relationship Management Platform"
+    "tagline": "Business Sales & Customer Relationship Management Platform",
+    "introTagline": "CRM · YBS · BI"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -28,6 +29,9 @@
     "confirmDelete": "Are you sure you want to delete this? This action cannot be undone.",
     "actions": "Actions",
     "status": "Status",
+    "type": "Type",
+    "active": "Active",
+    "inactive": "Inactive",
     "owner": "Owner",
     "all": "All",
     "none": "None",
@@ -44,6 +48,9 @@
     "viewAll": "View all",
     "viewDetails": "View details",
     "close": "Close",
+    "menu": "Menu",
+    "toggleSidebar": "Toggle sidebar",
+    "toggleTheme": "Toggle dark mode",
     "page": "Page",
     "of": "of",
     "results": "results",
@@ -142,12 +149,38 @@
     "openDeals": "Open",
     "lostDeals": "Lost",
     "jobTitle": "Job Title",
+    "firstName": "First name",
+    "lastName": "Last name",
     "size": "Company Size",
     "revenue": "Annual Revenue",
     "source": "Source",
     "score": "Score",
     "convertLead": "Convert to deal",
     "leadConverted": "Converted",
+    "companyStatus": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "prospect": "Prospect"
+    },
+    "leadStatus": {
+      "new": "New",
+      "contacted": "Contacted",
+      "qualified": "Qualified",
+      "unqualified": "Unqualified",
+      "converted": "Converted"
+    },
+    "leadSource": {
+      "website": "Website",
+      "referral": "Referral",
+      "linkedin": "LinkedIn",
+      "advertisement": "Advertisement",
+      "email": "Email",
+      "event": "Event",
+      "other": "Other"
+    },
+    "companySize": {
+      "self_employed": "Self-employed"
+    },
     "tabs": {
       "overview": "Overview",
       "contacts": "Contacts",
@@ -195,6 +228,7 @@
     "customerGrowth": "Customer Growth",
     "pipelineVelocity": "Pipeline Velocity",
     "avgDaysToClose": "Avg. Days to Close",
+    "avgDealSize": "Avg. Deal Size",
     "dealsPerMonth": "Deals / Month",
     "velocityScore": "Velocity Score",
     "employee": "Employee",
@@ -241,6 +275,11 @@
       "follow_up": "Follow-up",
       "demo": "Demo",
       "proposal": "Proposal"
+    },
+    "activityStatus": {
+      "planned": "Planned",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
     }
   },
   "reports": {
@@ -258,7 +297,24 @@
     },
     "startDate": "Start date",
     "endDate": "End date",
-    "noData": "No data for the selected range"
+    "noData": "No data for the selected range",
+    "columns": {
+      "deal": "Deal",
+      "stage": "Stage",
+      "revenue": "Revenue",
+      "period": "Period",
+      "previousPeriod": "Previous Period",
+      "lead": "Lead",
+      "daysInPipeline": "Days in Pipeline",
+      "metric": "Metric",
+      "changePct": "Change %",
+      "format": "Format"
+    },
+    "formatTypes": {
+      "currency": "Currency",
+      "percent": "Percent",
+      "number": "Number"
+    }
   },
   "knowledge": {
     "title": "Knowledge",
@@ -292,6 +348,12 @@
       "deal_lost": "Deal lost",
       "target_reached": "Target reached",
       "mention": "Mention"
+    },
+    "messages": {
+      "task_due": "You have a task due within 24 hours.",
+      "new_lead": "You have a new lead: {name}.",
+      "deal_won": "'{deal_title}' was marked as Won.",
+      "deal_lost": "'{deal_title}' was marked as Lost."
     }
   },
   "settingsPage": {
@@ -309,6 +371,7 @@
     "appearanceHint": "Choose how SalesCore looks and which language it's displayed in.",
     "language": "Language",
     "theme": "Theme",
+    "toggleTheme": "Toggle dark mode",
     "themeLight": "Light",
     "themeDark": "Dark",
     "passwordUpdated": "Password updated successfully",

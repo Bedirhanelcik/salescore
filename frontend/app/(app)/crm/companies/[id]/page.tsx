@@ -7,6 +7,7 @@ import { ArrowLeft, Building2, Globe, MapPin } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardContent } from "@/components/ui/Card";
+import { ErrorState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Tabs } from "@/components/ui/Tabs";
 import { StageBadge } from "@/components/ui/Badge";
@@ -24,11 +25,15 @@ export default function CompanyDetailPage() {
   const { t, locale } = useI18n();
   const [tab, setTab] = useState("overview");
 
-  const { data: company, isLoading } = useCompany(companyId);
+  const { data: company, isLoading, isError, refetch } = useCompany(companyId);
   const { data: c360 } = useCustomer360(companyId);
   const { data: contacts } = useContacts({ company_id: companyId, page_size: 50 });
   const { data: deals } = useDeals({ company_id: companyId, page_size: 50 });
   const { data: activities } = useActivities({ company_id: companyId, page_size: 50 });
+
+  if (isError) {
+    return <ErrorState message={t("common.somethingWentWrong")} onRetry={refetch} />;
+  }
 
   if (isLoading || !company) {
     return (
@@ -80,7 +85,7 @@ export default function CompanyDetailPage() {
         </div>
         <div className="flex items-center gap-2">
           <Badge tone={company.status === "active" ? "success" : company.status === "prospect" ? "brand" : "neutral"}>
-            {company.status}
+            {t(`crm.companyStatus.${company.status}`)}
           </Badge>
           {company.owner && (
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -111,7 +116,10 @@ export default function CompanyDetailPage() {
         <Card>
           <CardContent className="pt-5 grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
             <Field label={t("common.industry")} value={company.industry} />
-            <Field label={t("crm.size")} value={company.size} />
+            <Field
+              label={t("crm.size")}
+              value={company.size ? t(`crm.companySize.${company.size}`, company.size) : undefined}
+            />
             <Field label={t("common.country")} value={company.country} />
             <Field label={t("common.website")} value={company.website} />
             <Field

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -8,9 +8,29 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const title = "SalesCore | Sales & CRM Platform";
+const description = "Business Sales & Customer Relationship Management Platform - CRM, YBS and BI in one system.";
+
 export const metadata: Metadata = {
-  title: "SalesCore | Sales & CRM Platform",
-  description: "Business Sales & Customer Relationship Management Platform - CRM, YBS and BI in one system.",
+  title,
+  description,
+  applicationName: "SalesCore",
+  manifest: "/manifest.webmanifest",
+  openGraph: {
+    title,
+    description,
+    siteName: "SalesCore",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title,
+    description,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#4338ca",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

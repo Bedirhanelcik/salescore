@@ -13,6 +13,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.cache import get_cache
+from app.core.rbac import has_full_visibility, scope_to_owner_only
 from app.models.company import Company
 from app.models.deal import Deal, DealStageHistory
 from app.models.enums import DEAL_STAGE_ORDER, CompanySize, DealStage, UserRole
@@ -82,8 +83,11 @@ def get_kpi_summary(db: Session, days: int = 30) -> KpiSummary:
             select(func.coalesce(func.sum(Deal.value), 0)).where(Deal.stage.not_in([DealStage.WON, DealStage.LOST]))
         ).scalar_one()
     )
+    # `Deal.created_at` is a DateTime column - an exclusive upper bound is required or deals
+    # created on `prev_end` itself (after midnight) are silently dropped.
+    prev_end_exclusive = prev_end + timedelta(days=1)
     prev_pipeline_stmt = select(func.coalesce(func.sum(Deal.value), 0)).where(
-        Deal.stage.not_in([DealStage.WON, DealStage.LOST]), Deal.created_at <= prev_end
+        Deal.stage.not_in([DealStage.WON, DealStage.LOST]), Deal.created_at < prev_end_exclusive
     )
     prev_pipeline_value = float(db.execute(prev_pipeline_stmt).scalar_one())
 
@@ -122,11 +126,11 @@ def get_kpi_summary(db: Session, days: int = 30) -> KpiSummary:
         )
     ).scalar_one()
     prev_created_count = db.execute(
-        select(func.count()).where(Deal.created_at >= prev_start, Deal.created_at <= prev_end)
+        select(func.count()).where(Deal.created_at >= prev_start, Deal.created_at < prev_end_exclusive)
     ).scalar_one()
     prev_created_won_count = db.execute(
         select(func.count()).where(
-            Deal.created_at >= prev_start, Deal.created_at <= prev_end, Deal.stage == DealStage.WON
+            Deal.created_at >= prev_start, Deal.created_at < prev_end_exclusive, Deal.stage == DealStage.WON
         )
     ).scalar_one()
     conversion_rate = round((created_won_count / created_count) * 100, 1) if created_count else 0
@@ -140,7 +144,7 @@ def get_kpi_summary(db: Session, days: int = 30) -> KpiSummary:
     ).scalar_one()
     prev_active_customers = db.execute(
         select(func.count(func.distinct(Deal.company_id))).where(
-            Deal.company_id.is_not(None), Deal.updated_at >= prev_start, Deal.updated_at <= prev_end
+            Deal.company_id.is_not(None), Deal.updated_at >= prev_start, Deal.updated_at < prev_end_exclusive
         )
     ).scalar_one()
 
@@ -309,7 +313,7 @@ def get_revenue_trend(db: Session, months: int = 12) -> RevenueAnalytics:
             )
         ).scalar_one()
 
-        prev_month_start = date(month_start.year - 1, month_start.month, 1) if month_start.month else month_start
+        prev_month_start = date(month_start.year - 1, month_start.month, 1)
         prev_month_end = date(
             prev_month_start.year, prev_month_start.month, monthrange(prev_month_start.year, prev_month_start.month)[1]
         )
@@ -343,58 +347,77 @@ def get_revenue_trend(db: Session, months: int = 12) -> RevenueAnalytics:
     return result
 
 
-def get_team_performance(db: Session, days: int = 30) -> TeamPerformance:
+def get_team_performance(db: Session, days: int = 30, user: User | None = None) -> TeamPerformance:
     start, end, _, _ = _period_bounds(days)
-    reps = db.execute(select(User).where(User.role == UserRole.SALES_REP, User.is_active.is_(True))).scalars().all()
+    reps_stmt = select(User).where(User.role == UserRole.SALES_REP, User.is_active.is_(True))
+    if user is not None and scope_to_owner_only(user):
+        # Individual revenue/win-rate/target-achievement is compensation-adjacent (same rule
+        # as sales targets) - a Sales Rep may only see their own row, never a colleague's.
+        reps_stmt = reps_stmt.where(User.id == user.id)
+    reps = db.execute(reps_stmt).scalars().all()
+    rep_ids = [rep.id for rep in reps]
+    if not rep_ids:
+        return TeamPerformance(rows=[])
+
+    # One aggregate query per metric across all reps, instead of one set of queries per rep.
+    deals_count_by_rep: dict[int, int] = dict(
+        db.execute(
+            select(Deal.owner_id, func.count())
+            .where(Deal.owner_id.in_(rep_ids), Deal.created_at >= start)
+            .group_by(Deal.owner_id)
+        ).all()
+    )
+
+    won_lost_stmt = (
+        select(Deal.owner_id, Deal.stage, func.count(), func.coalesce(func.sum(Deal.value), 0))
+        .where(
+            Deal.owner_id.in_(rep_ids),
+            Deal.stage.in_([DealStage.WON, DealStage.LOST]),
+            Deal.actual_close_date >= start,
+            Deal.actual_close_date <= end,
+        )
+        .group_by(Deal.owner_id, Deal.stage)
+    )
+    won_count_by_rep: dict[int, int] = {}
+    lost_count_by_rep: dict[int, int] = {}
+    revenue_by_rep: dict[int, float] = {}
+    for owner_id, stage, count, value_sum in db.execute(won_lost_stmt).all():
+        if stage == DealStage.WON:
+            won_count_by_rep[owner_id] = count
+            revenue_by_rep[owner_id] = float(value_sum)
+        else:
+            lost_count_by_rep[owner_id] = count
+
+    target_by_rep: dict[int, float] = {
+        employee_id: float(total)
+        for employee_id, total in db.execute(
+            select(SalesTarget.employee_id, func.coalesce(func.sum(SalesTarget.target_amount), 0))
+            .where(
+                SalesTarget.employee_id.in_(rep_ids),
+                SalesTarget.period_start <= end,
+                SalesTarget.period_end >= start,
+            )
+            .group_by(SalesTarget.employee_id)
+        ).all()
+    }
 
     rows: list[TeamPerformanceRow] = []
     for rep in reps:
-        deals_count = db.execute(
-            select(func.count()).where(Deal.owner_id == rep.id, Deal.created_at >= start)
-        ).scalar_one()
-        won_count = db.execute(
-            select(func.count()).where(
-                Deal.owner_id == rep.id,
-                Deal.stage == DealStage.WON,
-                Deal.actual_close_date >= start,
-                Deal.actual_close_date <= end,
-            )
-        ).scalar_one()
-        lost_count = db.execute(
-            select(func.count()).where(
-                Deal.owner_id == rep.id,
-                Deal.stage == DealStage.LOST,
-                Deal.actual_close_date >= start,
-                Deal.actual_close_date <= end,
-            )
-        ).scalar_one()
-        revenue = float(
-            db.execute(
-                select(func.coalesce(func.sum(Deal.value), 0)).where(
-                    Deal.owner_id == rep.id,
-                    Deal.stage == DealStage.WON,
-                    Deal.actual_close_date >= start,
-                    Deal.actual_close_date <= end,
-                )
-            ).scalar_one()
-        )
+        won_count = won_count_by_rep.get(rep.id, 0)
+        lost_count = lost_count_by_rep.get(rep.id, 0)
+        revenue = revenue_by_rep.get(rep.id, 0.0)
         win_rate = round((won_count / (won_count + lost_count)) * 100, 1) if (won_count + lost_count) else 0
-
-        target = db.execute(
-            select(func.coalesce(func.sum(SalesTarget.target_amount), 0)).where(
-                SalesTarget.employee_id == rep.id, SalesTarget.period_start <= end, SalesTarget.period_end >= start
-            )
-        ).scalar_one()
-        achievement_pct = round((revenue / float(target)) * 100, 1) if target else 0
+        target = target_by_rep.get(rep.id, 0.0)
+        achievement_pct = round((revenue / target) * 100, 1) if target else 0
 
         rows.append(
             TeamPerformanceRow(
                 employee=rep,
-                deals_count=deals_count,
+                deals_count=deals_count_by_rep.get(rep.id, 0),
                 won_count=won_count,
                 revenue=revenue,
                 win_rate=win_rate,
-                target_amount=float(target),
+                target_amount=target,
                 achievement_pct=achievement_pct,
             )
         )
@@ -473,8 +496,11 @@ def get_customer_growth(db: Session, months: int = 12) -> list[CustomerGrowthPoi
     for month_start in month_starts:
         _, last_day = monthrange(month_start.year, month_start.month)
         month_end = date(month_start.year, month_start.month, last_day)
+        # `Company.created_at` is a DateTime column - an exclusive upper bound is required or
+        # companies created on the last day of the month (after midnight) are silently dropped.
+        month_end_exclusive = month_end + timedelta(days=1)
         new_customers = db.execute(
-            select(func.count()).where(Company.created_at >= month_start, Company.created_at <= month_end)
+            select(func.count()).where(Company.created_at >= month_start, Company.created_at < month_end_exclusive)
         ).scalar_one()
         running_total += new_customers
         points.append(
@@ -503,8 +529,11 @@ def get_pipeline_velocity(db: Session, days: int = 90) -> PipelineVelocity:
     months_span = max(days / 30, 1)
     deals_per_month = round(len(won_deals) / months_span, 1)
 
-    total_open_and_won = db.execute(select(func.count()).where(Deal.created_at >= start)).scalar_one()
-    win_rate = len(won_deals) / total_open_and_won if total_open_and_won else 0
+    lost_count = db.execute(
+        select(func.count()).where(Deal.stage == DealStage.LOST, Deal.actual_close_date >= start)
+    ).scalar_one()
+    closed_count = len(won_deals) + lost_count
+    win_rate = len(won_deals) / closed_count if closed_count else 0
     velocity_score = round((len(won_deals) * win_rate * avg_deal_size) / max(avg_days, 1), 2)
 
     return PipelineVelocity(
@@ -515,7 +544,7 @@ def get_pipeline_velocity(db: Session, days: int = 90) -> PipelineVelocity:
     )
 
 
-def get_business_insights(db: Session) -> list[BusinessInsight]:
+def get_business_insights(db: Session, user: User | None = None) -> list[BusinessInsight]:
     insights: list[BusinessInsight] = []
 
     kpis = get_kpi_summary(db, days=30)
@@ -571,19 +600,23 @@ def get_business_insights(db: Session) -> list[BusinessInsight]:
             )
         )
 
-    team = get_team_performance(db, days=30)
-    below_target = [r for r in team.rows if r.target_amount > 0 and r.achievement_pct < 70]
-    if below_target:
-        names = ", ".join(r.employee.full_name for r in below_target[:3])
-        insights.append(
-            BusinessInsight(
-                id="reps_below_target",
-                severity="warning",
-                title=f"{len(below_target)} sales rep(s) below 70% of target",
-                description=f"{names} are below 70% of their monthly target. Consider coaching or pipeline support.",
-                metric_key="sales_target",
+    # Named per-rep standing is compensation-adjacent, same rule as sales targets - only
+    # compute/surface it for roles with full visibility (Admin/Manager/Analyst/Viewer),
+    # never for a Sales Rep who would otherwise see colleagues' names and numbers.
+    if user is None or has_full_visibility(user):
+        team = get_team_performance(db, days=30)
+        below_target = [r for r in team.rows if r.target_amount > 0 and r.achievement_pct < 70]
+        if below_target:
+            names = ", ".join(r.employee.full_name for r in below_target[:3])
+            insights.append(
+                BusinessInsight(
+                    id="reps_below_target",
+                    severity="warning",
+                    title=f"{len(below_target)} sales rep(s) below 70% of target",
+                    description=f"{names} are below 70% of their monthly target. Consider coaching or pipeline support.",
+                    metric_key="sales_target",
+                )
             )
-        )
 
     win_loss = get_win_loss_trend(db, months=2)
     if len(win_loss) == 2 and win_loss[0].win_rate > 0:

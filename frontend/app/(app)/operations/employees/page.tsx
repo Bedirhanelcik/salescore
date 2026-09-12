@@ -85,7 +85,7 @@ export default function EmployeesPage() {
                     <td className="px-5 py-3 text-muted-foreground">{emp.job_title ?? "—"}</td>
                     <td className="px-5 py-3">
                       <Badge tone={emp.is_active ? "success" : "neutral"}>
-                        {emp.is_active ? "Active" : "Inactive"}
+                        {emp.is_active ? t("common.active") : t("common.inactive")}
                       </Badge>
                     </td>
                   </tr>

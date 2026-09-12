@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "SalesCore",
-    "tagline": "منصة إدارة المبيعات وعلاقات العملاء"
+    "tagline": "منصة إدارة المبيعات وعلاقات العملاء",
+    "introTagline": "CRM · YBS · BI"
   },
   "nav": {
     "dashboard": "لوحة التحكم",
@@ -28,6 +29,9 @@
     "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا؟ لا يمكن التراجع عن هذا الإجراء.",
     "actions": "إجراءات",
     "status": "الحالة",
+    "type": "النوع",
+    "active": "نشط",
+    "inactive": "غير نشط",
     "owner": "المالك",
     "all": "الكل",
     "none": "لا شيء",
@@ -44,6 +48,9 @@
     "viewAll": "عرض الكل",
     "viewDetails": "عرض التفاصيل",
     "close": "إغلاق",
+    "menu": "القائمة",
+    "toggleSidebar": "طي/توسيع الشريط الجانبي",
+    "toggleTheme": "تبديل الوضع الداكن",
     "page": "صفحة",
     "of": "من",
     "results": "نتائج",
@@ -142,12 +149,38 @@
     "openDeals": "المفتوحة",
     "lostDeals": "الخاسرة",
     "jobTitle": "المسمى الوظيفي",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
     "size": "حجم الشركة",
     "revenue": "الإيراد السنوي",
     "source": "المصدر",
     "score": "النقاط",
     "convertLead": "تحويل إلى صفقة",
     "leadConverted": "تم التحويل",
+    "companyStatus": {
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "prospect": "عميل مرتقب"
+    },
+    "leadStatus": {
+      "new": "جديد",
+      "contacted": "تم التواصل",
+      "qualified": "مؤهل",
+      "unqualified": "غير مؤهل",
+      "converted": "تم التحويل"
+    },
+    "leadSource": {
+      "website": "الموقع الإلكتروني",
+      "referral": "إحالة",
+      "linkedin": "لينكدإن",
+      "advertisement": "إعلان",
+      "email": "البريد الإلكتروني",
+      "event": "فعالية",
+      "other": "أخرى"
+    },
+    "companySize": {
+      "self_employed": "عمل حر"
+    },
     "tabs": {
       "overview": "نظرة عامة",
       "contacts": "جهات الاتصال",
@@ -195,6 +228,7 @@
     "customerGrowth": "نمو العملاء",
     "pipelineVelocity": "سرعة خط الأنابيب",
     "avgDaysToClose": "متوسط أيام الإغلاق",
+    "avgDealSize": "متوسط حجم الصفقة",
     "dealsPerMonth": "صفقات / شهر",
     "velocityScore": "مؤشر السرعة",
     "employee": "الموظف",
@@ -241,6 +275,11 @@
       "follow_up": "متابعة",
       "demo": "عرض توضيحي",
       "proposal": "عرض"
+    },
+    "activityStatus": {
+      "planned": "مخطط له",
+      "completed": "مكتمل",
+      "cancelled": "ملغى"
     }
   },
   "reports": {
@@ -258,7 +297,24 @@
     },
     "startDate": "تاريخ البدء",
     "endDate": "تاريخ الانتهاء",
-    "noData": "لا توجد بيانات للنطاق المحدد"
+    "noData": "لا توجد بيانات للنطاق المحدد",
+    "columns": {
+      "deal": "الصفقة",
+      "stage": "المرحلة",
+      "revenue": "الإيراد",
+      "period": "الفترة",
+      "previousPeriod": "الفترة السابقة",
+      "lead": "العميل المحتمل",
+      "daysInPipeline": "الأيام في المسار",
+      "metric": "المقياس",
+      "changePct": "نسبة التغيير",
+      "format": "التنسيق"
+    },
+    "formatTypes": {
+      "currency": "عملة",
+      "percent": "نسبة مئوية",
+      "number": "رقم"
+    }
   },
   "knowledge": {
     "title": "المعرفة",
@@ -292,6 +348,12 @@
       "deal_lost": "تم خسارة الصفقة",
       "target_reached": "تم تحقيق الهدف",
       "mention": "إشارة"
+    },
+    "messages": {
+      "task_due": "لديك مهمة مستحقة خلال 24 ساعة.",
+      "new_lead": "لديك عميل محتمل جديد: {name}.",
+      "deal_won": "تم وضع علامة 'مكسوبة' على الصفقة '{deal_title}'.",
+      "deal_lost": "تم وضع علامة 'خاسرة' على الصفقة '{deal_title}'."
     }
   },
   "settingsPage": {
@@ -309,6 +371,7 @@
     "appearanceHint": "اختر شكل SalesCore واللغة التي يُعرض بها.",
     "language": "اللغة",
     "theme": "السمة",
+    "toggleTheme": "تبديل الوضع الداكن",
     "themeLight": "فاتح",
     "themeDark": "داكن",
     "passwordUpdated": "تم تحديث كلمة المرور بنجاح",

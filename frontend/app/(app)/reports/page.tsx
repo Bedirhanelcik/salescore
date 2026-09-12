@@ -26,6 +26,59 @@ const REPORT_TYPES = [
   "kpi",
 ];
 
+// Maps a raw backend column key to an i18n key for its header label - reusing an existing
+// key wherever one already carries the right meaning, and only adding new `reports.columns.*`
+// entries for columns that have no equivalent elsewhere in the app.
+const COLUMN_LABEL_KEYS: Record<string, string> = {
+  deal: "reports.columns.deal",
+  company: "common.company",
+  owner: "common.owner",
+  stage: "reports.columns.stage",
+  value: "common.value",
+  probability: "sales.probability",
+  expected_close_date: "sales.expectedClose",
+  industry: "common.industry",
+  country: "common.country",
+  status: "common.status",
+  total_deals: "crm.totalDeals",
+  won_deals: "crm.wonDeals",
+  lifetime_value: "crm.lifetimeValue",
+  employee: "analytics.employee",
+  deals: "analytics.deals",
+  won: "analytics.won",
+  revenue: "reports.columns.revenue",
+  win_rate: "analytics.winRate",
+  target: "sales.target",
+  achievement_pct: "sales.achievement",
+  period: "reports.columns.period",
+  actual: "sales.actual",
+  forecast: "sales.forecast",
+  previous_period: "reports.columns.previousPeriod",
+  lead: "reports.columns.lead",
+  source: "crm.source",
+  score: "crm.score",
+  converted: "crm.leadConverted",
+  days_in_pipeline: "reports.columns.daysInPipeline",
+  title: "common.name",
+  type: "common.type",
+  date: "common.date",
+  metric: "reports.columns.metric",
+  change_pct: "reports.columns.changePct",
+  format: "reports.columns.format",
+};
+
+// Enum-valued columns whose raw stored value (e.g. "won", "active") needs translation - keyed
+// by report type first because the same column name means a different taxonomy in each report
+// (e.g. "status" is a company status in `customers` but a lead status in `lead-conversion`).
+const ENUM_COLUMNS: Record<string, Record<string, string>> = {
+  sales: { stage: "sales.stages" },
+  pipeline: { stage: "sales.stages" },
+  customers: { status: "crm.companyStatus" },
+  "lead-conversion": { status: "crm.leadStatus", source: "crm.leadSource" },
+  activity: { status: "operations.activityStatus", type: "operations.activityTypes" },
+  kpi: { format: "reports.formatTypes" },
+};
+
 export default function ReportsPage() {
   const { t } = useI18n();
   const [reportType, setReportType] = useState("sales");
@@ -119,19 +172,22 @@ export default function ReportsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left text-xs text-muted-foreground rtl:text-right">
-                  {columns.map((col) => (
-                    <th
-                      key={col}
-                      className="cursor-pointer px-5 py-3 font-medium select-none"
-                      onClick={() => toggleSort(col)}
-                    >
-                      <span className="inline-flex items-center gap-1">
-                        {titleCase(col)}
-                        {sortBy === col &&
-                          (sortDir === "asc" ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />)}
-                      </span>
-                    </th>
-                  ))}
+                  {columns.map((col) => {
+                    const labelKey = COLUMN_LABEL_KEYS[col];
+                    return (
+                      <th
+                        key={col}
+                        className="cursor-pointer px-5 py-3 font-medium select-none"
+                        onClick={() => toggleSort(col)}
+                      >
+                        <span className="inline-flex items-center gap-1">
+                          {labelKey ? t(labelKey) : titleCase(col)}
+                          {sortBy === col &&
+                            (sortDir === "asc" ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />)}
+                        </span>
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody>
@@ -139,7 +195,7 @@ export default function ReportsPage() {
                   <tr key={idx} className="border-b border-border/70 last:border-b-0 hover:bg-card-hover">
                     {columns.map((col) => (
                       <td key={col} className="px-5 py-3 text-foreground whitespace-nowrap">
-                        {formatCell(row[col])}
+                        {formatCell(row[col], col, reportType, t)}
                       </td>
                     ))}
                   </tr>
@@ -162,9 +218,16 @@ export default function ReportsPage() {
   );
 }
 
-function formatCell(value: unknown): string {
+function formatCell(
+  value: unknown,
+  col: string,
+  reportType: string,
+  t: (key: string, fallback?: string) => string
+): string {
   if (value === null || value === undefined) return "—";
-  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (typeof value === "boolean") return value ? t("common.yes") : t("common.no");
   if (typeof value === "number") return Number.isInteger(value) ? String(value) : value.toFixed(2);
+  const enumNamespace = ENUM_COLUMNS[reportType]?.[col];
+  if (enumNamespace) return t(`${enumNamespace}.${value}`, String(value));
   return String(value);
 }

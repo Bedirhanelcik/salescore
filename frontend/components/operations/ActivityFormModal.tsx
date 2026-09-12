@@ -59,9 +59,9 @@ export function ActivityFormModal({ open, onClose }: { open: boolean; onClose: (
           <Input {...register("title")} autoFocus />
           <FieldError>{errors.title?.message}</FieldError>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <Label>{t("common.company")}</Label>
+            <Label>{t("common.type")}</Label>
             <Select {...register("type")}>
               <option value="call">{t("operations.activityTypes.call")}</option>
               <option value="email">{t("operations.activityTypes.email")}</option>

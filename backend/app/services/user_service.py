@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.audit import record_audit
-from app.core.exceptions import ConflictError, NotFoundError
+from app.core.exceptions import ConflictError, ForbiddenError, NotFoundError
 from app.core.pagination import paginate
 from app.core.security import hash_password
 from app.models.enums import UserRole
@@ -65,7 +65,18 @@ def create_user(db: Session, actor: User, data: UserCreate) -> User:
 
 def update_user(db: Session, actor: User, user_id: int, data: UserUpdate) -> User:
     user = get_user_or_404(db, user_id)
-    for field, value in data.model_dump(exclude_unset=True).items():
+    changes = data.model_dump(exclude_unset=True)
+    # PATCH /employees/{id} is open to Managers so they can promote a self-registered Viewer
+    # into a working role on their team - but granting Admin is a privilege-escalation vector,
+    # so only an existing Admin may set the Admin role (on themselves or anyone else) or change
+    # the role of an existing Admin.
+    if (
+        "role" in changes
+        and (changes["role"] == UserRole.ADMIN or user.role == UserRole.ADMIN)
+        and actor.role != UserRole.ADMIN
+    ):
+        raise ForbiddenError("Only an administrator can grant or change the Admin role.")
+    for field, value in changes.items():
         setattr(user, field, value)
     record_audit(
         db, user_id=actor.id, action="update", entity_type="employee", entity_id=user.id, entity_label=user.full_name

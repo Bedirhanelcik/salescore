@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 
+import { useI18n } from "@/lib/contexts/i18n-context";
 import { Button } from "./Button";
 
 export function EmptyState({
@@ -36,12 +37,13 @@ export function EmptyState({
 }
 
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const { t } = useI18n();
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-16 px-6 text-center">
       <p className="text-sm font-semibold text-danger">{message}</p>
       {onRetry && (
         <Button size="sm" variant="outline" onClick={onRetry}>
-          Try again
+          {t("common.tryAgain")}
         </Button>
       )}
     </div>

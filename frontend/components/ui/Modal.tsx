@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { X } from "lucide-react";
 
+import { useI18n } from "@/lib/contexts/i18n-context";
 import { cn } from "@/lib/utils";
 
 export function Modal({
@@ -31,6 +32,8 @@ export function Modal({
     };
   }, [open, onClose]);
 
+  const { t } = useI18n();
+
   if (!open) return null;
 
   const sizeClass = { sm: "max-w-sm", md: "max-w-lg", lg: "max-w-2xl", xl: "max-w-4xl" }[size];
@@ -44,6 +47,7 @@ export function Modal({
             <h2 className="text-sm font-semibold text-foreground">{title}</h2>
             <button
               onClick={onClose}
+              aria-label={t("common.close")}
               className="rounded-md p-1 text-muted-foreground hover:bg-card-hover hover:text-foreground"
             >
               <X className="h-4 w-4" />
@@ -62,7 +66,7 @@ export function ConfirmDialog({
   onConfirm,
   title,
   description,
-  confirmLabel = "Confirm",
+  confirmLabel,
   isDestructive = true,
   isLoading,
 }: {
@@ -75,6 +79,8 @@ export function ConfirmDialog({
   isDestructive?: boolean;
   isLoading?: boolean;
 }) {
+  const { t } = useI18n();
+
   if (!open) return null;
   return (
     <Modal open={open} onClose={onClose} title={title} size="sm">
@@ -84,7 +90,7 @@ export function ConfirmDialog({
           onClick={onClose}
           className="h-9 rounded-lg border border-border px-4 text-sm font-medium hover:bg-card-hover"
         >
-          Cancel
+          {t("common.cancel")}
         </button>
         <button
           onClick={onConfirm}
@@ -94,7 +100,7 @@ export function ConfirmDialog({
             isDestructive ? "bg-danger hover:opacity-90" : "bg-brand hover:bg-brand-hover"
           )}
         >
-          {confirmLabel}
+          {confirmLabel ?? t("common.confirm")}
         </button>
       </div>
     </Modal>

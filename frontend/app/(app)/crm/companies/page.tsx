@@ -64,9 +64,9 @@ export default function CompaniesPage() {
           <option value="">
             {t("common.status")}: {t("common.all")}
           </option>
-          <option value="prospect">Prospect</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
+          <option value="prospect">{t("crm.companyStatus.prospect")}</option>
+          <option value="active">{t("crm.companyStatus.active")}</option>
+          <option value="inactive">{t("crm.companyStatus.inactive")}</option>
         </Select>
         <Button onClick={() => setModalOpen(true)} size="sm">
           <Plus className="h-4 w-4" />
@@ -112,7 +112,7 @@ export default function CompaniesPage() {
                       {company.annual_revenue ? formatCurrency(company.annual_revenue) : "—"}
                     </td>
                     <td className="px-5 py-3">
-                      <Badge tone={STATUS_TONE[company.status]}>{company.status}</Badge>
+                      <Badge tone={STATUS_TONE[company.status]}>{t(`crm.companyStatus.${company.status}`)}</Badge>
                     </td>
                     <td className="px-5 py-3">
                       {company.owner && (

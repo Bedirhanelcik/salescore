@@ -26,6 +26,20 @@ def test_company_not_found(client, admin_user):
     assert response.json()["error"]["code"] == "COMPANY_NOT_FOUND"
 
 
+def test_sort_by_relationship_name_does_not_crash(client, admin_user):
+    # Regression test: sort_by is a free-text query param. "owner"/"contacts" are relationship
+    # attributes on Company, not sortable columns, and used to raise NotImplementedError from
+    # .desc()/.asc(), producing a 500. An unrecognized sort_by must fall back silently instead.
+    headers = auth_headers(client, "admin@test.io")
+    client.post("/api/v1/companies", headers=headers, json={"name": "Sort Check Co"})
+
+    response = client.get("/api/v1/companies?sort_by=owner", headers=headers)
+    assert response.status_code == 200
+
+    response = client.get("/api/v1/companies?sort_by=contacts", headers=headers)
+    assert response.status_code == 200
+
+
 def test_update_company(client, admin_user):
     headers = auth_headers(client, "admin@test.io")
     create = client.post("/api/v1/companies", headers=headers, json={"name": "Initech"})

@@ -58,7 +58,7 @@ export function LeadFormModal({ open, onClose }: { open: boolean; onClose: () =>
           <Label>{t("common.company")}</Label>
           <Input {...register("company_name")} />
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <Label>{t("common.email")}</Label>
             <Input {...register("email")} />
@@ -69,17 +69,17 @@ export function LeadFormModal({ open, onClose }: { open: boolean; onClose: () =>
             <Input {...register("phone")} />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <Label>{t("crm.source")}</Label>
             <Select {...register("source")}>
-              <option value="website">Website</option>
-              <option value="referral">Referral</option>
-              <option value="linkedin">LinkedIn</option>
-              <option value="advertisement">Advertisement</option>
-              <option value="email">Email</option>
-              <option value="event">Event</option>
-              <option value="other">Other</option>
+              <option value="website">{t("crm.leadSource.website")}</option>
+              <option value="referral">{t("crm.leadSource.referral")}</option>
+              <option value="linkedin">{t("crm.leadSource.linkedin")}</option>
+              <option value="advertisement">{t("crm.leadSource.advertisement")}</option>
+              <option value="email">{t("crm.leadSource.email")}</option>
+              <option value="event">{t("crm.leadSource.event")}</option>
+              <option value="other">{t("crm.leadSource.other")}</option>
             </Select>
           </div>
           <div>

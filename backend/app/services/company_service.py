@@ -45,7 +45,9 @@ def list_companies(
     if status:
         stmt = stmt.where(Company.status == status)
 
-    sort_column = getattr(Company, sort_by, Company.created_at)
+    # getattr(Company, sort_by) must be restricted to real columns - Company also exposes
+    # relationship attributes (owner, contacts, deals) that raise NotImplementedError from .desc()/.asc().
+    sort_column = getattr(Company, sort_by) if sort_by in Company.__table__.columns else Company.created_at
     stmt = stmt.order_by(sort_column.desc() if sort_dir == "desc" else sort_column.asc())
 
     return paginate(db, stmt, page, page_size)
@@ -95,11 +97,6 @@ def delete_company(db: Session, user: User, company_id: int) -> None:
     )
     db.delete(company)
     db.commit()
-
-
-def search_companies(db: Session, query: str, limit: int = 5) -> list[Company]:
-    stmt = select(Company).where(Company.name.ilike(f"%{query}%")).limit(limit)
-    return list(db.execute(stmt).scalars().all())
 
 
 def get_customer_360(db: Session, user: User, company_id: int) -> dict:

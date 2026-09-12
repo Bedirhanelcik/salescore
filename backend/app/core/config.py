@@ -1,6 +1,12 @@
 from functools import lru_cache
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Fine for local development (no setup required to run the app), but must never reach a
+# production deployment - the guard below refuses to start the app with these if ENV=production.
+_INSECURE_JWT_SECRET_KEY = "change-me-in-production-please-use-a-long-random-string"
+_INSECURE_DATABASE_URL = "postgresql+psycopg://salescore:salescore@localhost:5432/salescore"
 
 
 class Settings(BaseSettings):
@@ -10,10 +16,10 @@ class Settings(BaseSettings):
     ENV: str = "development"
     API_V1_PREFIX: str = "/api/v1"
 
-    DATABASE_URL: str = "postgresql+psycopg://salescore:salescore@localhost:5432/salescore"
+    DATABASE_URL: str = _INSECURE_DATABASE_URL
     REDIS_URL: str = "redis://localhost:6379/0"
 
-    JWT_SECRET_KEY: str = "change-me-in-production-please-use-a-long-random-string"
+    JWT_SECRET_KEY: str = _INSECURE_JWT_SECRET_KEY
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 12
 
@@ -27,6 +33,22 @@ class Settings(BaseSettings):
     AI_PROVIDER: str = "mock"  # "mock" | "openai"
     OPENAI_API_KEY: str | None = None
     OPENAI_MODEL: str = "gpt-4o-mini"
+
+    @model_validator(mode="after")
+    def _reject_insecure_defaults_in_production(self) -> "Settings":
+        if self.ENV.lower() != "production":
+            return self
+        if self.JWT_SECRET_KEY == _INSECURE_JWT_SECRET_KEY:
+            raise ValueError(
+                "Refusing to start with ENV=production: JWT_SECRET_KEY is still the development "
+                "default. Set a long, random JWT_SECRET_KEY in the environment before deploying."
+            )
+        if self.DATABASE_URL == _INSECURE_DATABASE_URL:
+            raise ValueError(
+                "Refusing to start with ENV=production: DATABASE_URL is still the development "
+                "default. Set a real DATABASE_URL in the environment before deploying."
+            )
+        return self
 
 
 @lru_cache

@@ -8,6 +8,7 @@ import { ArrowLeft, Briefcase, CheckCircle2, Circle, XCircle } from "lucide-reac
 import { StageBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { ErrorState } from "@/components/ui/EmptyState";
 import { Label, Textarea } from "@/components/ui/Input";
 import { ConfirmDialog, Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -27,10 +28,14 @@ export default function DealDetailPage() {
   const [lostReasonOpen, setLostReasonOpen] = useState(false);
   const [lostReason, setLostReason] = useState("");
 
-  const { data: deal, isLoading } = useDeal(dealId);
+  const { data: deal, isLoading, isError, refetch } = useDeal(dealId);
   const { data: history } = useDealHistory(dealId);
   const changeStage = useChangeDealStage();
   const deleteDeal = useDeleteDeal();
+
+  if (isError) {
+    return <ErrorState message={t("common.somethingWentWrong")} onRetry={refetch} />;
+  }
 
   if (isLoading || !deal) {
     return (

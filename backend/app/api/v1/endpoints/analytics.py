@@ -37,7 +37,7 @@ def get_revenue(months: int = 12, db: Session = Depends(get_db), current_user: U
 
 @router.get("/team-performance", response_model=TeamPerformance)
 def get_team_performance(days: int = 30, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    return analytics_service.get_team_performance(db, days)
+    return analytics_service.get_team_performance(db, days, current_user)
 
 
 @router.get("/segmentation", response_model=list[SegmentationRow])
@@ -66,4 +66,4 @@ def get_customer_growth(
 
 @router.get("/insights", response_model=BusinessInsights)
 def get_insights(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    return BusinessInsights(insights=analytics_service.get_business_insights(db))
+    return BusinessInsights(insights=analytics_service.get_business_insights(db, current_user))

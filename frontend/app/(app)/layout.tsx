@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 
 import { useAuth } from "@/lib/contexts/auth-context";
 import { Navbar } from "@/components/layout/Navbar";
+import { Splash } from "@/components/layout/Splash";
 import { MobileSidebarDrawer, Sidebar } from "@/components/layout/Sidebar";
 
 const COLLAPSE_KEY = "salescore_sidebar_collapsed";
@@ -38,21 +38,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   if (isLoading || !user) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <Loader2 className="h-6 w-6 animate-spin text-brand" />
-      </div>
-    );
+    return <Splash />;
   }
 
   return (
     <div className="flex min-h-screen">
       <Sidebar collapsed={collapsed} onToggleCollapse={toggleCollapse} />
       <MobileSidebarDrawer open={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
-      <div className="flex min-h-screen flex-1 flex-col">
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
         <Navbar onOpenMobileNav={() => setMobileNavOpen(true)} />
-        <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8">
-          <div className="mx-auto w-full max-w-[1400px]">{children}</div>
+        <main className="min-w-0 flex-1 px-4 py-6 lg:px-8 lg:py-8">
+          <div className="mx-auto w-full min-w-0 max-w-[1400px]">{children}</div>
         </main>
       </div>
     </div>

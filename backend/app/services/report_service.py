@@ -92,10 +92,10 @@ def customer_report(db: Session, user: User) -> list[dict]:
     return rows
 
 
-def employee_performance_report(db: Session, start_date: date | None, end_date: date | None) -> list[dict]:
+def employee_performance_report(db: Session, user: User, start_date: date | None, end_date: date | None) -> list[dict]:
     start, end = _date_bounds(start_date, end_date)
     days = max((end - start).days, 1)
-    team = analytics_service.get_team_performance(db, days=days)
+    team = analytics_service.get_team_performance(db, days=days, user=user)
     return [
         {
             "employee": row.employee.full_name,
@@ -201,7 +201,7 @@ def get_report(
         case "customers":
             return customer_report(db, user)
         case "employee-performance":
-            return employee_performance_report(db, start_date, end_date)
+            return employee_performance_report(db, user, start_date, end_date)
         case "revenue":
             return revenue_report(db)
         case "lead-conversion":

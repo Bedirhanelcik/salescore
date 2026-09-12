@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import { AuthProvider } from "@/lib/contexts/auth-context";
 import { I18nProvider } from "@/lib/contexts/i18n-context";
 import { ThemeProvider } from "@/lib/contexts/theme-context";
+import { AppIntro } from "@/components/layout/AppIntro";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -27,7 +28,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <ThemeProvider>
         <I18nProvider>
           <AuthProvider>
-            {children}
+            <AppIntro>{children}</AppIntro>
             <Toaster position="top-center" richColors closeButton />
           </AuthProvider>
         </I18nProvider>

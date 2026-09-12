@@ -39,10 +39,3 @@ def get_term_by_key(db: Session, key: str) -> KnowledgeTerm:
     if not term:
         raise NotFoundError("Knowledge term", key)
     return term
-
-
-def get_terms_briefs(db: Session, keys: list[str]) -> list[KnowledgeTerm]:
-    if not keys:
-        return []
-    stmt = select(KnowledgeTerm).where(KnowledgeTerm.key.in_(keys))
-    return list(db.execute(stmt).scalars().all())

@@ -11,6 +11,7 @@ class NotificationRead(BaseModel):
     type: NotificationType
     title: str
     message: str
+    params: dict | None
     is_read: bool
     related_entity_type: str | None
     related_entity_id: int | None

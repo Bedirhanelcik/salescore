@@ -38,7 +38,16 @@ export function CompanyFormModal({ open, onClose }: { open: boolean; onClose: ()
 
   const onSubmit = async (values: FormValues) => {
     try {
-      const payload = { ...values, annual_revenue: values.annual_revenue || undefined };
+      const payload = {
+        ...values,
+        industry: values.industry || undefined,
+        // `size` is a strict enum on the backend - an empty string (from the "None" option)
+        // fails validation, unlike a genuinely omitted field, so it must become undefined.
+        size: values.size || undefined,
+        country: values.country || undefined,
+        website: values.website || undefined,
+        annual_revenue: values.annual_revenue || undefined,
+      };
       await createCompany.mutateAsync(payload);
       toast.success(t("crm.addCompany"));
       reset();
@@ -56,7 +65,7 @@ export function CompanyFormModal({ open, onClose }: { open: boolean; onClose: ()
           <Input {...register("name")} autoFocus />
           <FieldError>{errors.name?.message}</FieldError>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <Label>{t("common.industry")}</Label>
             <Input {...register("industry")} />
@@ -65,7 +74,7 @@ export function CompanyFormModal({ open, onClose }: { open: boolean; onClose: ()
             <Label>{t("crm.size")}</Label>
             <Select {...register("size")} defaultValue="">
               <option value="">{t("common.none")}</option>
-              <option value="self_employed">Self-employed</option>
+              <option value="self_employed">{t("crm.companySize.self_employed")}</option>
               <option value="1-50">1-50</option>
               <option value="51-200">51-200</option>
               <option value="201-1000">201-1000</option>
@@ -73,7 +82,7 @@ export function CompanyFormModal({ open, onClose }: { open: boolean; onClose: ()
             </Select>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <Label>{t("common.country")}</Label>
             <Input {...register("country")} />
@@ -83,7 +92,7 @@ export function CompanyFormModal({ open, onClose }: { open: boolean; onClose: ()
             <Input {...register("website")} />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <Label>{t("crm.revenue")}</Label>
             <Input type="number" {...register("annual_revenue")} />
@@ -91,9 +100,9 @@ export function CompanyFormModal({ open, onClose }: { open: boolean; onClose: ()
           <div>
             <Label>{t("common.status")}</Label>
             <Select {...register("status")}>
-              <option value="prospect">Prospect</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
+              <option value="prospect">{t("crm.companyStatus.prospect")}</option>
+              <option value="active">{t("crm.companyStatus.active")}</option>
+              <option value="inactive">{t("crm.companyStatus.inactive")}</option>
             </Select>
           </div>
         </div>

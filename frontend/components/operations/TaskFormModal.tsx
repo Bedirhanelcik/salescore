@@ -63,7 +63,7 @@ export function TaskFormModal({ open, onClose }: { open: boolean; onClose: () =>
           <Label>{t("crm.tabs.notes")}</Label>
           <Textarea rows={2} {...register("description")} />
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <Label>{t("operations.priority")}</Label>
             <Select {...register("priority")}>

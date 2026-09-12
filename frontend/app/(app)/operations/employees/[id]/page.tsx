@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardContent } from "@/components/ui/Card";
+import { ErrorState } from "@/components/ui/EmptyState";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useI18n } from "@/lib/contexts/i18n-context";
@@ -19,8 +20,12 @@ export default function EmployeeDetailPage() {
   const router = useRouter();
   const { t, locale } = useI18n();
 
-  const { data: employee, isLoading } = useEmployee(employeeId);
+  const { data: employee, isLoading, isError, refetch } = useEmployee(employeeId);
   const { data: targets } = useSalesTargets({ employee_id: employeeId });
+
+  if (isError) {
+    return <ErrorState message={t("common.somethingWentWrong")} onRetry={refetch} />;
+  }
 
   if (isLoading || !employee) {
     return (
@@ -56,7 +61,7 @@ export default function EmployeeDetailPage() {
         <CardContent className="pt-5 grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
           <Field label={t("common.email")} value={employee.email} />
           <Field label={t("operations.department")} value={employee.department?.name} />
-          <Field label={t("common.status")} value={employee.is_active ? "Active" : "Inactive"} />
+          <Field label={t("common.status")} value={employee.is_active ? t("common.active") : t("common.inactive")} />
           <Field label={t("common.createdAt")} value={formatDate(employee.created_at, locale)} />
         </CardContent>
       </Card>

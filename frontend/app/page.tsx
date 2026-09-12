@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+import { Splash } from "@/components/layout/Splash";
+
 export default function RootPage() {
   const router = useRouter();
 
@@ -10,5 +12,5 @@ export default function RootPage() {
     router.replace("/dashboard");
   }, [router]);
 
-  return null;
+  return <Splash />;
 }

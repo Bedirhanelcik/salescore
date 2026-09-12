@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "SalesCore",
-    "tagline": "Kurumsal Satış ve Müşteri İlişkileri Yönetimi Platformu"
+    "tagline": "Kurumsal Satış ve Müşteri İlişkileri Yönetimi Platformu",
+    "introTagline": "CRM · YBS · BI"
   },
   "nav": {
     "dashboard": "Panel",
@@ -28,6 +29,9 @@
     "confirmDelete": "Bunu silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
     "actions": "İşlemler",
     "status": "Durum",
+    "type": "Tür",
+    "active": "Aktif",
+    "inactive": "Pasif",
     "owner": "Sahibi",
     "all": "Tümü",
     "none": "Yok",
@@ -44,6 +48,9 @@
     "viewAll": "Tümünü gör",
     "viewDetails": "Detayları gör",
     "close": "Kapat",
+    "menu": "Menü",
+    "toggleSidebar": "Kenar çubuğunu daralt/genişlet",
+    "toggleTheme": "Karanlık modu değiştir",
     "page": "Sayfa",
     "of": "/",
     "results": "sonuç",
@@ -142,12 +149,38 @@
     "openDeals": "Açık",
     "lostDeals": "Kaybedilen",
     "jobTitle": "Ünvan",
+    "firstName": "Ad",
+    "lastName": "Soyad",
     "size": "Şirket Büyüklüğü",
     "revenue": "Yıllık Gelir",
     "source": "Kaynak",
     "score": "Puan",
     "convertLead": "Fırsata dönüştür",
     "leadConverted": "Dönüştürüldü",
+    "companyStatus": {
+      "active": "Aktif",
+      "inactive": "Pasif",
+      "prospect": "Potansiyel"
+    },
+    "leadStatus": {
+      "new": "Yeni",
+      "contacted": "İletişime Geçildi",
+      "qualified": "Nitelikli",
+      "unqualified": "Niteliksiz",
+      "converted": "Dönüştürüldü"
+    },
+    "leadSource": {
+      "website": "Web Sitesi",
+      "referral": "Referans",
+      "linkedin": "LinkedIn",
+      "advertisement": "Reklam",
+      "email": "E-posta",
+      "event": "Etkinlik",
+      "other": "Diğer"
+    },
+    "companySize": {
+      "self_employed": "Bağımsız Çalışan"
+    },
     "tabs": {
       "overview": "Genel Bakış",
       "contacts": "Kişiler",
@@ -195,6 +228,7 @@
     "customerGrowth": "Müşteri Büyümesi",
     "pipelineVelocity": "Pipeline Hızı",
     "avgDaysToClose": "Ort. Kapanış Süresi",
+    "avgDealSize": "Ort. Fırsat Büyüklüğü",
     "dealsPerMonth": "Fırsat / Ay",
     "velocityScore": "Hız Skoru",
     "employee": "Çalışan",
@@ -241,6 +275,11 @@
       "follow_up": "Takip",
       "demo": "Demo",
       "proposal": "Teklif"
+    },
+    "activityStatus": {
+      "planned": "Planlandı",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal Edildi"
     }
   },
   "reports": {
@@ -258,7 +297,24 @@
     },
     "startDate": "Başlangıç tarihi",
     "endDate": "Bitiş tarihi",
-    "noData": "Seçilen aralık için veri yok"
+    "noData": "Seçilen aralık için veri yok",
+    "columns": {
+      "deal": "Fırsat",
+      "stage": "Aşama",
+      "revenue": "Gelir",
+      "period": "Dönem",
+      "previousPeriod": "Önceki Dönem",
+      "lead": "Potansiyel Müşteri",
+      "daysInPipeline": "Boru Hattında Geçen Gün",
+      "metric": "Metrik",
+      "changePct": "Değişim %",
+      "format": "Biçim"
+    },
+    "formatTypes": {
+      "currency": "Para Birimi",
+      "percent": "Yüzde",
+      "number": "Sayı"
+    }
   },
   "knowledge": {
     "title": "Bilgi Merkezi",
@@ -292,6 +348,12 @@
       "deal_lost": "Fırsat kaybedildi",
       "target_reached": "Hedefe ulaşıldı",
       "mention": "Bahsedilme"
+    },
+    "messages": {
+      "task_due": "24 saat içinde teslim edilmesi gereken bir göreviniz var.",
+      "new_lead": "Yeni bir potansiyel müşteriniz var: {name}.",
+      "deal_won": "'{deal_title}' kazanıldı olarak işaretlendi.",
+      "deal_lost": "'{deal_title}' kaybedildi olarak işaretlendi."
     }
   },
   "settingsPage": {
@@ -309,6 +371,7 @@
     "appearanceHint": "SalesCore'un görünümünü ve görüntülenme dilini seçin.",
     "language": "Dil",
     "theme": "Tema",
+    "toggleTheme": "Karanlık modu değiştir",
     "themeLight": "Açık",
     "themeDark": "Koyu",
     "passwordUpdated": "Şifre başarıyla güncellendi",

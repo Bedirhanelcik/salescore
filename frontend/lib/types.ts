@@ -213,6 +213,7 @@ export interface NotificationItem {
   type: NotificationType;
   title: string;
   message: string;
+  params: Record<string, string> | null;
   is_read: boolean;
   related_entity_type: string | null;
   related_entity_id: number | null;
@@ -355,6 +356,8 @@ export interface SearchResultItem {
   title: string;
   subtitle: string | null;
   url: string;
+  title_i18n: Record<string, string> | null;
+  subtitle_i18n: Record<string, string> | null;
 }
 
 export interface ApiErrorBody {

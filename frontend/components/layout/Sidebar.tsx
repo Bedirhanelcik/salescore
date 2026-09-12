@@ -17,6 +17,7 @@ import {
 
 import { useI18n } from "@/lib/contexts/i18n-context";
 import { cn } from "@/lib/utils";
+import { Logo } from "./Logo";
 
 const NAV_ITEMS = [
   { href: "/dashboard", key: "nav.dashboard", icon: LayoutDashboard },
@@ -84,6 +85,7 @@ export function SidebarContent({ collapsed, onNavigate }: { collapsed?: boolean;
 }
 
 export function Sidebar({ collapsed, onToggleCollapse }: { collapsed: boolean; onToggleCollapse: () => void }) {
+  const { t } = useI18n();
   return (
     <aside
       className={cn(
@@ -94,14 +96,12 @@ export function Sidebar({ collapsed, onToggleCollapse }: { collapsed: boolean; o
       <div
         className={cn("flex h-14 items-center gap-2 border-b border-border px-3.5", collapsed && "justify-center px-0")}
       >
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-brand text-sm font-bold text-white">
-          S
-        </div>
-        {!collapsed && <span className="text-[15px] font-bold tracking-tight text-foreground">SalesCore</span>}
+        <Logo size="sm" withWordmark={!collapsed} />
       </div>
       <SidebarContent collapsed={collapsed} />
       <button
         onClick={onToggleCollapse}
+        aria-label={t("common.toggleSidebar")}
         className="flex h-10 items-center justify-center border-t border-border text-muted-foreground hover:bg-card-hover hover:text-foreground"
       >
         {collapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
@@ -111,19 +111,15 @@ export function Sidebar({ collapsed, onToggleCollapse }: { collapsed: boolean; o
 }
 
 export function MobileSidebarDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useI18n();
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-40 lg:hidden">
       <div className="fixed inset-0 bg-black/40" onClick={onClose} />
       <div className="relative flex h-full w-72 flex-col bg-card shadow-2xl animate-in">
         <div className="flex h-14 items-center justify-between border-b border-border px-3.5">
-          <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-brand text-sm font-bold text-white">
-              S
-            </div>
-            <span className="text-[15px] font-bold tracking-tight text-foreground">SalesCore</span>
-          </div>
-          <button onClick={onClose} className="rounded-md p-1 hover:bg-card-hover">
+          <Logo size="sm" withWordmark />
+          <button onClick={onClose} aria-label={t("common.close")} className="rounded-md p-1 hover:bg-card-hover">
             <X className="h-5 w-5" />
           </button>
         </div>

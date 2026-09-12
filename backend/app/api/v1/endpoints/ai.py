@@ -21,5 +21,5 @@ class AskResponse(BaseModel):
 @router.post("/ask", response_model=AskResponse)
 def ask(payload: AskRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     provider = get_provider()
-    answer = provider.answer(db, payload.question)
+    answer = provider.answer(db, payload.question, current_user)
     return AskResponse(answer=answer)

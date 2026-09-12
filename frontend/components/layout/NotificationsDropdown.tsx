@@ -11,7 +11,7 @@ import {
   useNotifications,
   useUnreadCount,
 } from "@/lib/hooks/use-notifications";
-import { relativeTime } from "@/lib/utils";
+import { interpolate, relativeTime } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
 const ENTITY_URL: Record<string, string> = {
@@ -53,6 +53,7 @@ export function NotificationsDropdown() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((v) => !v)}
+        aria-label={t("notifications.title")}
         className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-card-hover hover:text-foreground"
       >
         <Bell className="h-[18px] w-[18px]" />
@@ -63,7 +64,7 @@ export function NotificationsDropdown() {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 z-40 mt-2 w-80 rounded-xl border border-border bg-card shadow-2xl animate-in rtl:right-auto rtl:left-0">
+        <div className="absolute right-0 z-40 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-xl border border-border bg-card shadow-2xl animate-in rtl:right-auto rtl:left-0">
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
             <span className="text-sm font-semibold text-foreground">{t("notifications.title")}</span>
             {count > 0 && (
@@ -86,7 +87,7 @@ export function NotificationsDropdown() {
                   if (base && n.related_entity_id) router.push(`${base}/${n.related_entity_id}`);
                 }}
                 className={cn(
-                  "flex w-full items-start gap-2.5 border-b border-border/60 px-4 py-3 text-left last:border-b-0 hover:bg-card-hover",
+                  "flex w-full items-start gap-2.5 border-b border-border/60 px-4 py-3 text-start last:border-b-0 hover:bg-card-hover",
                   !n.is_read && "bg-brand-subtle/30"
                 )}
               >
@@ -94,8 +95,12 @@ export function NotificationsDropdown() {
                   className={cn("mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full", TYPE_DOT[n.type] ?? "bg-muted-foreground")}
                 />
                 <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-medium text-foreground">{n.title}</span>
-                  <span className="block text-xs text-muted-foreground line-clamp-2">{n.message}</span>
+                  <span className="block text-sm font-medium text-foreground">
+                    {t(`notifications.types.${n.type}`, n.title)}
+                  </span>
+                  <span className="block text-xs text-muted-foreground line-clamp-2">
+                    {interpolate(t(`notifications.messages.${n.type}`, n.message), n.params ?? {})}
+                  </span>
                   <span className="mt-0.5 block text-[10px] text-subtle-foreground">{relativeTime(n.created_at)}</span>
                 </span>
               </button>

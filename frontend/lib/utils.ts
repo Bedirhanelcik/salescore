@@ -74,3 +74,8 @@ export function titleCase(value: string): string {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
 }
+
+/** Replaces `{name}`-style placeholders in a translated template with values from `vars`. */
+export function interpolate(template: string, vars: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (match, key: string) => vars[key] ?? match);
+}

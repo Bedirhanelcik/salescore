@@ -26,7 +26,3 @@ class User(Base, TimestampMixin):
 
     department = relationship("Department", back_populates="employees", foreign_keys=[department_id])
     manager = relationship("User", remote_side=[id], foreign_keys=[manager_id])
-
-    @property
-    def is_manager_or_above(self) -> bool:
-        return self.role in (UserRole.ADMIN, UserRole.MANAGER)

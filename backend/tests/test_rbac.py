@@ -101,6 +101,53 @@ def test_only_admin_can_create_employee(client, admin_user, manager_user, sales_
     assert response.status_code == 201
 
 
+def test_sales_rep_only_sees_own_row_in_team_performance(client, sales_rep_user, sales_rep2_user):
+    # Individual revenue/win-rate/target-achievement is compensation-adjacent - a Sales Rep
+    # must not see a colleague's row, same rule already enforced for Sales Targets.
+    rep1_headers = auth_headers(client, "rep@test.io")
+    response = client.get("/api/v1/analytics/team-performance", headers=rep1_headers)
+    assert response.status_code == 200
+    emails = {row["employee"]["email"] for row in response.json()["rows"]}
+    assert emails <= {"rep@test.io"}
+
+
+def test_manager_sees_full_team_performance(client, manager_user, sales_rep_user, sales_rep2_user):
+    manager_headers = auth_headers(client, "manager@test.io")
+    response = client.get("/api/v1/analytics/team-performance", headers=manager_headers)
+    assert response.status_code == 200
+    emails = {row["employee"]["email"] for row in response.json()["rows"]}
+    assert {"rep@test.io", "rep2@test.io"} <= emails
+
+
+def test_manager_cannot_grant_admin_role(client, admin_user, manager_user):
+    # Privilege-escalation check: PATCH /employees/{id} is open to Managers so they can promote
+    # a self-registered Viewer to a working role, but only an Admin may grant the Admin role.
+    manager_headers = auth_headers(client, "manager@test.io")
+    response = client.patch(f"/api/v1/employees/{manager_user.id}", headers=manager_headers, json={"role": "admin"})
+    assert response.status_code == 403
+    assert response.json()["error"]["code"] == "FORBIDDEN"
+
+    admin_headers = auth_headers(client, "admin@test.io")
+    response = client.patch(f"/api/v1/employees/{manager_user.id}", headers=admin_headers, json={"role": "admin"})
+    assert response.status_code == 200
+    assert response.json()["role"] == "admin"
+
+
+def test_manager_can_promote_viewer_to_sales_rep(client, manager_user):
+    manager_headers = auth_headers(client, "manager@test.io")
+    registered = client.post(
+        "/api/v1/auth/register",
+        json={"email": "newbie@test.io", "password": "Password123!", "full_name": "New Bie"},
+    ).json()
+    assert registered["user"]["role"] == "viewer"
+
+    response = client.patch(
+        f"/api/v1/employees/{registered['user']['id']}", headers=manager_headers, json={"role": "sales_rep"}
+    )
+    assert response.status_code == 200
+    assert response.json()["role"] == "sales_rep"
+
+
 def test_only_admin_or_manager_can_create_sales_target(client, admin_user, analyst_user, sales_rep_user):
     analyst_headers = auth_headers(client, "analyst@test.io")
     response = client.post(

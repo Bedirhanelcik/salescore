@@ -3,6 +3,7 @@
 import { useDroppable } from "@dnd-kit/core";
 import { Plus } from "lucide-react";
 
+import { useI18n } from "@/lib/contexts/i18n-context";
 import type { DealListItem, DealStage } from "@/lib/types";
 import { cn, formatCompactCurrency } from "@/lib/utils";
 import { DealCard } from "./DealCard";
@@ -23,6 +24,7 @@ export function PipelineColumn({
   onAddDeal: () => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: stage });
+  const { t } = useI18n();
 
   return (
     <div className="flex w-72 shrink-0 flex-col rounded-xl border border-border bg-card-hover/40">
@@ -36,6 +38,7 @@ export function PipelineColumn({
         {stage !== "won" && stage !== "lost" && (
           <button
             onClick={onAddDeal}
+            aria-label={t("sales.addDeal")}
             className="rounded-md p-1 text-muted-foreground hover:bg-card hover:text-foreground"
           >
             <Plus className="h-3.5 w-3.5" />

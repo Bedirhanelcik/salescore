@@ -546,6 +546,7 @@ def seed_notifications(db: Session, sales_reps: list[User], deals: list[Deal]) -
                 type=NotificationType.DEAL_WON,
                 title="Deal won!",
                 message=f"'{deal.title}' was marked as Won.",
+                params={"deal_title": deal.title},
                 related_entity_type="deal",
                 related_entity_id=deal.id,
                 is_read=random.random() < 0.4,

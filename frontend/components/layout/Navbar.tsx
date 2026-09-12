@@ -40,6 +40,7 @@ export function Navbar({ onOpenMobileNav }: { onOpenMobileNav: () => void }) {
         <div className="flex h-14 items-center gap-2 px-4 lg:px-6">
           <button
             onClick={onOpenMobileNav}
+            aria-label={t("common.menu")}
             className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-card-hover lg:hidden"
           >
             <Menu className="h-5 w-5" />
@@ -58,6 +59,7 @@ export function Navbar({ onOpenMobileNav }: { onOpenMobileNav: () => void }) {
             <LanguageSwitcher />
             <button
               onClick={toggleTheme}
+              aria-label={t("common.toggleTheme")}
               className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-card-hover hover:text-foreground"
             >
               {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}

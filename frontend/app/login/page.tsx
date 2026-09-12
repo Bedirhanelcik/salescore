@@ -15,6 +15,8 @@ import { ApiError } from "@/lib/api-client";
 import { Button } from "@/components/ui/Button";
 import { FieldError, Input, Label } from "@/components/ui/Input";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { Logo } from "@/components/layout/Logo";
+import { Splash } from "@/components/layout/Splash";
 
 const schema = z.object({
   email: z.string().email(),
@@ -63,12 +65,19 @@ export default function LoginPage() {
     setValue("password", password);
   };
 
+  // Still resolving the session, or already signed in and about to be redirected to
+  // /dashboard above - render the shared splash instead of flashing the login form.
+  if (isLoading || user) {
+    return <Splash />;
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
       <div className="absolute right-4 top-4 flex items-center gap-1 rtl:right-auto rtl:left-4">
         <LanguageSwitcher />
         <button
           onClick={toggleTheme}
+          aria-label={t("common.toggleTheme")}
           className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-card-hover"
         >
           {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
@@ -77,9 +86,7 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center text-center">
-          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-brand text-lg font-bold text-white">
-            S
-          </div>
+          <Logo size="md" className="mb-3" />
           <h1 className="text-xl font-bold text-foreground">{t("app.name")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{t("app.tagline")}</p>
         </div>

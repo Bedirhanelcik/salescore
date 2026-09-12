@@ -65,9 +65,9 @@ export function EmployeeFormModal({ open, onClose }: { open: boolean; onClose: (
           <Input type="password" {...register("password")} />
           <FieldError>{errors.password?.message}</FieldError>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <Label>Role</Label>
+            <Label>{t("settingsPage.role")}</Label>
             <Select {...register("role")}>
               <option value="admin">{t("roles.admin")}</option>
               <option value="manager">{t("roles.manager")}</option>

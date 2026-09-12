@@ -46,7 +46,14 @@ export function DealFormModal({
 
   const onSubmit = async (values: FormValues) => {
     try {
-      await createDeal.mutateAsync({ ...values, stage: defaultStage, company_id: values.company_id || undefined });
+      await createDeal.mutateAsync({
+        ...values,
+        stage: defaultStage,
+        company_id: values.company_id || undefined,
+        // An empty date input submits "" - the backend's `date | None` field rejects that
+        // (it isn't a parseable date), unlike a genuinely omitted field, so it must be undefined.
+        expected_close_date: values.expected_close_date || undefined,
+      });
       toast.success(t("sales.addDeal"));
       reset();
       onClose();
@@ -74,7 +81,7 @@ export function DealFormModal({
             ))}
           </Select>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <Label>{t("sales.dealValue")}</Label>
             <Input type="number" min={0} {...register("value")} />

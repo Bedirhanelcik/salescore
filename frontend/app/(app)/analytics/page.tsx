@@ -46,7 +46,7 @@ export default function AnalyticsPage() {
           loading={velocityLoading}
         />
         <VelocityStat
-          label={t("crm.tabs.deals")}
+          label={t("analytics.avgDealSize")}
           value={velocity ? formatCompactCurrency(velocity.average_deal_size) : undefined}
           loading={velocityLoading}
         />

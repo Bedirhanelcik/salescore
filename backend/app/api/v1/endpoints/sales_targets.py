@@ -18,7 +18,7 @@ def list_targets(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    rows = sales_target_service.list_targets(db, employee_id, department_id)
+    rows = sales_target_service.list_targets(db, current_user, employee_id, department_id)
     return [
         SalesTargetRead(
             id=r["target"].id,

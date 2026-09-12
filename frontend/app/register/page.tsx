@@ -15,6 +15,8 @@ import { ApiError } from "@/lib/api-client";
 import { Button } from "@/components/ui/Button";
 import { FieldError, Input, Label } from "@/components/ui/Input";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { Logo } from "@/components/layout/Logo";
+import { Splash } from "@/components/layout/Splash";
 
 const schema = z.object({
   full_name: z.string().min(2, "Required"),
@@ -40,6 +42,12 @@ export default function RegisterPage() {
     if (!isLoading && user) router.replace("/dashboard");
   }, [isLoading, user, router]);
 
+  // Still resolving the session, or already signed in and about to be redirected to
+  // /dashboard above - render the shared splash instead of flashing the register form.
+  if (isLoading || user) {
+    return <Splash />;
+  }
+
   const onSubmit = async (values: FormValues) => {
     setServerError(null);
     try {
@@ -62,6 +70,7 @@ export default function RegisterPage() {
         <LanguageSwitcher />
         <button
           onClick={toggleTheme}
+          aria-label={t("common.toggleTheme")}
           className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-card-hover"
         >
           {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
@@ -70,9 +79,7 @@ export default function RegisterPage() {
 
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center text-center">
-          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-brand text-lg font-bold text-white">
-            S
-          </div>
+          <Logo size="md" className="mb-3" />
           <h1 className="text-xl font-bold text-foreground">{t("app.name")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{t("app.tagline")}</p>
         </div>
