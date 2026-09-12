@@ -8,6 +8,7 @@ from app.models.knowledge import KnowledgeCategory, KnowledgeTerm
 from app.models.lead import Lead
 from app.models.notification import Notification
 from app.models.sales_target import SalesTarget
+from app.models.support_ticket import SupportTicket
 from app.models.task import Task
 from app.models.user import User
 
@@ -24,6 +25,7 @@ __all__ = [
     "Lead",
     "Notification",
     "SalesTarget",
+    "SupportTicket",
     "Task",
     "User",
 ]

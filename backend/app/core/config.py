@@ -34,6 +34,17 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str | None = None
     OPENAI_MODEL: str = "gpt-4o-mini"
 
+    # Support ticket notification email. All optional - when SMTP_HOST/SUPPORT_EMAIL aren't
+    # set (e.g. local dev), app.core.email silently no-ops instead of crashing; the ticket is
+    # still saved to the database either way (see support_service.create_ticket).
+    SUPPORT_EMAIL: str | None = None
+    SUPPORT_FROM_EMAIL: str | None = None
+    SMTP_HOST: str | None = None
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str | None = None
+    SMTP_PASSWORD: str | None = None
+    SUPPORT_TICKETS_PER_HOUR: int = 5
+
     @model_validator(mode="after")
     def _reject_insecure_defaults_in_production(self) -> "Settings":
         if self.ENV.lower() != "production":

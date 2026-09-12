@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from tests.conftest import auth_headers
 
 
@@ -87,3 +89,66 @@ def test_search_filter(client, admin_user):
     body = response.json()
     assert body["total"] == 1
     assert body["items"][0]["name"] == "Globex International"
+
+
+def test_customer_360_total_sales_counts_only_won_deals(client, admin_user):
+    headers = auth_headers(client, "admin@test.io")
+    company_id = client.post("/api/v1/companies", headers=headers, json={"name": "Atlas Digital"}).json()["id"]
+
+    open_deal = client.post(
+        "/api/v1/deals", headers=headers, json={"title": "Open", "value": 15000, "stage": "negotiation", "company_id": company_id}
+    ).json()
+    lost_deal = client.post(
+        "/api/v1/deals", headers=headers, json={"title": "Lost", "value": 8000, "stage": "negotiation", "company_id": company_id}
+    ).json()
+    won_deal = client.post(
+        "/api/v1/deals", headers=headers, json={"title": "Won", "value": 25000, "stage": "negotiation", "company_id": company_id}
+    ).json()
+    client.patch(f"/api/v1/deals/{lost_deal['id']}/stage", headers=headers, json={"stage": "lost"})
+    client.patch(f"/api/v1/deals/{won_deal['id']}/stage", headers=headers, json={"stage": "won"})
+
+    body = client.get(f"/api/v1/companies/{company_id}/360", headers=headers).json()
+    assert body["lifetime_value"] == 25000
+    assert body["total_deals"] == 3
+    assert body["won_deals"] == 1
+    assert body["lost_deals"] == 1
+    assert body["open_deals"] == 1
+    assert open_deal["stage"] == "negotiation"
+
+
+def test_customer_360_contact_count_and_last_communication(client, admin_user):
+    headers = auth_headers(client, "admin@test.io")
+    company_id = client.post("/api/v1/companies", headers=headers, json={"name": "Atlas Digital"}).json()["id"]
+
+    empty_360 = client.get(f"/api/v1/companies/{company_id}/360", headers=headers).json()
+    assert empty_360["contact_count"] == 0
+    assert empty_360["last_communication_at"] is None
+
+    client.post(
+        "/api/v1/contacts", headers=headers, json={"first_name": "Mehmet", "last_name": "Yilmaz", "company_id": company_id}
+    )
+    client.post(
+        "/api/v1/activities",
+        headers=headers,
+        json={
+            "type": "call",
+            "title": "Discovery call",
+            "activity_date": datetime.now(UTC).isoformat(),
+            "company_id": company_id,
+        },
+    )
+
+    body = client.get(f"/api/v1/companies/{company_id}/360", headers=headers).json()
+    assert body["contact_count"] == 1
+    assert body["last_communication_at"] is not None
+    assert body["last_communication_type"] == "call"
+
+
+def test_sales_rep_cannot_view_another_reps_company_360(client, sales_rep_user, sales_rep2_user):
+    rep1_headers = auth_headers(client, "rep@test.io")
+    rep2_headers = auth_headers(client, "rep2@test.io")
+    company_id = client.post("/api/v1/companies", headers=rep1_headers, json={"name": "Rep1 Co"}).json()["id"]
+
+    response = client.get(f"/api/v1/companies/{company_id}/360", headers=rep2_headers)
+    assert response.status_code == 403
+    assert response.json()["error"]["code"] == "FORBIDDEN"

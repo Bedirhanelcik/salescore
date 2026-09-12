@@ -12,6 +12,9 @@ export type TaskPriority = "low" | "medium" | "high" | "critical";
 export type NotificationType =
   "task_due" | "deal_follow_up" | "new_lead" | "deal_won" | "deal_lost" | "target_reached" | "mention";
 export type TargetPeriod = "monthly" | "quarterly" | "yearly";
+export type SupportCategory =
+  "general" | "account" | "crm" | "pipeline" | "analytics" | "reports" | "technical" | "other";
+export type SupportStatus = "open" | "in_progress" | "resolved" | "closed";
 
 export interface DepartmentBrief {
   id: number;
@@ -82,6 +85,9 @@ export interface Customer360 {
   won_deals: number;
   open_deals: number;
   lost_deals: number;
+  contact_count: number;
+  last_communication_at: string | null;
+  last_communication_type: ActivityType | null;
 }
 
 export interface Contact {
@@ -358,6 +364,20 @@ export interface SearchResultItem {
   url: string;
   title_i18n: Record<string, string> | null;
   subtitle_i18n: Record<string, string> | null;
+}
+
+export interface SupportTicket {
+  id: number;
+  name: string;
+  email: string;
+  subject: string;
+  category: SupportCategory;
+  message: string;
+  status: SupportStatus;
+  email_sent: boolean;
+  user: UserBrief | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ApiErrorBody {

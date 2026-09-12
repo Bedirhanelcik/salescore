@@ -155,7 +155,9 @@
     "noLeads": "Henüz lead yok",
     "noLeadsHint": "Pipeline'ı doldurmaya başlamak için ilk lead'inizi oluşturun.",
     "customerSince": "Müşteri olma tarihi",
-    "lifetimeValue": "Yaşam Boyu Değer",
+    "lifetimeValue": "Toplam Satış",
+    "lastCommunication": "Son İletişim",
+    "noCommunicationYet": "Henüz iletişim yok",
     "totalDeals": "Toplam Fırsat",
     "wonDeals": "Kazanılan",
     "openDeals": "Açık",
@@ -583,5 +585,165 @@
         "body": "Profilinizi, şifrenizi ve çalışma alanı tercihlerinizi yönetin."
       }
     }
+  },
+  "about": {
+    "navLabel": "SalesCore Nedir?",
+    "faqTitle": "Sık Sorulan Sorular",
+    "intro": {
+      "title": "SalesCore Nedir?",
+      "description": "SalesCore; kurumların müşterilerini, satış operasyonlarını ve iş performansını tek bir yerden yönetmesini sağlayan entegre bir CRM, İş Zekası ve Yönetim Bilişim Sistemi'dir."
+    },
+    "faq": {
+      "whatIsSalesCore": {
+        "question": "SalesCore nedir?",
+        "answer": "SalesCore; kurumların müşterilerini, satış aktivitelerini, fırsatlarını ve iş performansını tek bir yerden yönetmesini sağlayan bir CRM ve yönetim bilişim platformudur."
+      },
+      "whatIsCrm": {
+        "question": "CRM nedir?",
+        "answer": "CRM, Müşteri İlişkileri Yönetimi anlamına gelir. İşletmelerin müşteri, kişi, potansiyel müşteri ve satış bilgilerini düzenlemesine yardımcı olur."
+      },
+      "whatIsLead": {
+        "question": "Lead (Potansiyel Müşteri) nedir?",
+        "answer": "Lead, henüz nitelikli bir satış fırsatına dönüşmemiş potansiyel bir müşteridir."
+      },
+      "whatIsDeal": {
+        "question": "Deal (Fırsat) nedir?",
+        "answer": "Deal; belirli bir değeri, aşaması ve sahibi olan potansiyel bir satış işlemini temsil eder."
+      },
+      "whatIsPipeline": {
+        "question": "Satış Hattı (Pipeline) nedir?",
+        "answer": "Satış Hattı, fırsatların Lead aşamasından Nitelendirme, Teklif ve Pazarlık'tan geçerek Kazanıldı veya Kaybedildi durumuna nasıl ilerlediğini gösterir."
+      },
+      "whereNumbersComeFrom": {
+        "question": "Panel rakamları nereden geliyor?",
+        "answer": "Panel metrikleri, size ait gerçek CRM ve satış kayıtlarından hesaplanır. Asla rastgele veya önceden yüklenmiş değerler değildir."
+      },
+      "whatIsRevenue": {
+        "question": "Gelir (Revenue) nedir?",
+        "answer": "Gelir, SalesCore'da kaydedilen kazanılmış satışların değerini temsil eder."
+      },
+      "whatIsPipelineValue": {
+        "question": "Pipeline Değeri nedir?",
+        "answer": "Pipeline Değeri, hâlihazırda açık olan satış fırsatlarının toplam değerini temsil eder."
+      },
+      "whatIsWinRate": {
+        "question": "Kazanma Oranı (Win Rate) nedir?",
+        "answer": "Kazanma Oranı, kapanan fırsatlar içinde kazanılanların yüzdesini temsil eder."
+      },
+      "whatIsAnalytics": {
+        "question": "Analitik nedir?",
+        "answer": "Analitik, CRM ve satış verilerini ölçülebilir iş performansı bilgisine dönüştürür."
+      },
+      "whatIsReports": {
+        "question": "Raporlar nedir?",
+        "answer": "Raporlar; operasyonel iş verilerini filtrelemenizi, incelemenizi ve dışa aktarmanızı sağlar."
+      },
+      "whatIsInsights": {
+        "question": "İş Öngörüleri (Business Insights) nedir?",
+        "answer": "İş Öngörüleri; yönetimin dikkatini gerektirebilecek anlamlı örüntüleri, değişimleri ve alanları öne çıkarır."
+      },
+      "whoIsFor": {
+        "question": "SalesCore kimler için?",
+        "answer": "SalesCore; satış ekipleri, yöneticiler, analistler ve satış operasyonlarını yönetip veriye dayalı kararlar almak isteyen kurumlar için tasarlanmıştır."
+      },
+      "howSupportsManagement": {
+        "question": "SalesCore yönetimi nasıl destekler?",
+        "answer": "Operasyonel CRM verilerini KPI'lar, analitik, raporlar ve iş öngörüleriyle birleştirerek yöneticilerin performansı anlamasını ve bilinçli kararlar almasını sağlar."
+      }
+    },
+    "scenarioTitle": "SalesCore Nasıl Çalışır?",
+    "scenarioIntro": "Bir yazılım şirketinin satış müdürü olduğunuzu ve bir fırsatı ilk temastan kazanılmasına kadar takip ettiğinizi hayal edin.",
+    "scenario": {
+      "company": {
+        "title": "Şirket",
+        "description": "Bir satış temsilcisi potansiyel bir müşteri olan Atlas Digital'i bulur ve CRM'e ekler."
+      },
+      "contact": {
+        "title": "Kişi",
+        "description": "Atlas Digital'deki karar verici kişi, Kişi olarak eklenir."
+      },
+      "lead": {
+        "title": "Lead",
+        "description": "Atlas Digital'in erken ilgisini takip etmek için bir Lead oluşturulur ve nitelendirilir."
+      },
+      "opportunity": {
+        "title": "Fırsat",
+        "description": "Nitelendirilen Lead, pipeline'da 25.000 $ değerinde bir Fırsata dönüşür."
+      },
+      "proposal": {
+        "title": "Teklif",
+        "description": "Bir teklif hazırlanır ve Atlas Digital'e gönderilir."
+      },
+      "negotiation": {
+        "title": "Pazarlık",
+        "description": "Şartlar ve fiyatlandırma görüşülüp netleştirilir."
+      },
+      "wonLost": {
+        "title": "Kazanıldı / Kaybedildi",
+        "description": "Atlas Digital satın almayı kabul eder - fırsat Kazanıldı olarak işaretlenir."
+      },
+      "analyticsStep": {
+        "title": "Analitik",
+        "description": "SalesCore; Gelir, Pipeline, Kazanma Oranı ve Ortalama Fırsat Büyüklüğü'nü otomatik olarak günceller."
+      },
+      "decisionStep": {
+        "title": "Karar",
+        "description": "Yönetim, sonraki adımları planlamak için Analitik, Raporlar ve İş Öngörülerini inceler."
+      }
+    },
+    "dataChain": {
+      "title": "Veriden Karara",
+      "subtitle": "SalesCore'u sıradan bir CRM'den ayıran şey budur.",
+      "data": { "label": "Operasyonel Veri", "example": "\"5 fırsat oluşturuldu.\"" },
+      "information": { "label": "Bilgi", "example": "\"Pipeline değeri 120.000 $.\"" },
+      "insight": {
+        "label": "Öngörü",
+        "example": "\"Açık fırsatların çoğu Pazarlık aşamasında yoğunlaşmış durumda.\""
+      },
+      "decision": {
+        "label": "Karar",
+        "example": "\"Yönetim, bu fırsatları kapatmak için ek satış kaynağı ayırır.\""
+      }
+    },
+    "supportCta": {
+      "title": "Hâlâ bir sorunuz mu var?",
+      "description": "Aradığınızı bulamadınız mı? SalesCore ekibine sorun.",
+      "button": "Destek ile İletişime Geç"
+    }
+  },
+  "support": {
+    "title": "Destek",
+    "subtitle": "Bir soru sorun, bir sorun bildirin veya SalesCore ekibinden yardım isteyin.",
+    "form": {
+      "title": "Talep gönder",
+      "name": "Ad Soyad",
+      "email": "E-posta",
+      "subject": "Konu",
+      "category": "Kategori",
+      "message": "Mesaj",
+      "submit": "Talebi Gönder",
+      "submitting": "Gönderiliyor...",
+      "success": "Destek talebiniz gönderildi. En kısa sürede size dönüş yapacağız."
+    },
+    "categories": {
+      "general": "Genel Soru",
+      "account": "Hesap",
+      "crm": "CRM",
+      "pipeline": "Satış Hattı",
+      "analytics": "Analitik",
+      "reports": "Raporlar",
+      "technical": "Teknik Sorun",
+      "other": "Diğer"
+    },
+    "status": {
+      "open": "Açık",
+      "in_progress": "İşlemde",
+      "resolved": "Çözüldü",
+      "closed": "Kapatıldı"
+    },
+    "myTickets": "Taleplerim",
+    "allTickets": "Tüm Talepler",
+    "noTickets": "Henüz herhangi bir destek talebi göndermediniz.",
+    "noTicketsAdmin": "Henüz destek talebi yok."
   }
 }

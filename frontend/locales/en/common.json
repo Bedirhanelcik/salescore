@@ -155,7 +155,9 @@
     "noLeads": "No leads yet",
     "noLeadsHint": "Capture your first lead to start filling the pipeline.",
     "customerSince": "Customer since",
-    "lifetimeValue": "Lifetime Value",
+    "lifetimeValue": "Total Sales",
+    "lastCommunication": "Last Communication",
+    "noCommunicationYet": "No communication yet",
     "totalDeals": "Total Deals",
     "wonDeals": "Won",
     "openDeals": "Open",
@@ -583,5 +585,165 @@
         "body": "Manage your profile, password and workspace preferences."
       }
     }
+  },
+  "about": {
+    "navLabel": "What is SalesCore?",
+    "faqTitle": "Frequently Asked Questions",
+    "intro": {
+      "title": "What is SalesCore?",
+      "description": "SalesCore is an integrated CRM, Business Intelligence and Management Information System designed to help organizations manage customers, sales operations and business performance in one place."
+    },
+    "faq": {
+      "whatIsSalesCore": {
+        "question": "What is SalesCore?",
+        "answer": "SalesCore is a CRM and management information platform that helps organizations manage customers, sales activities, opportunities and business performance in one place."
+      },
+      "whatIsCrm": {
+        "question": "What is CRM?",
+        "answer": "CRM stands for Customer Relationship Management. It helps businesses organize customer, contact, lead and sales information."
+      },
+      "whatIsLead": {
+        "question": "What is a Lead?",
+        "answer": "A Lead is a potential customer who has not yet become a qualified sales opportunity."
+      },
+      "whatIsDeal": {
+        "question": "What is a Deal?",
+        "answer": "A Deal represents a potential sales transaction with a defined value, stage and owner."
+      },
+      "whatIsPipeline": {
+        "question": "What is the Sales Pipeline?",
+        "answer": "The Sales Pipeline shows how opportunities move from Lead through Qualification, Proposal and Negotiation to Won or Lost."
+      },
+      "whereNumbersComeFrom": {
+        "question": "Where do Dashboard numbers come from?",
+        "answer": "Dashboard metrics are calculated from the real CRM and sales records available to you. They are never random or pre-loaded values."
+      },
+      "whatIsRevenue": {
+        "question": "What is Revenue?",
+        "answer": "Revenue represents the value of closed-won sales recorded in SalesCore."
+      },
+      "whatIsPipelineValue": {
+        "question": "What is Pipeline Value?",
+        "answer": "Pipeline Value represents the total value of currently open sales opportunities."
+      },
+      "whatIsWinRate": {
+        "question": "What is Win Rate?",
+        "answer": "Win Rate represents the percentage of closed opportunities that were won."
+      },
+      "whatIsAnalytics": {
+        "question": "What is Analytics?",
+        "answer": "Analytics transforms CRM and sales data into measurable business performance information."
+      },
+      "whatIsReports": {
+        "question": "What are Reports?",
+        "answer": "Reports let you filter, review and export operational business data."
+      },
+      "whatIsInsights": {
+        "question": "What are Business Insights?",
+        "answer": "Business Insights highlight meaningful patterns, changes and areas that may need management attention."
+      },
+      "whoIsFor": {
+        "question": "Who is SalesCore for?",
+        "answer": "SalesCore is designed for sales teams, managers, analysts and organizations that want to manage sales operations and make data-driven decisions."
+      },
+      "howSupportsManagement": {
+        "question": "How does SalesCore support management?",
+        "answer": "It connects operational CRM data with KPIs, analytics, reports and business insights so managers can understand performance and make informed decisions."
+      }
+    },
+    "scenarioTitle": "How SalesCore Works",
+    "scenarioIntro": "Imagine you are the sales manager of a software company, following one deal from first contact to Won.",
+    "scenario": {
+      "company": {
+        "title": "Company",
+        "description": "A sales rep finds a potential customer, Atlas Digital, and adds it to the CRM."
+      },
+      "contact": {
+        "title": "Contact",
+        "description": "The decision-maker at Atlas Digital is added as a Contact."
+      },
+      "lead": {
+        "title": "Lead",
+        "description": "A Lead is created to track Atlas Digital's early interest, then qualified."
+      },
+      "opportunity": {
+        "title": "Opportunity",
+        "description": "The qualified Lead becomes a $25,000 Deal in the pipeline."
+      },
+      "proposal": {
+        "title": "Proposal",
+        "description": "A proposal is prepared and sent to Atlas Digital."
+      },
+      "negotiation": {
+        "title": "Negotiation",
+        "description": "Terms and pricing are discussed and finalized."
+      },
+      "wonLost": {
+        "title": "Won / Lost",
+        "description": "Atlas Digital agrees to buy - the Deal is marked Won."
+      },
+      "analyticsStep": {
+        "title": "Analytics",
+        "description": "SalesCore updates Revenue, Pipeline, Win Rate and Average Deal Size automatically."
+      },
+      "decisionStep": {
+        "title": "Decision",
+        "description": "Management reviews Analytics, Reports and Business Insights to plan next steps."
+      }
+    },
+    "dataChain": {
+      "title": "From Data to Decisions",
+      "subtitle": "This is what makes SalesCore more than a CRM.",
+      "data": { "label": "Operational Data", "example": "\"5 deals were created.\"" },
+      "information": { "label": "Information", "example": "\"Pipeline value is $120,000.\"" },
+      "insight": {
+        "label": "Insight",
+        "example": "\"Most open opportunities are concentrated in the Negotiation stage.\""
+      },
+      "decision": {
+        "label": "Decision",
+        "example": "\"Management allocates additional sales resources to close these opportunities.\""
+      }
+    },
+    "supportCta": {
+      "title": "Still have a question?",
+      "description": "Can't find what you're looking for? Ask the SalesCore team.",
+      "button": "Contact Support"
+    }
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "Ask a question, report a problem, or request help from the SalesCore team.",
+    "form": {
+      "title": "Submit a request",
+      "name": "Name",
+      "email": "Email",
+      "subject": "Subject",
+      "category": "Category",
+      "message": "Message",
+      "submit": "Submit Request",
+      "submitting": "Submitting...",
+      "success": "Your support request has been submitted. We'll get back to you soon."
+    },
+    "categories": {
+      "general": "General Question",
+      "account": "Account",
+      "crm": "CRM",
+      "pipeline": "Sales Pipeline",
+      "analytics": "Analytics",
+      "reports": "Reports",
+      "technical": "Technical Problem",
+      "other": "Other"
+    },
+    "status": {
+      "open": "Open",
+      "in_progress": "In Progress",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "myTickets": "My Tickets",
+    "allTickets": "All Tickets",
+    "noTickets": "You haven't submitted any support requests yet.",
+    "noTicketsAdmin": "No support tickets yet."
   }
 }

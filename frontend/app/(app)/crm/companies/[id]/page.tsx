@@ -97,16 +97,25 @@ export default function CompanyDetailPage() {
       </div>
 
       {c360 && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-8">
           <StatCard
             label={t("crm.customerSince")}
             value={c360.customer_since ? formatDate(c360.customer_since, locale) : "—"}
           />
           <StatCard label={t("crm.lifetimeValue")} value={formatCurrency(c360.lifetime_value)} highlight />
+          <StatCard label={t("crm.contacts")} value={String(c360.contact_count)} />
           <StatCard label={t("crm.totalDeals")} value={String(c360.total_deals)} />
           <StatCard label={t("crm.wonDeals")} value={String(c360.won_deals)} tone="success" />
           <StatCard label={t("crm.openDeals")} value={String(c360.open_deals)} tone="info" />
           <StatCard label={t("crm.lostDeals")} value={String(c360.lost_deals)} />
+          <StatCard
+            label={t("crm.lastCommunication")}
+            value={
+              c360.last_communication_at
+                ? `${formatDate(c360.last_communication_at, locale)} · ${t(`operations.activityTypes.${c360.last_communication_type}`)}`
+                : t("crm.noCommunicationYet")
+            }
+          />
         </div>
       )}
 

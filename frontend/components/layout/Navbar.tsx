@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CircleHelp, Menu, Moon, Search, Sun } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { CircleHelp, Info, Menu, Moon, Search, Sun } from "lucide-react";
 
 import { useI18n } from "@/lib/contexts/i18n-context";
 import { useOnboarding } from "@/lib/contexts/onboarding-context";
@@ -15,6 +16,7 @@ export function Navbar({ onOpenMobileNav }: { onOpenMobileNav: () => void }) {
   const { t } = useI18n();
   const { theme, toggleTheme } = useTheme();
   const { openGuide } = useOnboarding();
+  const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
@@ -59,6 +61,14 @@ export function Navbar({ onOpenMobileNav }: { onOpenMobileNav: () => void }) {
           </button>
 
           <div className="ms-auto flex items-center gap-1">
+            <button
+              onClick={() => router.push("/about")}
+              aria-label={t("about.navLabel")}
+              className="flex h-9 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground hover:bg-card-hover hover:text-foreground sm:px-2.5"
+            >
+              <Info className="h-[18px] w-[18px] shrink-0 sm:hidden" />
+              <span className="hidden sm:inline">{t("about.navLabel")}</span>
+            </button>
             <LanguageSwitcher />
             <button
               onClick={toggleTheme}

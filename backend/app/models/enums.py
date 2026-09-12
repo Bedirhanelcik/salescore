@@ -118,3 +118,21 @@ class TargetPeriod(str, enum.Enum):
     MONTHLY = "monthly"
     QUARTERLY = "quarterly"
     YEARLY = "yearly"
+
+
+class SupportCategory(str, enum.Enum):
+    GENERAL = "general"
+    ACCOUNT = "account"
+    CRM = "crm"
+    PIPELINE = "pipeline"
+    ANALYTICS = "analytics"
+    REPORTS = "reports"
+    TECHNICAL = "technical"
+    OTHER = "other"
+
+
+class SupportStatus(str, enum.Enum):
+    OPEN = "open"
+    IN_PROGRESS = "in_progress"
+    RESOLVED = "resolved"
+    CLOSED = "closed"

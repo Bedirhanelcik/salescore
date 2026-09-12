@@ -17,6 +17,7 @@ from app.api.v1.endpoints import (
     reports,
     sales_targets,
     search,
+    support,
     tasks,
 )
 
@@ -38,3 +39,4 @@ api_router.include_router(notifications.router)
 api_router.include_router(audit_logs.router)
 api_router.include_router(search.router)
 api_router.include_router(ai.router)
+api_router.include_router(support.router)

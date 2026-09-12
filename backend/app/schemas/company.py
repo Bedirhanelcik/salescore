@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.enums import CompanySize, CompanyStatus
+from app.models.enums import ActivityType, CompanySize, CompanyStatus
 from app.schemas.user import UserBrief
 
 
@@ -51,3 +51,6 @@ class Customer360(BaseModel):
     won_deals: int
     open_deals: int
     lost_deals: int
+    contact_count: int
+    last_communication_at: datetime | None
+    last_communication_type: ActivityType | None

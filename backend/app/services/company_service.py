@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.audit import record_audit
@@ -100,6 +100,8 @@ def delete_company(db: Session, user: User, company_id: int) -> None:
 
 
 def get_customer_360(db: Session, user: User, company_id: int) -> dict:
+    from app.models.activity import Activity
+    from app.models.contact import Contact
     from app.models.deal import Deal
     from app.models.enums import DealStage
 
@@ -109,7 +111,20 @@ def get_customer_360(db: Session, user: User, company_id: int) -> dict:
     won = [d for d in deals if d.stage == DealStage.WON]
     lost = [d for d in deals if d.stage == DealStage.LOST]
     open_deals = [d for d in deals if d.stage not in (DealStage.WON, DealStage.LOST)]
+    # Total Sales / lifetime value must use the same WON-only business rule as Dashboard
+    # Revenue (see analytics_service._won_value) - open and lost deals never count as revenue.
     lifetime_value = sum(float(d.value) for d in won)
+
+    contact_count = db.execute(
+        select(func.count()).select_from(Contact).where(Contact.company_id == company_id)
+    ).scalar_one()
+
+    last_activity = db.execute(
+        select(Activity)
+        .where(Activity.company_id == company_id)
+        .order_by(Activity.activity_date.desc())
+        .limit(1)
+    ).scalar_one_or_none()
 
     return {
         "company": company,
@@ -119,4 +134,7 @@ def get_customer_360(db: Session, user: User, company_id: int) -> dict:
         "won_deals": len(won),
         "open_deals": len(open_deals),
         "lost_deals": len(lost),
+        "contact_count": contact_count,
+        "last_communication_at": last_activity.activity_date if last_activity else None,
+        "last_communication_type": last_activity.type if last_activity else None,
     }

@@ -155,7 +155,9 @@
     "noLeads": "Noch keine Leads",
     "noLeadsHint": "Erfassen Sie Ihren ersten Lead, um die Pipeline zu füllen.",
     "customerSince": "Kunde seit",
-    "lifetimeValue": "Customer Lifetime Value",
+    "lifetimeValue": "Gesamtumsatz",
+    "lastCommunication": "Letzte Kommunikation",
+    "noCommunicationYet": "Noch keine Kommunikation",
     "totalDeals": "Deals gesamt",
     "wonDeals": "Gewonnen",
     "openDeals": "Offen",
@@ -583,5 +585,165 @@
         "body": "Verwalten Sie Ihr Profil, Passwort und Ihre Workspace-Einstellungen."
       }
     }
+  },
+  "about": {
+    "navLabel": "Was ist SalesCore?",
+    "faqTitle": "Häufig gestellte Fragen",
+    "intro": {
+      "title": "Was ist SalesCore?",
+      "description": "SalesCore ist ein integriertes CRM-, Business-Intelligence- und Management-Informationssystem, mit dem Organisationen Kunden, Vertriebsprozesse und Geschäftsleistung an einem Ort verwalten können."
+    },
+    "faq": {
+      "whatIsSalesCore": {
+        "question": "Was ist SalesCore?",
+        "answer": "SalesCore ist eine CRM- und Management-Informationsplattform, die Organisationen hilft, Kunden, Vertriebsaktivitäten, Chancen und Geschäftsleistung an einem Ort zu verwalten."
+      },
+      "whatIsCrm": {
+        "question": "Was ist CRM?",
+        "answer": "CRM steht für Customer Relationship Management. Es hilft Unternehmen, Kunden-, Kontakt-, Lead- und Vertriebsinformationen zu organisieren."
+      },
+      "whatIsLead": {
+        "question": "Was ist ein Lead?",
+        "answer": "Ein Lead ist ein potenzieller Kunde, der noch keine qualifizierte Verkaufschance geworden ist."
+      },
+      "whatIsDeal": {
+        "question": "Was ist ein Deal?",
+        "answer": "Ein Deal stellt eine mögliche Verkaufstransaktion mit einem definierten Wert, einer Phase und einem Verantwortlichen dar."
+      },
+      "whatIsPipeline": {
+        "question": "Was ist die Vertriebspipeline?",
+        "answer": "Die Vertriebspipeline zeigt, wie sich Chancen von Lead über Qualifizierung, Angebot und Verhandlung bis zu Gewonnen oder Verloren bewegen."
+      },
+      "whereNumbersComeFrom": {
+        "question": "Woher stammen die Dashboard-Zahlen?",
+        "answer": "Dashboard-Kennzahlen werden aus Ihren eigenen, echten CRM- und Vertriebsdaten berechnet. Sie sind niemals zufällig oder vorgeladen."
+      },
+      "whatIsRevenue": {
+        "question": "Was ist Umsatz?",
+        "answer": "Umsatz stellt den Wert der in SalesCore erfassten, gewonnenen Abschlüsse dar."
+      },
+      "whatIsPipelineValue": {
+        "question": "Was ist der Pipeline-Wert?",
+        "answer": "Der Pipeline-Wert stellt den Gesamtwert der aktuell offenen Verkaufschancen dar."
+      },
+      "whatIsWinRate": {
+        "question": "Was ist die Gewinnrate?",
+        "answer": "Die Gewinnrate stellt den prozentualen Anteil der abgeschlossenen Chancen dar, die gewonnen wurden."
+      },
+      "whatIsAnalytics": {
+        "question": "Was ist Analytics?",
+        "answer": "Analytics verwandelt CRM- und Vertriebsdaten in messbare Informationen zur Geschäftsleistung."
+      },
+      "whatIsReports": {
+        "question": "Was sind Berichte?",
+        "answer": "Mit Berichten können Sie operative Geschäftsdaten filtern, überprüfen und exportieren."
+      },
+      "whatIsInsights": {
+        "question": "Was sind Business Insights?",
+        "answer": "Business Insights heben bedeutsame Muster, Veränderungen und Bereiche hervor, die die Aufmerksamkeit des Managements erfordern könnten."
+      },
+      "whoIsFor": {
+        "question": "Für wen ist SalesCore gedacht?",
+        "answer": "SalesCore ist für Vertriebsteams, Manager, Analysten und Organisationen konzipiert, die Vertriebsprozesse verwalten und datengestützte Entscheidungen treffen möchten."
+      },
+      "howSupportsManagement": {
+        "question": "Wie unterstützt SalesCore das Management?",
+        "answer": "Es verbindet operative CRM-Daten mit KPIs, Analysen, Berichten und Business Insights, damit Manager die Leistung verstehen und fundierte Entscheidungen treffen können."
+      }
+    },
+    "scenarioTitle": "So funktioniert SalesCore",
+    "scenarioIntro": "Stellen Sie sich vor, Sie sind der Vertriebsleiter eines Softwareunternehmens und verfolgen einen Deal vom ersten Kontakt bis zum Gewinn.",
+    "scenario": {
+      "company": {
+        "title": "Unternehmen",
+        "description": "Ein Vertriebsmitarbeiter findet einen potenziellen Kunden, Atlas Digital, und fügt ihn dem CRM hinzu."
+      },
+      "contact": {
+        "title": "Kontakt",
+        "description": "Der Entscheider bei Atlas Digital wird als Kontakt hinzugefügt."
+      },
+      "lead": {
+        "title": "Lead",
+        "description": "Ein Lead wird erstellt, um das frühe Interesse von Atlas Digital zu verfolgen, und dann qualifiziert."
+      },
+      "opportunity": {
+        "title": "Opportunity",
+        "description": "Aus dem qualifizierten Lead wird ein Deal über 25.000 $ in der Pipeline."
+      },
+      "proposal": {
+        "title": "Angebot",
+        "description": "Ein Angebot wird erstellt und an Atlas Digital gesendet."
+      },
+      "negotiation": {
+        "title": "Verhandlung",
+        "description": "Konditionen und Preise werden besprochen und festgelegt."
+      },
+      "wonLost": {
+        "title": "Gewonnen / Verloren",
+        "description": "Atlas Digital stimmt dem Kauf zu - der Deal wird als Gewonnen markiert."
+      },
+      "analyticsStep": {
+        "title": "Analytics",
+        "description": "SalesCore aktualisiert Umsatz, Pipeline, Gewinnrate und durchschnittliche Dealgröße automatisch."
+      },
+      "decisionStep": {
+        "title": "Entscheidung",
+        "description": "Das Management prüft Analytics, Berichte und Business Insights, um die nächsten Schritte zu planen."
+      }
+    },
+    "dataChain": {
+      "title": "Von Daten zu Entscheidungen",
+      "subtitle": "Das macht SalesCore zu mehr als nur einem CRM.",
+      "data": { "label": "Operative Daten", "example": "\"5 Deals wurden erstellt.\"" },
+      "information": { "label": "Information", "example": "\"Der Pipeline-Wert beträgt 120.000 $.\"" },
+      "insight": {
+        "label": "Erkenntnis",
+        "example": "\"Die meisten offenen Chancen konzentrieren sich auf die Verhandlungsphase.\""
+      },
+      "decision": {
+        "label": "Entscheidung",
+        "example": "\"Das Management stellt zusätzliche Vertriebsressourcen bereit, um diese Chancen abzuschließen.\""
+      }
+    },
+    "supportCta": {
+      "title": "Haben Sie noch eine Frage?",
+      "description": "Nicht gefunden, wonach Sie suchen? Fragen Sie das SalesCore-Team.",
+      "button": "Support kontaktieren"
+    }
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "Stellen Sie eine Frage, melden Sie ein Problem oder bitten Sie das SalesCore-Team um Hilfe.",
+    "form": {
+      "title": "Anfrage senden",
+      "name": "Name",
+      "email": "E-Mail",
+      "subject": "Betreff",
+      "category": "Kategorie",
+      "message": "Nachricht",
+      "submit": "Anfrage senden",
+      "submitting": "Wird gesendet...",
+      "success": "Ihre Supportanfrage wurde gesendet. Wir melden uns in Kürze bei Ihnen."
+    },
+    "categories": {
+      "general": "Allgemeine Frage",
+      "account": "Konto",
+      "crm": "CRM",
+      "pipeline": "Vertriebspipeline",
+      "analytics": "Analytics",
+      "reports": "Berichte",
+      "technical": "Technisches Problem",
+      "other": "Sonstiges"
+    },
+    "status": {
+      "open": "Offen",
+      "in_progress": "In Bearbeitung",
+      "resolved": "Gelöst",
+      "closed": "Geschlossen"
+    },
+    "myTickets": "Meine Anfragen",
+    "allTickets": "Alle Anfragen",
+    "noTickets": "Sie haben noch keine Supportanfragen gesendet.",
+    "noTicketsAdmin": "Noch keine Supportanfragen."
   }
 }
