@@ -19,10 +19,14 @@ def list_tasks(
     status: TaskStatus | None = None,
     assignee_id: int | None = None,
     mine_only: bool = False,
+    related_company_id: int | None = None,
+    related_deal_id: int | None = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return task_service.list_tasks(db, current_user, page, page_size, status, assignee_id, mine_only)
+    return task_service.list_tasks(
+        db, current_user, page, page_size, status, assignee_id, mine_only, related_company_id, related_deal_id
+    )
 
 
 @router.post("", response_model=TaskRead, status_code=201)

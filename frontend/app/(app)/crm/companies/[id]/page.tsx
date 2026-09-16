@@ -2,20 +2,23 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Building2, Globe, MapPin } from "lucide-react";
+import { ArrowLeft, Building2, Globe, MapPin, Plus } from "lucide-react";
 
 import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { ErrorState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Tabs } from "@/components/ui/Tabs";
-import { StageBadge } from "@/components/ui/Badge";
+import { StageBadge, TaskStatusBadge } from "@/components/ui/Badge";
+import { ContactFormModal } from "@/components/crm/ContactFormModal";
 import { useI18n } from "@/lib/contexts/i18n-context";
 import { useCompany, useCustomer360 } from "@/lib/hooks/use-companies";
 import { useContacts } from "@/lib/hooks/use-contacts";
 import { useDeals } from "@/lib/hooks/use-deals";
 import { useActivities } from "@/lib/hooks/use-activities";
+import { useTasks } from "@/lib/hooks/use-tasks";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export default function CompanyDetailPage() {
@@ -24,12 +27,14 @@ export default function CompanyDetailPage() {
   const router = useRouter();
   const { t, locale } = useI18n();
   const [tab, setTab] = useState("overview");
+  const [contactModalOpen, setContactModalOpen] = useState(false);
 
   const { data: company, isLoading, isError, refetch } = useCompany(companyId);
   const { data: c360 } = useCustomer360(companyId);
   const { data: contacts } = useContacts({ company_id: companyId, page_size: 50 });
   const { data: deals } = useDeals({ company_id: companyId, page_size: 50 });
   const { data: activities } = useActivities({ company_id: companyId, page_size: 50 });
+  const { data: tasks } = useTasks({ related_company_id: companyId, page_size: 50 });
 
   if (isError) {
     return <ErrorState message={t("common.somethingWentWrong")} onRetry={refetch} />;
@@ -48,7 +53,11 @@ export default function CompanyDetailPage() {
     { key: "overview", label: t("crm.tabs.overview") },
     { key: "contacts", label: t("crm.tabs.contacts"), count: contacts?.total },
     { key: "deals", label: t("crm.tabs.deals"), count: deals?.total },
-    { key: "activities", label: t("crm.tabs.activities"), count: activities?.total },
+    {
+      key: "activities",
+      label: t("crm.tabs.activities"),
+      count: activities && tasks ? activities.total + tasks.total : undefined,
+    },
   ];
 
   return (
@@ -143,6 +152,12 @@ export default function CompanyDetailPage() {
       {tab === "contacts" && (
         <Card>
           <CardContent className="pt-5 space-y-3">
+            <div className="flex justify-end">
+              <Button size="sm" onClick={() => setContactModalOpen(true)}>
+                <Plus className="h-4 w-4" />
+                {t("crm.addContact")}
+              </Button>
+            </div>
             {!contacts || contacts.items.length === 0 ? (
               <p className="py-6 text-center text-sm text-muted-foreground">{t("crm.noContacts")}</p>
             ) : (
@@ -195,22 +210,53 @@ export default function CompanyDetailPage() {
       {tab === "activities" && (
         <Card>
           <CardContent className="pt-5 space-y-3">
-            {!activities || activities.items.length === 0 ? (
-              <p className="py-6 text-center text-sm text-muted-foreground">{t("operations.noActivities")}</p>
-            ) : (
-              activities.items.map((a) => (
-                <div key={a.id} className="border-b border-border/60 pb-3 last:border-0 last:pb-0">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-foreground">{a.title}</p>
-                    <span className="text-xs text-muted-foreground">{formatDate(a.activity_date, locale)}</span>
+            {(() => {
+              const feed = [
+                ...(activities?.items ?? []).map((a) => ({
+                  key: `activity-${a.id}`,
+                  date: a.activity_date,
+                  node: (
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-foreground">{a.title}</p>
+                      <span className="text-xs text-muted-foreground">{formatDate(a.activity_date, locale)}</span>
+                    </div>
+                  ),
+                  sub: t(`operations.activityTypes.${a.type}`),
+                })),
+                ...(tasks?.items ?? []).map((task) => ({
+                  key: `task-${task.id}`,
+                  date: task.due_date ?? task.created_at,
+                  node: (
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-medium text-foreground">{task.title}</p>
+                      <div className="flex items-center gap-2">
+                        {task.due_date && (
+                          <span className="text-xs text-muted-foreground">{formatDate(task.due_date, locale)}</span>
+                        )}
+                        <TaskStatusBadge status={task.status} label={t(`operations.taskStatus.${task.status}`)} />
+                      </div>
+                    </div>
+                  ),
+                  sub: t("operations.tasks"),
+                })),
+              ].sort((x, y) => new Date(y.date).getTime() - new Date(x.date).getTime());
+
+              return feed.length === 0 ? (
+                <p className="py-6 text-center text-sm text-muted-foreground">{t("operations.noActivities")}</p>
+              ) : (
+                feed.map((item) => (
+                  <div key={item.key} className="border-b border-border/60 pb-3 last:border-0 last:pb-0">
+                    {item.node}
+                    <p className="text-xs text-muted-foreground">{item.sub}</p>
                   </div>
-                  <p className="text-xs text-muted-foreground">{t(`operations.activityTypes.${a.type}`)}</p>
-                </div>
-              ))
-            )}
+                ))
+              );
+            })()}
           </CardContent>
         </Card>
       )}
+
+      <ContactFormModal open={contactModalOpen} onClose={() => setContactModalOpen(false)} companyId={companyId} />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ArrowLeft, Briefcase, CheckCircle2, Circle, XCircle } from "lucide-react";
@@ -15,6 +16,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { ApiError } from "@/lib/api-client";
 import { DEAL_STAGE_TRANSITIONS } from "@/lib/deal-stages";
 import { useI18n } from "@/lib/contexts/i18n-context";
+import { useActivities } from "@/lib/hooks/use-activities";
 import { useChangeDealStage, useDeal, useDealHistory, useDeleteDeal } from "@/lib/hooks/use-deals";
 import type { DealStage } from "@/lib/types";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils";
@@ -30,6 +32,7 @@ export default function DealDetailPage() {
 
   const { data: deal, isLoading, isError, refetch } = useDeal(dealId);
   const { data: history } = useDealHistory(dealId);
+  const { data: activities } = useActivities({ deal_id: dealId, page_size: 20 });
   const changeStage = useChangeDealStage();
   const deleteDeal = useDeleteDeal();
 
@@ -98,7 +101,13 @@ export default function DealDetailPage() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-foreground">{deal.title}</h1>
-            <p className="text-sm text-muted-foreground">{deal.company?.name}</p>
+            {deal.company ? (
+              <Link href={`/crm/companies/${deal.company.id}`} className="text-sm text-brand hover:underline">
+                {deal.company.name}
+              </Link>
+            ) : (
+              <p className="text-sm text-muted-foreground">—</p>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -129,7 +138,19 @@ export default function DealDetailPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardContent className="pt-5 grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
-            <Field label={t("common.company")} value={deal.company?.name} />
+            <div>
+              <p className="text-xs text-muted-foreground">{t("common.company")}</p>
+              {deal.company ? (
+                <Link
+                  href={`/crm/companies/${deal.company.id}`}
+                  className="mt-0.5 block font-medium text-brand hover:underline"
+                >
+                  {deal.company.name}
+                </Link>
+              ) : (
+                <p className="mt-0.5 font-medium text-foreground">—</p>
+              )}
+            </div>
             <Field label={t("sales.dealValue")} value={formatCurrency(deal.value, deal.currency)} />
             <Field label={t("sales.probability")} value={`${deal.probability}%`} />
             <Field
@@ -176,6 +197,29 @@ export default function DealDetailPage() {
                 </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardContent className="pt-5">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {t("crm.tabs.activities")}
+            </p>
+            {!activities || activities.items.length === 0 ? (
+              <p className="py-6 text-center text-sm text-muted-foreground">{t("operations.noActivities")}</p>
+            ) : (
+              <div className="space-y-3">
+                {activities.items.map((a) => (
+                  <div key={a.id} className="border-b border-border/60 pb-3 last:border-0 last:pb-0">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-foreground">{a.title}</p>
+                      <span className="text-xs text-muted-foreground">{formatDate(a.activity_date, locale)}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{t(`operations.activityTypes.${a.type}`)}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

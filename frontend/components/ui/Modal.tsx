@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useId, useRef } from "react";
 import { X } from "lucide-react";
 
 import { useI18n } from "@/lib/contexts/i18n-context";
@@ -19,8 +19,12 @@ export function Modal({
   children: React.ReactNode;
   size?: "sm" | "md" | "lg" | "xl";
 }) {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+
   useEffect(() => {
     if (!open) return;
+    panelRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
@@ -41,10 +45,22 @@ export function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-[8vh]">
       <div className="fixed inset-0 bg-black/40 backdrop-blur-[2px] animate-in" onClick={onClose} />
-      <div className={cn("relative w-full rounded-xl border border-border bg-card shadow-2xl animate-in", sizeClass)}>
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? titleId : undefined}
+        tabIndex={-1}
+        className={cn(
+          "relative w-full rounded-xl border border-border bg-card shadow-2xl animate-in outline-none",
+          sizeClass
+        )}
+      >
         {title && (
           <div className="flex items-center justify-between border-b border-border px-5 py-4">
-            <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+            <h2 id={titleId} className="text-sm font-semibold text-foreground">
+              {title}
+            </h2>
             <button
               onClick={onClose}
               aria-label={t("common.close")}

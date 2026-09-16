@@ -106,3 +106,17 @@ def test_analyst_cannot_create_task(client, analyst_user):
     headers = auth_headers(client, "analyst@test.io")
     response = client.post("/api/v1/tasks", headers=headers, json={"title": "Blocked"})
     assert response.status_code == 403
+
+
+def test_list_tasks_filters_by_related_company(client, admin_user):
+    headers = auth_headers(client, "admin@test.io")
+    company = client.post("/api/v1/companies", headers=headers, json={"name": "Task Co"}).json()
+    other_company = client.post("/api/v1/companies", headers=headers, json={"name": "Other Co"}).json()
+    _create_task(client, headers, title="Company Task", related_company_id=company["id"])
+    _create_task(client, headers, title="Other Task", related_company_id=other_company["id"])
+    _create_task(client, headers, title="Unrelated Task")
+
+    response = client.get(f"/api/v1/tasks?related_company_id={company['id']}", headers=headers)
+    assert response.status_code == 200
+    titles = [t["title"] for t in response.json()["items"]]
+    assert titles == ["Company Task"]

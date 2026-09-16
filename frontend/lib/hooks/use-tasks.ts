@@ -9,6 +9,8 @@ export interface TaskFilters {
   status?: string;
   assignee_id?: number;
   mine_only?: boolean;
+  related_company_id?: number;
+  related_deal_id?: number;
 }
 
 export function useTasks(filters: TaskFilters) {

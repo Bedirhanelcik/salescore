@@ -71,6 +71,8 @@ export default function AnalyticsPage() {
           <CardContent>
             {revenueLoading || !revenue ? (
               <Skeleton className="h-[280px] w-full" />
+            ) : revenue.points.every((p) => p.actual === 0 && p.target === 0 && p.forecast === 0) ? (
+              <p className="py-8 text-center text-sm text-muted-foreground">{t("common.noResults")}</p>
             ) : (
               <RevenueChart points={revenue.points} />
             )}
@@ -81,7 +83,13 @@ export default function AnalyticsPage() {
             <CardTitle>{t("analytics.winLoss")}</CardTitle>
           </CardHeader>
           <CardContent>
-            {winLossLoading || !winLoss ? <Skeleton className="h-[260px] w-full" /> : <WinLossChart rows={winLoss} />}
+            {winLossLoading || !winLoss ? (
+              <Skeleton className="h-[260px] w-full" />
+            ) : winLoss.every((r) => r.won === 0 && r.lost === 0) ? (
+              <p className="py-8 text-center text-sm text-muted-foreground">{t("common.noResults")}</p>
+            ) : (
+              <WinLossChart rows={winLoss} />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -91,7 +99,13 @@ export default function AnalyticsPage() {
           <CardTitle>{t("analytics.salesFunnel")}</CardTitle>
         </CardHeader>
         <CardContent>
-          {funnelLoading || !funnel ? <Skeleton className="h-56 w-full" /> : <FunnelChart stages={funnel.stages} />}
+          {funnelLoading || !funnel ? (
+            <Skeleton className="h-56 w-full" />
+          ) : funnel.stages.every((s) => s.count === 0) ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">{t("common.noResults")}</p>
+          ) : (
+            <FunnelChart stages={funnel.stages} />
+          )}
         </CardContent>
       </Card>
 
@@ -117,6 +131,8 @@ export default function AnalyticsPage() {
           <CardContent>
             {customerGrowthLoading || !customerGrowth ? (
               <Skeleton className="h-[220px] w-full" />
+            ) : customerGrowth.every((p) => p.new_customers === 0 && p.total_customers === 0) ? (
+              <p className="py-8 text-center text-sm text-muted-foreground">{t("common.noResults")}</p>
             ) : (
               <CustomerGrowthChart points={customerGrowth} />
             )}
@@ -136,6 +152,8 @@ export default function AnalyticsPage() {
             <div className="px-5 pb-5">
               <Skeleton className="h-40 w-full" />
             </div>
+          ) : team.rows.length === 0 ? (
+            <p className="px-5 py-8 text-center text-sm text-muted-foreground">{t("common.noResults")}</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

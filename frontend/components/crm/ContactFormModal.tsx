@@ -6,9 +6,10 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/Button";
-import { FieldError, Input, Label } from "@/components/ui/Input";
+import { FieldError, Input, Label, Select } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { useI18n } from "@/lib/contexts/i18n-context";
+import { useCompanies } from "@/lib/hooks/use-companies";
 import { useCreateContact } from "@/lib/hooks/use-contacts";
 import { ApiError } from "@/lib/api-client";
 
@@ -18,6 +19,7 @@ const schema = z.object({
   email: z.string().email().optional().or(z.literal("")),
   phone: z.string().optional(),
   job_title: z.string().optional(),
+  company_id: z.coerce.number().optional(),
 });
 type FormValues = z.infer<typeof schema>;
 
@@ -32,16 +34,21 @@ export function ContactFormModal({
 }) {
   const { t } = useI18n();
   const createContact = useCreateContact();
+  const { data: companies } = useCompanies({ page_size: 100 });
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) });
+  } = useForm<z.input<typeof schema>, unknown, FormValues>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (values: FormValues) => {
     try {
-      await createContact.mutateAsync({ ...values, email: values.email || undefined, company_id: companyId });
+      await createContact.mutateAsync({
+        ...values,
+        email: values.email || undefined,
+        company_id: companyId ?? values.company_id ?? undefined,
+      });
       toast.success(t("crm.addContact"));
       reset();
       onClose();
@@ -80,6 +87,19 @@ export function ContactFormModal({
             <Input {...register("job_title")} />
           </div>
         </div>
+        {!companyId && (
+          <div>
+            <Label>{t("common.company")}</Label>
+            <Select {...register("company_id")} defaultValue="">
+              <option value="">{t("common.none")}</option>
+              {companies?.items.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+        )}
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={onClose}>
             {t("common.cancel")}

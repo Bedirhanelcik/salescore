@@ -39,6 +39,8 @@ def list_tasks(
     status: TaskStatus | None = None,
     assignee_id: int | None = None,
     mine_only: bool = False,
+    related_company_id: int | None = None,
+    related_deal_id: int | None = None,
 ):
     stmt = select(Task).options(*LOAD_OPTIONS)
 
@@ -49,6 +51,12 @@ def list_tasks(
 
     if status:
         stmt = stmt.where(Task.status == status)
+
+    if related_company_id:
+        stmt = stmt.where(Task.related_company_id == related_company_id)
+
+    if related_deal_id:
+        stmt = stmt.where(Task.related_deal_id == related_deal_id)
 
     stmt = stmt.order_by(Task.due_date.asc().nulls_last())
     result = paginate(db, stmt, page, page_size)
