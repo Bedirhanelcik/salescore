@@ -865,5 +865,6 @@ All four are the live application, not mockups.
 
 ## License
 
-Built as an academic capstone / portfolio project. No license file is
-included — add one before any public redistribution.
+Copyright © 2026 Bedirhan Elçik. All rights reserved.
+
+This project is published publicly for portfolio and educational purposes. The source code may be viewed for reference, but copying, redistribution, modification, or commercial use without explicit permission from the author is not permitted.
