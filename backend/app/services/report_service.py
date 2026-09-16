@@ -110,8 +110,8 @@ def employee_performance_report(db: Session, user: User, start_date: date | None
     ]
 
 
-def revenue_report(db: Session, months: int = 12) -> list[dict]:
-    trend = analytics_service.get_revenue_trend(db, months)
+def revenue_report(db: Session, user: User, months: int = 12) -> list[dict]:
+    trend = analytics_service.get_revenue_trend(db, months, user=user)
     return [
         {
             "period": p.period_label,
@@ -187,8 +187,8 @@ def activity_report(db: Session, user: User, start_date: date | None, end_date: 
     return rows
 
 
-def kpi_report(db: Session) -> list[dict]:
-    kpis = analytics_service.get_kpi_summary(db, days=30)
+def kpi_report(db: Session, user: User) -> list[dict]:
+    kpis = analytics_service.get_kpi_summary(db, days=30, user=user)
     return [{"metric": m.label, "value": m.value, "change_pct": m.change_pct, "format": m.format} for m in kpis.metrics]
 
 
@@ -203,7 +203,7 @@ def get_report(
         case "employee-performance":
             return employee_performance_report(db, user, start_date, end_date)
         case "revenue":
-            return revenue_report(db)
+            return revenue_report(db, user)
         case "lead-conversion":
             return lead_conversion_report(db, user)
         case "pipeline":
@@ -211,6 +211,6 @@ def get_report(
         case "activity":
             return activity_report(db, user, start_date, end_date)
         case "kpi":
-            return kpi_report(db)
+            return kpi_report(db, user)
         case _:
             return []

@@ -73,3 +73,73 @@ def test_sales_rep_only_sees_own_deals_in_report(client, sales_rep_user, sales_r
     titles = [row["deal"] for row in rep1_report["items"]]
     assert "Rep1 Deal" in titles
     assert "Rep2 Deal" not in titles
+
+
+def _win_deal(client, headers, value):
+    deal = client.post(
+        "/api/v1/deals", headers=headers, json={"title": "Deal", "value": value, "stage": "negotiation"}
+    ).json()
+    client.patch(f"/api/v1/deals/{deal['id']}/stage", headers=headers, json={"stage": "won"})
+
+
+def _current_period_actual(items: list[dict]) -> float:
+    return items[-1]["actual"]
+
+
+def _kpi_value(items: list[dict], metric_label: str) -> float:
+    return next(row["value"] for row in items if row["metric"] == metric_label)
+
+
+def test_revenue_report_scoped_to_sales_rep(client, sales_rep_user, sales_rep2_user):
+    rep1_headers = auth_headers(client, "rep@test.io")
+    rep2_headers = auth_headers(client, "rep2@test.io")
+    _win_deal(client, rep1_headers, 25000)
+    _win_deal(client, rep2_headers, 99000)
+
+    rep1_items = client.get("/api/v1/reports/revenue", headers=rep1_headers).json()["items"]
+    assert _current_period_actual(rep1_items) == 25000.0
+
+    rep2_items = client.get("/api/v1/reports/revenue", headers=rep2_headers).json()["items"]
+    assert _current_period_actual(rep2_items) == 99000.0
+
+
+def test_kpi_report_scoped_to_sales_rep(client, sales_rep_user, sales_rep2_user):
+    rep1_headers = auth_headers(client, "rep@test.io")
+    rep2_headers = auth_headers(client, "rep2@test.io")
+    _win_deal(client, rep1_headers, 25000)
+    _win_deal(client, rep2_headers, 99000)
+
+    rep1_items = client.get("/api/v1/reports/kpi", headers=rep1_headers).json()["items"]
+    assert _kpi_value(rep1_items, "Revenue") == 25000.0
+
+    rep2_items = client.get("/api/v1/reports/kpi", headers=rep2_headers).json()["items"]
+    assert _kpi_value(rep2_items, "Revenue") == 99000.0
+
+
+def test_admin_sees_organization_wide_revenue_and_kpi_report(client, admin_user, sales_rep_user, sales_rep2_user):
+    rep1_headers = auth_headers(client, "rep@test.io")
+    rep2_headers = auth_headers(client, "rep2@test.io")
+    _win_deal(client, rep1_headers, 25000)
+    _win_deal(client, rep2_headers, 99000)
+
+    admin_headers = auth_headers(client, "admin@test.io")
+    revenue_items = client.get("/api/v1/reports/revenue", headers=admin_headers).json()["items"]
+    assert _current_period_actual(revenue_items) == 124000.0
+
+    kpi_items = client.get("/api/v1/reports/kpi", headers=admin_headers).json()["items"]
+    assert _kpi_value(kpi_items, "Revenue") == 124000.0
+
+
+def test_revenue_and_kpi_csv_export_are_scoped(client, sales_rep_user, sales_rep2_user):
+    rep1_headers = auth_headers(client, "rep@test.io")
+    rep2_headers = auth_headers(client, "rep2@test.io")
+    _win_deal(client, rep1_headers, 25000)
+    _win_deal(client, rep2_headers, 99000)
+
+    revenue_csv = client.get("/api/v1/reports/revenue?format=csv", headers=rep1_headers).text
+    assert "25000.0" in revenue_csv
+    assert "99000.0" not in revenue_csv
+
+    kpi_csv = client.get("/api/v1/reports/kpi?format=csv", headers=rep1_headers).text
+    assert "25000" in kpi_csv
+    assert "99000" not in kpi_csv
