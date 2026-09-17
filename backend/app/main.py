@@ -33,3 +33,8 @@ app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 @app.get("/api/health", tags=["Health"])
 def health_check():
     return {"status": "ok", "service": settings.APP_NAME, "env": settings.ENV}
+
+
+@app.get("/healthz", tags=["Health"])
+def healthz():
+    return {"status": "ok"}
