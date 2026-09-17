@@ -2,6 +2,8 @@
 
 **Enterprise CRM, Management Information System, Business Intelligence & Decision Support Platform**
 
+LİVE: https://salescore-platform.vercel.app/
+
 ```mermaid
 flowchart TD
     A["Management Information Systems (MIS / YBS)"]
